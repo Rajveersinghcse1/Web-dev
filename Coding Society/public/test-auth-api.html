@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Authentication & Post Creation API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .code {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Coding Society API Test</h1>
+        <p>Test authentication and post creation functionality</p>
+        
+        <div class="info">
+            <strong>Test User Credentials:</strong><br>
+            Email: test@example.com<br>
+            Password: password123
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔐 Step 1: Login</h2>
+        <input type="email" id="email" placeholder="Email" value="test@example.com">
+        <input type="password" id="password" placeholder="Password" value="password123">
+        <button class="button" onclick="login()">Login</button>
+        <div id="loginResult"></div>
+    </div>
+
+    <div class="container">
+        <h2>👤 Step 2: Get User Profile</h2>
+        <button class="button" onclick="getUserProfile()">Get My Profile</button>
+        <div id="profileResult"></div>
+    </div>
+
+    <div class="container">
+        <h2>📝 Step 3: Create Post</h2>
+        <textarea id="postContent" placeholder="Enter your post content here...">Hello! This is a test post to verify that our API and database connection is working properly. 🚀
+
+Let's test image upload and feed functionality!</textarea>
+        <input type="file" id="imageFile" accept="image/*" multiple>
+        <button class="button" onclick="createPost()">Create Post</button>
+        <div id="postResult"></div>
+    </div>
+
+    <div class="container">
+        <h2>📰 Step 4: Get Feed</h2>
+        <button class="button" onclick="getFeed()">Load Feed</button>
+        <div id="feedResult"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/v1';
+        let authToken = localStorage.getItem('authToken');
+
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        function showCode(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="code">${JSON.stringify(data, null, 2)}</div>`;
+        }
+
+        async function login() {
+            try {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    authToken = data.token;
+                    localStorage.setItem('authToken', authToken);
+                    showResult('loginResult', '✅ Login successful!', 'success');
+                    showCode('loginResult', data);
+                } else {
+                    showResult('loginResult', `❌ Login failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('loginResult', `❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getUserProfile() {
+            try {
+                if (!authToken) {
+                    showResult('profileResult', '❌ Please login first', 'error');
+                    return;
+                }
+
+                const response = await fetch(`${API_URL}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult('profileResult', '✅ Profile loaded successfully!', 'success');
+                    showCode('profileResult', data);
+                } else {
+                    showResult('profileResult', `❌ Failed to load profile: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('profileResult', `❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function createPost() {
+            try {
+                if (!authToken) {
+                    showResult('postResult', '❌ Please login first', 'error');
+                    return;
+                }
+
+                const content = document.getElementById('postContent').value;
+                const imageFile = document.getElementById('imageFile').files[0];
+
+                if (!content.trim()) {
+                    showResult('postResult', '❌ Please enter post content', 'error');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('content', content);
+                formData.append('type', 'text');
+                formData.append('privacy', 'public');
+
+                if (imageFile) {
+                    formData.append('files', imageFile);
+                }
+
+                const response = await fetch(`${API_URL}/feed`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult('postResult', '✅ Post created successfully!', 'success');
+                    showCode('postResult', data);
+                } else {
+                    showResult('postResult', `❌ Failed to create post: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('postResult', `❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getFeed() {
+            try {
+                if (!authToken) {
+                    showResult('feedResult', '❌ Please login first', 'error');
+                    return;
+                }
+
+                const response = await fetch(`${API_URL}/feed?page=1&limit=10`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult('feedResult', `✅ Feed loaded successfully! Found ${data.posts?.length || 0} posts`, 'success');
+                    showCode('feedResult', data);
+                } else {
+                    showResult('feedResult', `❌ Failed to load feed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('feedResult', `❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        // Check if already logged in
+        if (authToken) {
+            showResult('loginResult', '✅ Found existing token in localStorage', 'success');
+        }
+    </script>
+</body>
+</html>

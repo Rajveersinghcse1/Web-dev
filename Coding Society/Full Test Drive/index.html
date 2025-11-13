@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Test Drive - Database Management Console</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-database"></i>
+                    <h1>Full Test Drive Console</h1>
+                </div>
+                <div class="header-actions">
+                    <div class="connection-status" id="connectionStatus">
+                        <i class="fas fa-circle"></i>
+                        <span>Connecting...</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="refreshAll()">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh All
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="sidebar">
+            <div class="nav-section">
+                <h3>Collections</h3>
+                <ul class="nav-menu">
+                    <li><a href="#" onclick="loadCollection('users')" data-collection="users">
+                        <i class="fas fa-users"></i> Users
+                        <span class="count" id="users-count">0</span>
+                    </a></li>
+                    <li><a href="#" onclick="loadCollection('posts')" data-collection="posts">
+                        <i class="fas fa-file-text"></i> Posts
+                        <span class="count" id="posts-count">0</span>
+                    </a></li>
+                    <li><a href="#" onclick="loadCollection('achievements')" data-collection="achievements">
+                        <i class="fas fa-trophy"></i> Achievements
+                        <span class="count" id="achievements-count">0</span>
+                    </a></li>
+                    <li><a href="#" onclick="loadCollection('quests')" data-collection="quests">
+                        <i class="fas fa-map"></i> Quests
+                        <span class="count" id="quests-count">0</span>
+                    </a></li>
+                    <li><a href="#" onclick="loadCollection('stories')" data-collection="stories">
+                        <i class="fas fa-book"></i> Stories
+                        <span class="count" id="stories-count">0</span>
+                    </a></li>
+                    <li><a href="#" onclick="loadCollection('feedback')" data-collection="feedback">
+                        <i class="fas fa-comment"></i> Feedback
+                        <span class="count" id="feedback-count">0</span>
+                    </a></li>
+                    <li><a href="#" onclick="loadCollection('hackathons')" data-collection="hackathons">
+                        <i class="fas fa-code"></i> Hackathons
+                        <span class="count" id="hackathons-count">0</span>
+                    </a></li>
+                    <li><a href="#" onclick="loadCollection('innovations')" data-collection="innovations">
+                        <i class="fas fa-lightbulb"></i> Innovations
+                        <span class="count" id="innovations-count">0</span>
+                    </a></li>
+                    <li><a href="#" onclick="loadCollection('internships')" data-collection="internships">
+                        <i class="fas fa-briefcase"></i> Internships
+                        <span class="count" id="internships-count">0</span>
+                    </a></li>
+                    <li><a href="#" onclick="loadCollection('library')" data-collection="library">
+                        <i class="fas fa-library"></i> Library Content
+                        <span class="count" id="library-count">0</span>
+                    </a></li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <h3>Tools</h3>
+                <ul class="nav-menu">
+                    <li><a href="#" onclick="showDatabaseStats()">
+                        <i class="fas fa-chart-bar"></i> Database Stats
+                    </a></li>
+                    <li><a href="#" onclick="showSystemHealth()">
+                        <i class="fas fa-heartbeat"></i> System Health
+                    </a></li>
+                    <li><a href="#" onclick="exportData()">
+                        <i class="fas fa-download"></i> Export Data
+                    </a></li>
+                    <li><a href="#" onclick="showAPILogs()">
+                        <i class="fas fa-terminal"></i> API Logs
+                    </a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Welcome Dashboard -->
+            <div id="dashboard" class="content-section active">
+                <div class="dashboard-header">
+                    <h2>Database Management Dashboard</h2>
+                    <p>Monitor and manage your Docker database collections in real-time</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-users">0</h3>
+                            <p>Total Users</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-text"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-posts">0</h3>
+                            <p>Total Posts</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-achievements">0</h3>
+                            <p>Achievements</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-collections">10</h3>
+                            <p>Collections</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="btn btn-success" onclick="createNew('users')">
+                            <i class="fas fa-plus"></i> Add User
+                        </button>
+                        <button class="btn btn-info" onclick="createNew('posts')">
+                            <i class="fas fa-plus"></i> Create Post
+                        </button>
+                        <button class="btn btn-warning" onclick="backupDatabase()">
+                            <i class="fas fa-shield-alt"></i> Backup Database
+                        </button>
+                        <button class="btn btn-danger" onclick="clearLogs()">
+                            <i class="fas fa-trash"></i> Clear Logs
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collection View -->
+            <div id="collection-view" class="content-section">
+                <div class="collection-header">
+                    <div class="collection-title">
+                        <h2 id="collection-name">Collection</h2>
+                        <p id="collection-description">Manage your collection data</p>
+                    </div>
+                    <div class="collection-actions">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="search-input" placeholder="Search collection...">
+                        </div>
+                        <button class="btn btn-primary" onclick="createNewDocument()">
+                            <i class="fas fa-plus"></i> Add New
+                        </button>
+                        <button class="btn btn-outline" onclick="exportCollection()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+
+                <div class="collection-content">
+                    <div class="table-container">
+                        <table id="data-table" class="data-table">
+                            <thead id="table-head">
+                                <!-- Dynamic headers will be inserted here -->
+                            </thead>
+                            <tbody id="table-body">
+                                <!-- Dynamic data will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination controls will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Document Editor -->
+            <div id="document-editor" class="content-section">
+                <div class="editor-header">
+                    <h2 id="editor-title">Document Editor</h2>
+                    <div class="editor-actions">
+                        <button class="btn btn-success" onclick="saveDocument()">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button class="btn btn-outline" onclick="cancelEdit()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="editor-content">
+                    <div id="json-editor" class="json-editor">
+                        <!-- JSON editor will be initialized here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Confirm Action</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="modal-message">Are you sure you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="confirm-btn">Confirm</button>
+                <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+        </div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-json.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-monokai.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

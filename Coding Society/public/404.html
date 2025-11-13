@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <script>
+        // SPA fallback for GitHub Pages and other static hosts
+        const path = window.location.pathname;
+        const query = window.location.search;
+        const hash = window.location.hash;
+        
+        if (path !== '/') {
+            window.history.replaceState(null, null, '/');
+            window.location.replace('/' + query + hash);
+        }
+    </script>
+</head>
+<body>
+    <p>Redirecting...</p>
+</body>
+</html>

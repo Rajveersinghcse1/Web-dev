@@ -1,0 +1,893 @@
+@import "tailwindcss";
+
+/* Universal color system for all devices */
+:root {
+  /* Primary Brand Colors */
+  --primary-blue: #2563eb;
+  --primary-blue-light: #3b82f6;
+  --primary-blue-dark: #1d4ed8;
+  --primary-indigo: #4f46e5;
+  --primary-indigo-light: #6366f1;
+  --primary-indigo-dark: #3730a3;
+  --primary-purple: #7c3aed;
+  --primary-purple-light: #8b5cf6;
+  --primary-purple-dark: #5b21b6;
+  --primary-pink: #ec4899;
+  --primary-pink-light: #f472b6;
+  --primary-pink-dark: #be185d;
+  
+  /* Accent Colors */
+  --accent-emerald: #059669;
+  --accent-emerald-light: #10b981;
+  --accent-orange: #ea580c;
+  --accent-orange-light: #f97316;
+  
+  /* Text Colors - Consistent across all devices */
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --text-light: #d1d5db;
+  --text-white: #ffffff;
+  
+  /* Background Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  --bg-dark: #111827;
+  --bg-dark-secondary: #1f2937;
+  
+  /* Border Colors */
+  --border-light: #e5e7eb;
+  --border-medium: #d1d5db;
+  --border-dark: #374151;
+  
+  /* Shadow System */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-base: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  
+  /* Gradient Backgrounds */
+  --gradient-primary: linear-gradient(135deg, var(--primary-blue), var(--primary-indigo));
+  --gradient-secondary: linear-gradient(135deg, var(--primary-purple), var(--primary-pink));
+  --gradient-accent: linear-gradient(135deg, var(--accent-emerald), var(--primary-blue));
+  
+  /* Light Theme Colors */
+  --bg-blue-light: #eff6ff;
+  --bg-indigo-light: #eef2ff;
+  --bg-purple-light: #faf5ff;
+  --bg-pink-light: #fdf2f8;
+  --bg-green-light: #ecfdf5;
+  --bg-orange-light: #fff7ed;
+  --bg-gray-light: #f9fafb;
+}
+
+/* Universal Button Styles - Consistent across all devices */
+.btn-primary {
+  background: var(--gradient-primary);
+  color: var(--text-white);
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-base);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-indigo-dark));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--bg-secondary);
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-base);
+}
+
+/* Universal Card Styles */
+.card-enhanced {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  box-shadow: var(--shadow-base);
+  transition: all 0.3s ease;
+}
+
+/* Feed-specific styles */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Scroll animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Loading spinner */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin 2s linear infinite;
+}
+
+/* Reaction animations */
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 0.6s ease-in-out;
+}
+
+/* Notification styles */
+.notification-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.notification-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 300ms ease-out;
+}
+
+.notification-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.notification-exit-active {
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 300ms ease-in;
+}
+
+/* Glass morphism effect */
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.card-enhanced:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Universal Text Styles - Same across all devices */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-light {
+  color: var(--text-light);
+}
+
+/* Universal Accent Colors */
+.accent-blue {
+  color: var(--primary-blue);
+}
+
+.accent-indigo {
+  color: var(--primary-indigo);
+}
+
+.accent-purple {
+  color: var(--primary-purple);
+}
+
+.accent-pink {
+  color: var(--primary-pink);
+}
+
+.accent-emerald {
+  color: var(--accent-emerald);
+}
+
+.accent-orange {
+  color: var(--accent-orange);
+}
+
+/* Universal Background Gradients */
+.gradient-primary {
+  background: var(--gradient-primary);
+}
+
+.gradient-secondary {
+  background: var(--gradient-secondary);
+}
+
+.gradient-accent {
+  background: var(--gradient-accent);
+}
+
+/* Universal Light Accent Backgrounds */
+.bg-blue-light {
+  background-color: var(--bg-blue-light);
+}
+
+.bg-indigo-light {
+  background-color: var(--bg-indigo-light);
+}
+
+.bg-purple-light {
+  background-color: var(--bg-purple-light);
+}
+
+.bg-pink-light {
+  background-color: var(--bg-pink-light);
+}
+
+.bg-green-light {
+  background-color: var(--bg-green-light);
+}
+
+.bg-orange-light {
+  background-color: var(--bg-orange-light);
+}
+
+.bg-gray-light {
+  background-color: var(--bg-gray-light);
+}
+
+/* Universal Navbar Animations - Consistent across all devices */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Universal Modal Animations - Perfect centering with smooth transitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes modalSlideOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+}
+
+/* Universal Modal Centering Utilities */
+.modal-center {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
+  overflow: auto;
+}
+
+.modal-container {
+  width: 100%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+}
+
+/* Enhanced scrollbar styling for modals */
+.modal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+}
+
+.modal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 3px;
+  border: none;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(155, 155, 155, 0.7);
+}
+
+/* Boundary-safe modal positioning */
+.modal-boundary-safe {
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  box-sizing: border-box;
+}
+
+/* Responsive modal sizes with boundary protection */
+@media (max-width: 640px) {
+  .modal-container {
+    padding: 1rem;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
+  }
+  
+  .modal-boundary-safe {
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .modal-container {
+    padding: 1.5rem;
+    max-width: 28rem; /* 448px */
+    max-height: calc(100vh - 3rem);
+    max-height: calc(100dvh - 3rem);
+  }
+  
+  .modal-boundary-safe {
+    max-width: calc(100vw - 3rem);
+    max-height: calc(100vh - 3rem);
+    max-height: calc(100dvh - 3rem);
+  }
+}
+
+@media (min-width: 769px) {
+  .modal-container {
+    padding: 2rem;
+    max-width: 32rem; /* 512px */
+    max-height: calc(100vh - 4rem);
+    max-height: calc(100dvh - 4rem);
+  }
+  
+  .modal-boundary-safe {
+    max-width: calc(100vw - 4rem);
+    max-height: calc(100vh - 4rem);
+    max-height: calc(100dvh - 4rem);
+  }
+}
+
+/* Prevent modal content from exceeding boundaries */
+.modal-content-safe {
+  max-width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Safe viewport calculations for all devices */
+@supports (height: 100dvh) {
+  .modal-center {
+    min-height: 100dvh;
+  }
+  
+  .modal-container {
+    max-height: calc(100dvh - 2rem);
+  }
+  
+  .modal-boundary-safe {
+    max-height: calc(100dvh - 2rem);
+  }
+}
+
+/* Universal Modal Wrapper - Use this class for any new modals */
+.modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow: auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.modal-content {
+  position: relative;
+  width: 100%;
+  margin: auto;
+  max-width: 28rem; /* 448px - default mobile-first */
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Responsive modal content sizes */
+@media (min-width: 640px) {
+  .modal-wrapper {
+    padding: 1.5rem;
+  }
+  
+  .modal-content {
+    max-width: 32rem; /* 512px */
+    max-height: calc(100vh - 3rem);
+    max-height: calc(100dvh - 3rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .modal-wrapper {
+    padding: 2rem;
+  }
+  
+  .modal-content {
+    max-width: 42rem; /* 672px */
+    max-height: calc(100vh - 4rem);
+    max-height: calc(100dvh - 4rem);
+  }
+  
+  .modal-content.modal-large {
+    max-width: 64rem; /* 1024px */
+  }
+  
+  .modal-content.modal-small {
+    max-width: 28rem; /* 448px */
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
+/* Universal Glassmorphism - Consistent across all screen sizes */
+.glassmorphism {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Universal Navigation Hover Effects */
+.nav-item-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-item-hover:hover {
+  transform: translateY(-1px);
+  color: var(--primary-blue);
+}
+
+/* Universal Navigation Active States */
+.nav-item-active {
+  background: var(--gradient-primary);
+  color: var(--text-white);
+  box-shadow: var(--shadow-md);
+}
+
+.nav-item-inactive {
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.nav-item-inactive:hover {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--primary-blue);
+  box-shadow: var(--shadow-base);
+}
+
+/* Universal Mode Toggle Colors */
+.mode-toggle-study {
+  background: var(--bg-blue-light);
+  color: var(--primary-blue);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+}
+
+.mode-toggle-study:hover {
+  background: #dbeafe;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+}
+
+.mode-toggle-professional {
+  background: var(--bg-purple-light);
+  color: var(--primary-purple);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+}
+
+.mode-toggle-professional:hover {
+  background: #f3e8ff;
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.25);
+}
+
+/* Universal Dropdown Animations */
+.dropdown-enter {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+}
+
+.dropdown-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: all 0.2s ease-out;
+}
+
+.dropdown-exit {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.dropdown-exit-active {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.2s ease-in;
+}
+
+/* Universal Responsive Design - Colors consistent across all breakpoints */
+@media (max-width: 640px) {
+  .nav-item-hover {
+    padding: 0.75rem 1rem;
+    margin: 0.25rem 0;
+  }
+  
+  .glassmorphism {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.98);
+  }
+  
+  /* Ensure colors remain consistent on mobile */
+  .mode-toggle-study {
+    background: var(--bg-blue-light);
+    color: var(--primary-blue);
+  }
+  
+  .mode-toggle-professional {
+    background: var(--bg-purple-light);
+    color: var(--primary-purple);
+  }
+}
+
+/* Tablet responsive design (641px - 1023px) */
+@media (min-width: 641px) and (max-width: 1023px) {
+  .glassmorphism {
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+}
+
+/* Desktop responsive design (1024px - 1279px) */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .glassmorphism {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+}
+
+/* Large desktop/laptop responsive design (1280px+) */
+@media (min-width: 1280px) {
+  .glassmorphism {
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+}
+
+/* Ensure proper text wrapping and overflow handling */
+.text-responsive {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Mobile menu scroll fix */
+.mobile-menu-container {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mobile-menu-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mobile menu positioning and sizing fixes */
+@media (max-width: 1024px) {
+  .mobile-menu {
+    position: fixed;
+    top: 64px; /* Height of navbar */
+    left: 0;
+    right: 0;
+    width: 100vw;
+    max-width: 100vw;
+    box-sizing: border-box;
+    z-index: 9999;
+  }
+  
+  .mobile-menu-content {
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Ensure no horizontal overflow */
+  .mobile-menu * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* Feed page universal colors - Consistent across all devices */
+@media (max-width: 640px) {
+  /* Reduce card padding on mobile but keep colors consistent */
+  .feed-card .card-content {
+    padding: 1rem;
+  }
+  
+  /* Optimize code blocks for mobile with consistent colors */
+  .feed-code-block {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    background: var(--bg-dark);
+    color: var(--text-white);
+    border: 1px solid var(--border-dark);
+  }
+  
+  /* Better touch targets for feed actions with consistent colors */
+  .feed-action-button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.5rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+  }
+  
+  .feed-action-button:hover {
+    color: var(--primary-blue);
+  }
+  
+  .feed-action-button.liked {
+    color: #ef4444;
+  }
+  
+  .feed-action-button.bookmarked {
+    color: #f59e0b;
+  }
+  
+  /* Optimize avatar sizes with consistent styling */
+  .feed-avatar-small {
+    width: 2rem;
+    height: 2rem;
+    border: 2px solid var(--border-light);
+  }
+  
+  .feed-avatar-medium {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 2px solid var(--border-light);
+  }
+}
+
+@media (min-width: 641px) {
+  /* Desktop/tablet feed styling with same color consistency */
+  .feed-code-block {
+    background: var(--bg-dark);
+    color: var(--text-white);
+    border: 1px solid var(--border-dark);
+  }
+  
+  .feed-action-button {
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+  }
+  
+  .feed-action-button:hover {
+    color: var(--primary-blue);
+  }
+}
+
+/* Text truncation utilities */
+.truncate-2-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.truncate-3-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Universal Component Colors - Apply to all devices */
+.universal-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-base);
+  color: var(--text-primary);
+}
+
+.universal-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.universal-button-primary {
+  background: var(--gradient-primary);
+  color: var(--text-white);
+  border: none;
+  box-shadow: var(--shadow-base);
+}
+
+.universal-button-primary:hover {
+  background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-indigo-dark));
+  box-shadow: var(--shadow-md);
+}
+
+.universal-button-secondary {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
+}
+
+.universal-button-secondary:hover {
+  background: var(--bg-secondary);
+  color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+
+.universal-input {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+.universal-input:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.universal-text-primary {
+  color: var(--text-primary);
+}
+
+.universal-text-secondary {
+  color: var(--text-secondary);
+}
+
+.universal-text-muted {
+  color: var(--text-muted);
+}
+
+/* Universal responsive spacing that works across all devices */
+@media (max-width: 640px) {
+  .universal-spacing-mobile {
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .universal-spacing-tablet {
+    padding: 1rem;
+    margin: 0.75rem 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .universal-spacing-desktop {
+    padding: 1.5rem;
+    margin: 1rem 0;
+  }
+}

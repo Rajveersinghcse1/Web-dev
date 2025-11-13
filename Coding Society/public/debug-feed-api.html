@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Feed API Debug Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .status-banner {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+        
+        .test-section h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .auth-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 200px;
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status-banner">
+            🚀 Feed API Debug Test - Diagnosing 503 Errors and Auto-Logout Issues
+        </div>
+        
+        <h1>🔍 Coding Society Feed Debug</h1>
+        
+        <!-- Authentication Section -->
+        <div class="auth-section">
+            <h3>🔐 Authentication Test</h3>
+            <div>
+                <input type="email" id="email" placeholder="Email" value="user@codingsociety.com">
+                <input type="password" id="password" placeholder="Password" value="user123">
+                <button onclick="testLogin()">🔑 Login</button>
+                <button onclick="checkToken()">🎫 Check Token</button>
+                <button onclick="clearAuth()">🧹 Clear Auth</button>
+            </div>
+            <div id="authStatus" class="result info"></div>
+        </div>
+
+        <!-- API Tests -->
+        <div class="test-section">
+            <h3>🔧 API Connection Tests</h3>
+            <button onclick="testHealth()">❤️ Health Check</button>
+            <button onclick="testFeedGet()">📥 Get Feed</button>
+            <button onclick="testCreatePost()">✍️ Create Post</button>
+            <button onclick="testWithInvalidToken()">🚫 Test Invalid Token</button>
+            <div id="result" class="result info"></div>
+        </div>
+
+        <!-- Environment Check -->
+        <div class="test-section">
+            <h3>🌍 Environment Check</h3>
+            <button onclick="checkEnvironment()">🔍 Check Environment</button>
+            <div id="envResult" class="result info"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api/v1';
+        let authToken = localStorage.getItem('authToken');
+
+        function showResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.className = `result ${isError ? 'error' : 'success'}`;
+            element.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+        }
+
+        function showInfo(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.className = 'result info';
+            element.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+        }
+
+        async function makeRequest(url, options = {}) {
+            try {
+                console.log('Making request to:', url);
+                console.log('Options:', options);
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(authToken && { Authorization: `Bearer ${authToken}` }),
+                        ...options.headers
+                    },
+                    ...options
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+
+                let data;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    data = await response.text();
+                }
+
+                console.log('Response data:', data);
+
+                return {
+                    status: response.status,
+                    ok: response.ok,
+                    data,
+                    headers: [...response.headers.entries()]
+                };
+            } catch (error) {
+                console.error('Request error:', error);
+                throw error;
+            }
+        }
+
+        async function testLogin() {
+            try {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                const result = await makeRequest(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (result.ok) {
+                    authToken = result.data.token || result.data.accessToken;
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('user', JSON.stringify(result.data.user));
+                    
+                    showResult('authStatus', {
+                        status: '✅ LOGIN SUCCESSFUL!',
+                        token: authToken ? 'Present' : 'Missing',
+                        user: result.data.user?.email || 'Unknown',
+                        role: result.data.user?.role || 'Unknown'
+                    });
+                } else {
+                    showResult('authStatus', {
+                        status: '❌ LOGIN FAILED',
+                        error: result.data.message || 'Unknown error',
+                        statusCode: result.status
+                    }, true);
+                }
+            } catch (error) {
+                showResult('authStatus', {
+                    status: '❌ LOGIN ERROR',
+                    error: error.message
+                }, true);
+            }
+        }
+
+        async function checkToken() {
+            try {
+                if (!authToken) {
+                    showInfo('authStatus', '❌ No token found in localStorage');
+                    return;
+                }
+
+                const result = await makeRequest(`${API_BASE}/auth/me`);
+
+                showResult('authStatus', {
+                    status: result.ok ? '✅ Token Valid' : '❌ Token Invalid',
+                    tokenPresent: !!authToken,
+                    tokenPreview: authToken ? authToken.substring(0, 20) + '...' : 'None',
+                    response: result.data
+                }, !result.ok);
+            } catch (error) {
+                showResult('authStatus', {
+                    status: '❌ TOKEN CHECK ERROR',
+                    error: error.message
+                }, true);
+            }
+        }
+
+        function clearAuth() {
+            authToken = null;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            showInfo('authStatus', '🧹 Authentication cleared');
+        }
+
+        async function testHealth() {
+            try {
+                const result = await makeRequest(`${API_BASE}/../health`);
+                showResult('result', {
+                    status: '✅ HEALTH CHECK',
+                    response: result.data,
+                    statusCode: result.status
+                });
+            } catch (error) {
+                showResult('result', {
+                    status: '❌ HEALTH CHECK FAILED',
+                    error: error.message
+                }, true);
+            }
+        }
+
+        async function testFeedGet() {
+            try {
+                if (!authToken) {
+                    showResult('result', '❌ Please login first', true);
+                    return;
+                }
+
+                const result = await makeRequest(`${API_BASE}/feed`);
+                
+                showResult('result', {
+                    status: result.ok ? '✅ FEED GET SUCCESS' : '❌ FEED GET FAILED',
+                    statusCode: result.status,
+                    postCount: result.data?.posts?.length || 0,
+                    response: result.data
+                }, !result.ok);
+            } catch (error) {
+                showResult('result', {
+                    status: '❌ FEED GET ERROR',
+                    error: error.message
+                }, true);
+            }
+        }
+
+        async function testCreatePost() {
+            try {
+                if (!authToken) {
+                    showResult('result', '❌ Please login first', true);
+                    return;
+                }
+
+                const postData = {
+                    title: `Debug Test Post - ${new Date().toLocaleString()}`,
+                    content: `🔍 Debug test post created at ${new Date().toISOString()}\\n\\n✅ Testing 503 error fix\\n✅ Testing authentication persistence\\n✅ Testing frontend-backend communication`,
+                    type: 'text',
+                    category: 'debug',
+                    tags: ['debug', 'test', '503-fix'],
+                    privacy: 'public'
+                };
+
+                console.log('Creating post with data:', postData);
+
+                const result = await makeRequest(`${API_BASE}/feed`, {
+                    method: 'POST',
+                    body: JSON.stringify(postData)
+                });
+
+                showResult('result', {
+                    status: result.ok ? '✅ POST CREATED SUCCESS' : '❌ POST CREATION FAILED',
+                    statusCode: result.status,
+                    postId: result.data?.post?._id || 'None',
+                    response: result.data
+                }, !result.ok);
+            } catch (error) {
+                showResult('result', {
+                    status: '❌ POST CREATION ERROR',
+                    error: error.message
+                }, true);
+            }
+        }
+
+        async function testWithInvalidToken() {
+            try {
+                const oldToken = authToken;
+                authToken = 'invalid-token-123';
+
+                const result = await makeRequest(`${API_BASE}/feed`);
+                
+                authToken = oldToken; // Restore original token
+
+                showResult('result', {
+                    status: '🚫 INVALID TOKEN TEST',
+                    statusCode: result.status,
+                    shouldBe401: result.status === 401,
+                    response: result.data
+                }, result.status !== 401);
+            } catch (error) {
+                authToken = oldToken; // Restore original token
+                showResult('result', {
+                    status: '❌ INVALID TOKEN TEST ERROR',
+                    error: error.message
+                }, true);
+            }
+        }
+
+        async function checkEnvironment() {
+            try {
+                const checks = {
+                    localStorage: {
+                        authToken: localStorage.getItem('authToken') ? 'Present' : 'Missing',
+                        user: localStorage.getItem('user') ? 'Present' : 'Missing'
+                    },
+                    currentToken: authToken ? 'Present' : 'Missing',
+                    apiBase: API_BASE,
+                    timestamp: new Date().toISOString()
+                };
+
+                // Test basic connectivity
+                const healthResult = await makeRequest(`${API_BASE}/../health`).catch(() => ({ ok: false, data: 'Connection failed' }));
+                checks.backendHealth = healthResult.ok ? 'Connected' : 'Failed';
+
+                showInfo('envResult', checks);
+            } catch (error) {
+                showResult('envResult', {
+                    status: '❌ ENVIRONMENT CHECK ERROR',
+                    error: error.message
+                }, true);
+            }
+        }
+
+        // Check initial state
+        window.addEventListener('load', () => {
+            checkEnvironment();
+            if (authToken) {
+                showInfo('authStatus', `🎫 Token found: ${authToken.substring(0, 20)}...`);
+            } else {
+                showInfo('authStatus', '❌ No authentication token found');
+            }
+        });
+
+        // Listen for auth events
+        window.addEventListener('authTokenExpired', () => {
+            showResult('authStatus', '⚠️ Token expired event detected!', true);
+            clearAuth();
+        });
+    </script>
+</body>
+</html>

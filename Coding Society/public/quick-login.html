@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Login for Coding Society</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .success { background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .error { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .info { background: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .token-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Quick Login</h1>
+            <p>Instant authentication for testing</p>
+        </div>
+        
+        <div class="info">
+            <strong>🎯 Test User:</strong><br>
+            Email: test@example.com<br>
+            Password: password123
+        </div>
+
+        <button class="button" onclick="quickLogin()">🔑 Quick Login with Test User</button>
+        <button class="button" onclick="checkAuthStatus()">🔍 Check Authentication Status</button>
+        <button class="button" onclick="clearAuth()">🧹 Clear Authentication</button>
+        <button class="button" onclick="testCreatePost()">📝 Test Create Post</button>
+        
+        <div id="status"></div>
+        <div id="tokenInfo"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/v1';
+
+        function showMessage(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        function showTokenInfo(token) {
+            if (!token) {
+                document.getElementById('tokenInfo').innerHTML = '';
+                return;
+            }
+            
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const now = Math.floor(Date.now() / 1000);
+                const timeUntilExpiry = payload.exp - now;
+                
+                document.getElementById('tokenInfo').innerHTML = `
+                    <div class="token-display">
+                        <strong>🎫 Token Active:</strong><br>
+                        <strong>User ID:</strong> ${payload.id}<br>
+                        <strong>Expires in:</strong> ${Math.floor(timeUntilExpiry / 60)} minutes<br>
+                        <strong>Status:</strong> ${timeUntilExpiry > 0 ? '✅ Valid' : '❌ Expired'}<br>
+                        <strong>Token:</strong> ${token.substring(0, 50)}...
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error decoding token:', error);
+            }
+        }
+
+        async function quickLogin() {
+            try {
+                showMessage('status', '🔄 Logging in...', 'info');
+                
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'test@example.com',
+                        password: 'password123'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Store the token
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    showMessage('status', '✅ Login successful! You are now authenticated.', 'success');
+                    showTokenInfo(data.token);
+                    
+                    // Auto-redirect to main app after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                } else {
+                    showMessage('status', `❌ Login failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showMessage('status', `❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        function checkAuthStatus() {
+            const token = localStorage.getItem('authToken');
+            const user = localStorage.getItem('user');
+            
+            if (token) {
+                showMessage('status', '✅ You are authenticated!', 'success');
+                showTokenInfo(token);
+                
+                if (user) {
+                    const userData = JSON.parse(user);
+                    showMessage('status', `✅ Logged in as: ${userData.username || userData.email}`, 'success');
+                }
+            } else {
+                showMessage('status', '❌ Not authenticated. Please log in.', 'error');
+                document.getElementById('tokenInfo').innerHTML = '';
+            }
+        }
+
+        function clearAuth() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('refreshToken');
+            showMessage('status', '🧹 Authentication cleared!', 'info');
+            document.getElementById('tokenInfo').innerHTML = '';
+        }
+
+        async function testCreatePost() {
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                showMessage('status', '❌ Please log in first!', 'error');
+                return;
+            }
+
+            try {
+                showMessage('status', '🔄 Testing post creation...', 'info');
+                
+                const formData = new FormData();
+                formData.append('content', 'Test post from Quick Login tool! 🚀');
+                formData.append('type', 'text');
+                formData.append('privacy', 'public');
+
+                const response = await fetch(`${API_URL}/feed`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('status', '✅ Post created successfully! Feed functionality is working.', 'success');
+                } else {
+                    showMessage('status', `❌ Post creation failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showMessage('status', `❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        // Check auth status on page load
+        window.onload = () => {
+            checkAuthStatus();
+        };
+    </script>
+</body>
+</html>
