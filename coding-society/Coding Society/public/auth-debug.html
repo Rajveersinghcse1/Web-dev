@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Debug Tool</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        .header {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        input:focus, textarea:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            font-family: 'Consolas', 'Monaco', monospace;
+            white-space: pre-wrap;
+            margin: 15px 0;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .step {
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .step.active {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        .step.completed {
+            border-color: #28a745;
+            background: #f8fff8;
+        }
+        
+        .token-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 11px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Authentication Debug Tool</h1>
+            <p>Comprehensive tool to debug authentication issues</p>
+        </div>
+        
+        <div class="info">
+            <strong>🎯 Test User Credentials:</strong><br>
+            Email: test@example.com<br>
+            Password: password123
+        </div>
+    </div>
+
+    <div class="container step" id="step1">
+        <h2>📡 Step 1: Server Connectivity</h2>
+        <button class="button" onclick="testServerConnection()">Test Server Connection</button>
+        <div id="connectionResult"></div>
+    </div>
+
+    <div class="container step" id="step2">
+        <h2>🔑 Step 2: User Authentication</h2>
+        <input type="email" id="email" placeholder="Email" value="test@example.com">
+        <input type="password" id="password" placeholder="Password" value="password123">
+        <button class="button" onclick="authenticateUser()">Login & Get Token</button>
+        <div id="authResult"></div>
+        <div id="tokenDisplay"></div>
+    </div>
+
+    <div class="container step" id="step3">
+        <h2>🛡️ Step 3: Token Validation</h2>
+        <button class="button" onclick="validateToken()" id="validateBtn" disabled>Validate Current Token</button>
+        <button class="button" onclick="getUserProfile()" id="profileBtn" disabled>Get User Profile</button>
+        <div id="validationResult"></div>
+    </div>
+
+    <div class="container step" id="step4">
+        <h2>📝 Step 4: Protected Route Test</h2>
+        <textarea id="postContent" placeholder="Test post content..." rows="3">Testing authentication with a sample post! 🚀</textarea>
+        <button class="button" onclick="testProtectedRoute()" id="protectedBtn" disabled>Test Create Post</button>
+        <div id="protectedResult"></div>
+    </div>
+
+    <div class="container step" id="step5">
+        <h2>📊 Step 5: Feed Access Test</h2>
+        <button class="button" onclick="testFeedAccess()" id="feedBtn" disabled>Test Feed Access</button>
+        <div id="feedResult"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/v1';
+        let authToken = localStorage.getItem('authToken');
+        let tokenExpiry = localStorage.getItem('tokenExpiry');
+
+        // Utility functions
+        function showResult(elementId, message, type = 'info', data = null) {
+            const element = document.getElementById(elementId);
+            let html = `<div class="${type}">${message}</div>`;
+            if (data) {
+                html += `<div class="code-block">${JSON.stringify(data, null, 2)}</div>`;
+            }
+            element.innerHTML = html;
+        }
+
+        function showTokenInfo(token) {
+            if (!token) return;
+            
+            try {
+                // Decode JWT payload (just for display, not for validation)
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const now = Math.floor(Date.now() / 1000);
+                const timeUntilExpiry = payload.exp - now;
+                
+                document.getElementById('tokenDisplay').innerHTML = `
+                    <div class="token-info">
+                        <strong>🎫 Token Information:</strong><br>
+                        <strong>Issued:</strong> ${new Date(payload.iat * 1000).toLocaleString()}<br>
+                        <strong>Expires:</strong> ${new Date(payload.exp * 1000).toLocaleString()}<br>
+                        <strong>Time until expiry:</strong> ${Math.floor(timeUntilExpiry / 60)} minutes<br>
+                        <strong>Valid:</strong> ${timeUntilExpiry > 0 ? '✅ Yes' : '❌ Expired'}<br>
+                        <strong>User ID:</strong> ${payload.id}<br>
+                        <strong>Token:</strong> ${token.substring(0, 50)}...
+                    </div>
+                `;
+                
+                // Enable buttons if token is valid
+                if (timeUntilExpiry > 0) {
+                    document.getElementById('validateBtn').disabled = false;
+                    document.getElementById('profileBtn').disabled = false;
+                    document.getElementById('protectedBtn').disabled = false;
+                    document.getElementById('feedBtn').disabled = false;
+                }
+            } catch (error) {
+                console.error('Error decoding token:', error);
+            }
+        }
+
+        function markStepCompleted(stepId) {
+            document.getElementById(stepId).classList.add('completed');
+        }
+
+        function markStepActive(stepId) {
+            document.getElementById(stepId).classList.add('active');
+        }
+
+        // Test functions
+        async function testServerConnection() {
+            markStepActive('step1');
+            try {
+                const response = await fetch(`${API_URL}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult('connectionResult', '✅ Server is online and responding!', 'success', data);
+                    markStepCompleted('step1');
+                } else {
+                    showResult('connectionResult', `❌ Server error: ${data.message}`, 'error', data);
+                }
+            } catch (error) {
+                showResult('connectionResult', `❌ Connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function authenticateUser() {
+            markStepActive('step2');
+            try {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    authToken = data.token;
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('tokenExpiry', Date.now() + (24 * 60 * 60 * 1000)); // 24 hours
+                    
+                    showResult('authResult', '✅ Authentication successful!', 'success', {
+                        message: data.message,
+                        user: data.user,
+                        tokenReceived: !!data.token
+                    });
+                    
+                    showTokenInfo(authToken);
+                    markStepCompleted('step2');
+                } else {
+                    showResult('authResult', `❌ Authentication failed: ${data.message}`, 'error', data);
+                }
+            } catch (error) {
+                showResult('authResult', `❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function validateToken() {
+            markStepActive('step3');
+            if (!authToken) {
+                showResult('validationResult', '❌ No token available. Please login first.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/me`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult('validationResult', '✅ Token is valid!', 'success', data);
+                    markStepCompleted('step3');
+                } else {
+                    showResult('validationResult', `❌ Token validation failed: ${data.message}`, 'error', data);
+                    if (response.status === 401) {
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('tokenExpiry');
+                        authToken = null;
+                    }
+                }
+            } catch (error) {
+                showResult('validationResult', `❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getUserProfile() {
+            try {
+                const response = await fetch(`${API_URL}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult('validationResult', '✅ Profile loaded successfully!', 'success', data);
+                } else {
+                    showResult('validationResult', `❌ Failed to load profile: ${data.message}`, 'error', data);
+                }
+            } catch (error) {
+                showResult('validationResult', `❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testProtectedRoute() {
+            markStepActive('step4');
+            if (!authToken) {
+                showResult('protectedResult', '❌ No token available. Please login first.', 'error');
+                return;
+            }
+
+            try {
+                const content = document.getElementById('postContent').value;
+                
+                const formData = new FormData();
+                formData.append('content', content);
+                formData.append('type', 'text');
+                formData.append('privacy', 'public');
+
+                const response = await fetch(`${API_URL}/feed`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult('protectedResult', '✅ Post created successfully!', 'success', data);
+                    markStepCompleted('step4');
+                } else {
+                    showResult('protectedResult', `❌ Failed to create post: ${data.message}`, 'error', data);
+                }
+            } catch (error) {
+                showResult('protectedResult', `❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testFeedAccess() {
+            markStepActive('step5');
+            if (!authToken) {
+                showResult('feedResult', '❌ No token available. Please login first.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/feed?page=1&limit=5`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult('feedResult', `✅ Feed loaded successfully! Found ${data.posts?.length || 0} posts`, 'success', data);
+                    markStepCompleted('step5');
+                } else {
+                    showResult('feedResult', `❌ Failed to load feed: ${data.message}`, 'error', data);
+                }
+            } catch (error) {
+                showResult('feedResult', `❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        // Initialize
+        if (authToken) {
+            showTokenInfo(authToken);
+            showResult('authResult', '✅ Found existing token in localStorage', 'info');
+        }
+
+        // Auto-test server connection on load
+        window.onload = () => {
+            testServerConnection();
+        };
+    </script>
+</body>
+</html>
