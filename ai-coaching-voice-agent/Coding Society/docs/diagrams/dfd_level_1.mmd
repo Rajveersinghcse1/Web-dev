@@ -1,0 +1,98 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#dbeafe','primaryTextColor':'#1e3a8a','primaryBorderColor':'#2563eb','lineColor':'#3b82f6','secondaryColor':'#fef3c7','tertiaryColor':'#f0fdf4'}}}%%
+flowchart TB
+    %% External Entities
+    Student["👨‍🎓 Student"]
+    Admin["👨‍💼 Admin"]
+    Recruiter["🏢 Recruiter"]
+    EmailSvc["📧 Email Service"]
+    OAuthSvc["🔐 OAuth Provider"]
+    CodeExec["⚙️ Code Sandbox"]
+
+    %% Main Processes
+    subgraph Platform ["🎓 CODING SOCIETY - DETAILED PROCESSES"]
+        direction TB
+        
+        P1["<b>P1: Authentication</b><br/>━━━━━━━━━━<br/>• Register/Login<br/>• JWT Token Mgmt<br/>• Password Reset<br/>• Session Control"]
+        
+        P2["<b>P2: Content Management</b><br/>━━━━━━━━━━<br/>• Library Content<br/>• Innovation Projects<br/>• Internships<br/>• Hackathons"]
+        
+        P3["<b>P3: Social Feed</b><br/>━━━━━━━━━━<br/>• Create Posts<br/>• Like/Comment<br/>• Follow Users<br/>• Share Content"]
+        
+        P4["<b>P4: Learning Engine</b><br/>━━━━━━━━━━<br/>• Roadmaps<br/>• Quizzes<br/>• Code Editor<br/>• Progress Tracking"]
+        
+        P5["<b>P5: Career Services</b><br/>━━━━━━━━━━<br/>• Job Search<br/>• Applications<br/>• ATS Resume<br/>• Portfolio Builder"]
+        
+        P6["<b>P6: Admin Dashboard</b><br/>━━━━━━━━━━<br/>• Analytics<br/>• User Management<br/>• Settings<br/>• Moderation"]
+    end
+
+    %% Data Stores
+    MongoDB[("💾 <b>MongoDB</b><br/>━━━━━<br/>D1: Users<br/>D2: Posts<br/>D3: Content<br/>D4: Jobs<br/>D5: Analytics")]
+    MinIO[("📦 <b>MinIO S3</b><br/>━━━━━<br/>D6: Media<br/>D7: Uploads<br/>D8: Files")]
+
+    %% User Interactions
+    Student -->|"1.1 Register/Login"| P1
+    Student -->|"2.1 Browse Content"| P2
+    Student -->|"3.1 Create/View Posts"| P3
+    Student -->|"4.1 Learn/Code"| P4
+    Student -->|"5.1 Search Jobs"| P5
+    
+    Admin -->|"1.2 Admin Login"| P1
+    Admin -->|"2.2 Manage Content"| P2
+    Admin -->|"6.1 View Analytics"| P6
+    
+    Recruiter -->|"1.3 Recruiter Login"| P1
+    Recruiter -->|"5.2 Post Jobs"| P5
+
+    %% Process to Data Store
+    P1 -->|"1.4 Store User Data"| MongoDB
+    P1 <-->|"1.5 Read User Profile"| MongoDB
+    
+    P2 -->|"2.3 Save Content"| MongoDB
+    P2 -->|"2.4 Upload Files"| MinIO
+    P2 <-->|"2.5 Retrieve Content"| MongoDB
+    
+    P3 -->|"3.2 Save Posts"| MongoDB
+    P3 <-->|"3.3 Load Feed"| MongoDB
+    P3 -->|"3.4 Upload Images"| MinIO
+    
+    P4 -->|"4.2 Save Progress"| MongoDB
+    P4 <-->|"4.3 Load Quizzes"| MongoDB
+    
+    P5 -->|"5.3 Store Applications"| MongoDB
+    P5 <-->|"5.4 Query Jobs"| MongoDB
+    P5 -->|"5.5 Save Resumes"| MinIO
+    
+    P6 <-->|"6.2 Aggregate Data"| MongoDB
+    P6 -->|"6.3 Export Reports"| MinIO
+
+    %% External Service Interactions
+    P1 -->|"1.6 Send Verification"| EmailSvc
+    P1 <-->|"1.7 OAuth Flow"| OAuthSvc
+    
+    P2 -->|"2.6 Notify Users"| EmailSvc
+    
+    P4 -->|"4.4 Execute Code"| CodeExec
+    
+    P6 -->|"6.4 Send Alerts"| EmailSvc
+
+    %% Inter-Process Communication
+    P1 -.->|"Auth Token"| P2
+    P1 -.->|"Auth Token"| P3
+    P1 -.->|"Auth Token"| P4
+    P1 -.->|"Auth Token"| P5
+    P1 -.->|"Admin Token"| P6
+    
+    P3 -.->|"User Activity"| P6
+    P4 -.->|"Learning Metrics"| P6
+    P5 -.->|"Application Stats"| P6
+
+    %% Styling
+    classDef processClass fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a8a,font-weight:bold
+    classDef dataClass fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f
+    classDef userClass fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,color:#14532d
+    classDef externalClass fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#831843
+    
+    class P1,P2,P3,P4,P5,P6 processClass
+    class MongoDB,MinIO dataClass
+    class Student,Admin,Recruiter userClass
+    class EmailSvc,OAuthSvc,CodeExec externalClass

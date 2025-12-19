@@ -1,0 +1,49 @@
+flowchart TD
+    Start([🚀 Start]) --> CheckAuth{🔐 User Authenticated?}
+    
+    CheckAuth -->|No| LoginPage[📝 Show Login Page]
+    LoginPage --> EnterCreds[Enter Credentials]
+    EnterCreds --> Authenticate[🔄 Authenticate with Stack]
+    Authenticate --> AuthSuccess{✅ Success?}
+    AuthSuccess -->|No| LoginError[❌ Show Error]
+    LoginError --> LoginPage
+    AuthSuccess -->|Yes| CheckAuth
+    
+    CheckAuth -->|Yes| Dashboard[📊 Load Dashboard]
+    Dashboard --> CheckUser{👤 User Exists in DB?}
+    CheckUser -->|No| CreateUser[➕ Create User Record]
+    CreateUser --> LoadData
+    CheckUser -->|Yes| LoadData[📥 Load User Data & History]
+    
+    LoadData --> DisplayDashboard[🖥️ Display Dashboard]
+    DisplayDashboard --> UserChoice{🎯 User Action?}
+    
+    UserChoice -->|Select Coaching| SelectOption[🎓 Choose Coaching Option]
+    SelectOption --> OpenDialog[📋 Open Input Dialog]
+    OpenDialog --> EnterTopic[✏️ Enter Topic]
+    EnterTopic --> SelectExpert[👨‍🏫 Select Expert]
+    SelectExpert --> ValidInput{✅ Valid Input?}
+    ValidInput -->|No| EnterTopic
+    ValidInput -->|Yes| CreateRoom[🏠 Create Discussion Room]
+    CreateRoom --> NavigateRoom[🚪 Navigate to Room]
+    NavigateRoom --> StartSession[🎙️ Start Voice Session]
+    
+    StartSession --> SessionLoop{🔄 Session Active?}
+    SessionLoop -->|Yes| VoiceInput[🎤 Capture Voice]
+    VoiceInput --> Transcribe[📝 Transcribe Speech]
+    Transcribe --> SendToAI[🤖 Send to OpenAI]
+    SendToAI --> GetResponse[💬 Get AI Response]
+    GetResponse --> TextToSpeech[🔊 Convert to Speech]
+    TextToSpeech --> PlayAudio[🔈 Play Audio]
+    PlayAudio --> SaveConvo[💾 Save Conversation]
+    SaveConvo --> SessionLoop
+    
+    SessionLoop -->|No| EndSession[🏁 End Session]
+    EndSession --> ShowFeedback[📊 Show Feedback]
+    ShowFeedback --> UserChoice
+    
+    UserChoice -->|View History| ShowHistory[📜 Display History]
+    ShowHistory --> UserChoice
+    
+    UserChoice -->|Logout| Logout[🚪 Logout]
+    Logout --> End([🔚 End])

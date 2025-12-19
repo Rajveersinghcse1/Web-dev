@@ -1,0 +1,42 @@
+graph TB
+    subgraph UI ["🖥️ Sample UI Wireframe"]
+        subgraph Header ["Header"]
+            Logo["🎯 Logo"]
+            UserBtn["👤 User Button"]
+        end
+
+        subgraph MainContent ["Main Content Area"]
+            Welcome["Welcome Back, User!"]
+            
+            subgraph CoachingGrid ["Coaching Options Grid"]
+                Card1["📚<br/>Lecture on Topic"]
+                Card2["💼<br/>Mock Interview"]
+                Card3["❓<br/>Ques Ans Prep"]
+                Card4["🗣️<br/>Languages Skill"]
+                Card5["🧘<br/>Meditation"]
+            end
+
+            subgraph BottomSection ["Bottom Section"]
+                HistoryPanel["📜 Your Previous Lectures<br/>─────────────────<br/>No previous lectures"]
+                FeedbackPanel["💬 Feedback<br/>─────────────────<br/>No interview feedback"]
+            end
+        end
+    end
+
+    subgraph Dialog ["📋 User Input Dialog (Modal)"]
+        DialogTitle["Mock Interview"]
+        TopicInput["📝 Enter Topic Here..."]
+        ExpertGrid["Select Expert:<br/>👨 Joanna | 👩 Sallie | 👨 Matthew"]
+        Buttons["[Cancel] [Next →]"]
+    end
+
+    Card2 -.->|Click| Dialog
+
+    style Logo fill:#3b82f6
+    style UserBtn fill:#6366f1
+    style Card1 fill:#f3f4f6
+    style Card2 fill:#f3f4f6
+    style Card3 fill:#f3f4f6
+    style Card4 fill:#f3f4f6
+    style Card5 fill:#f3f4f6
+    style Dialog fill:#ffffff,stroke:#3b82f6,stroke-width:2px

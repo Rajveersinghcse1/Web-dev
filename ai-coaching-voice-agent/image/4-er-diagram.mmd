@@ -1,0 +1,32 @@
+erDiagram
+    USERS {
+        string _id PK
+        string name
+        string email
+        number credits
+        string subscriptionId
+    }
+
+    DISCUSSION_ROOM {
+        string _id PK
+        string coachingOption
+        string topic
+        string expertName
+        json conversation
+        string userId FK
+    }
+
+    COACHING_OPTIONS {
+        string name PK
+        string icon
+        string prompt
+    }
+
+    COACHING_EXPERTS {
+        string name PK
+        string avatar
+    }
+
+    USERS ||--o{ DISCUSSION_ROOM : "creates"
+    DISCUSSION_ROOM }o--|| COACHING_OPTIONS : "uses"
+    DISCUSSION_ROOM }o--|| COACHING_EXPERTS : "assigned to"
