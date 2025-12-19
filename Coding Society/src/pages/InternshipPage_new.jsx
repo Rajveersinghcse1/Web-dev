@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Input } from '../components/ui/input';
 import { useMode } from '../context/ModeContext';
-import studentService from '../services/studentService';
+import internshipService from '../services/internshipService';
 import {
   GraduationCap,
   MapPin,
@@ -92,7 +92,7 @@ const InternshipPage = () => {
         setIsLoading(true);
         setError(null);
         
-        const response = await studentService.getInternships();
+        const response = await internshipService.getInternships();
         
         if (response.success && response.data) {
           setInternships(response.data);
@@ -184,24 +184,24 @@ const InternshipPage = () => {
     logo: getCompanyLogo(internship.company),
     location: internship.location || 'Remote',
     duration: internship.duration || 'Not specified',
-    stipend: internship.stipend ? `$${internship.stipend}/month` : 'Unpaid',
-    posted: studentService.formatDate(internship.createdAt),
-    applicants: Math.floor(Math.random() * 2000) + 100, // Simulated data
-    spots: internship.openings || Math.floor(Math.random() * 50) + 5,
-    skills: internship.requiredSkills || [],
+    stipend: internship.stipend ? `$${internship.stipend.amount}/${internship.stipend.frequency}` : 'Unpaid',
+    posted: internshipService.formatDate(internship.createdAt),
+    applicants: internship.applications?.length || Math.floor(Math.random() * 100), // Use real count if available
+    spots: internship.openings?.total || Math.floor(Math.random() * 50) + 5,
+    skills: internship.skills?.required?.map(s => s.name) || [],
     description: internship.description,
-    requirements: internship.requirements || [],
+    requirements: internship.requirements?.map(r => r.description) || [],
     featured: internship.featured || false,
-    remote: internship.location?.toLowerCase().includes('remote') || false,
+    remote: internship.location?.type === 'remote' || false,
     level: internship.level || 'Intermediate',
     team: internship.department || 'General',
-    benefits: internship.benefits || [],
-    application_deadline: studentService.formatDate(internship.applicationDeadline),
-    start_date: studentService.formatDate(internship.startDate),
+    benefits: internship.benefits?.map(b => b.description) || [],
+    application_deadline: internshipService.formatDate(internship.application?.deadline),
+    start_date: internshipService.formatDate(internship.application?.startDate),
     status: internship.status || 'open',
     type: internship.type || 'Paid',
     mentorPhone: internship.mentor?.phone, // Include mentor phone from admin panel
-    applicationUrl: internship.applicationUrl,
+    applicationUrl: internship.application?.url,
     fileUrl: internship.fileUrl // Include file URL for additional documents
   })) : fallbackInternships;
 

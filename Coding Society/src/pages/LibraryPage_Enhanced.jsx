@@ -1,9 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Input } from '../components/ui/input';
-import { useMode } from '../context/ModeContext';
 import {
   BookOpen,
   FileText,
@@ -68,17 +67,36 @@ import {
   Atom,
   FlaskConical
 } from 'lucide-react';
+import studentService from '../services/studentService';
 
 const EnhancedLibraryPage = () => {
-  const { getCurrentTheme, currentMode, MODES } = useMode();
-  const theme = getCurrentTheme();
-  
   const [selectedTab, setSelectedTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('rating');
   const [viewMode, setViewMode] = useState('grid');
   const [showFilters, setShowFilters] = useState(false);
+
+  // State for dynamic data
+  const [libraryContent, setLibraryContent] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadLibraryContent = async () => {
+      try {
+        setIsLoading(true);
+        const response = await studentService.getLibraryContent();
+        if (response.success) {
+          setLibraryContent(response.data.content);
+        }
+      } catch (err) {
+        console.error("Failed to load library content", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadLibraryContent();
+  }, []);
 
   // Enhanced data with more realistic content for an educational platform
   const studyMaterials = [
@@ -379,6 +397,37 @@ const EnhancedLibraryPage = () => {
   const filteredMaterials = useMemo(() => {
     let materials = [];
     
+    // Add fetched content
+    const mappedContent = libraryContent.map(item => ({
+      id: item._id,
+      title: item.title,
+      subject: item.subject || item.category,
+      type: item.type,
+      category: item.category,
+      author: item.uploadedBy?.username || 'Unknown',
+      rating: item.metrics?.rating || 0,
+      downloads: item.metrics?.downloads || 0,
+      views: item.metrics?.views || 0,
+      difficulty: item.difficulty || 'Intermediate',
+      tags: item.tags || [],
+      contentType: ['book', 'reference'].includes(item.type) ? 'book' : ['exam_paper', 'practice_problems'].includes(item.type) ? 'paper' : 'note',
+      description: item.description,
+      thumbnail: '📚',
+      format: 'PDF',
+      size: 'Unknown',
+      lastModified: item.updatedAt,
+      isPremium: false
+    }));
+
+    // Add mapped content based on tab
+    if (selectedTab === 'all') {
+       materials.push(...mappedContent);
+    } else {
+       if (selectedTab === 'notes') materials.push(...mappedContent.filter(i => i.contentType === 'note'));
+       if (selectedTab === 'papers') materials.push(...mappedContent.filter(i => i.contentType === 'paper'));
+       if (selectedTab === 'books') materials.push(...mappedContent.filter(i => i.contentType === 'book'));
+    }
+
     if (selectedTab === 'all' || selectedTab === 'notes') {
       materials.push(...studyMaterials.map(item => ({ ...item, contentType: 'note' })));
     }
@@ -428,24 +477,24 @@ const EnhancedLibraryPage = () => {
     const isBook = material.contentType === 'book';
 
     return (
-      <Card key={material.id} className="group bg-white border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 transform hover:-translate-y-1">
+      <Card key={material.id} className="group bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex items-start space-x-3 flex-1">
               <div className="text-3xl flex-shrink-0">{material.thumbnail || '📚'}</div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-gray-900 text-sm sm:text-base line-clamp-2 mb-1">
+                <h3 className="font-bold text-slate-900 text-sm sm:text-base line-clamp-2 mb-1">
                   {material.title}
                 </h3>
-                <p className="text-sm text-gray-600 mb-2">
+                <p className="text-sm text-slate-600 mb-2">
                   by {material.author || material.instructor}
                   {material.authorType && (
-                    <span className="ml-1 text-xs text-gray-500">({material.authorType})</span>
+                    <span className="ml-1 text-xs text-slate-500">({material.authorType})</span>
                   )}
                 </p>
                 
                 {/* Enhanced metadata */}
-                <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 mb-3">
+                <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mb-3">
                   <span className="flex items-center gap-1">
                     <FileText className="w-3 h-3" />
                     {material.pages || material.duration} {material.pages ? 'pages' : ''}
@@ -468,19 +517,19 @@ const EnhancedLibraryPage = () => {
                     {material.difficulty}
                   </span>
                   {material.isPremium && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1">
+                    <span className="text-xs px-2 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1">
                       <Star className="w-3 h-3" />
                       Premium
                     </span>
                   )}
                   {material.hasVideo && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200 flex items-center gap-1">
+                    <span className="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-200 flex items-center gap-1">
                       <Video className="w-3 h-3" />
                       Video
                     </span>
                   )}
                   {material.hasAudio && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-200 flex items-center gap-1">
+                    <span className="text-xs px-2 py-1 rounded-full bg-purple-50 text-purple-800 border border-purple-200 flex items-center gap-1">
                       <Headphones className="w-3 h-3" />
                       Audio
                     </span>
@@ -492,9 +541,9 @@ const EnhancedLibraryPage = () => {
             <div className="flex flex-col items-end space-y-2">
               <div className="flex items-center space-x-1">
                 <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                <span className="text-sm font-medium">{material.rating}</span>
+                <span className="text-sm font-medium text-slate-700">{material.rating}</span>
               </div>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-600">
                 <MoreVertical className="w-4 h-4" />
               </Button>
             </div>
@@ -504,7 +553,7 @@ const EnhancedLibraryPage = () => {
         <CardContent>
           {/* AI Summary for notes */}
           {isNote && material.aiSummary && (
-            <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="mb-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
               <div className="flex items-center gap-2 mb-2">
                 <Brain className="w-4 h-4 text-blue-600" />
                 <span className="text-sm font-medium text-blue-800">AI Summary</span>
@@ -516,12 +565,12 @@ const EnhancedLibraryPage = () => {
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-4">
             {(material.tags || material.topics)?.slice(0, 3).map((tag, index) => (
-              <span key={index} className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer transition-colors">
+              <span key={index} className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer transition-colors border border-slate-200">
                 {tag}
               </span>
             ))}
             {(material.tags || material.topics)?.length > 3 && (
-              <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-500">
+              <span className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
                 +{(material.tags || material.topics).length - 3} more
               </span>
             )}
@@ -530,28 +579,28 @@ const EnhancedLibraryPage = () => {
           {/* Stats */}
           <div className="grid grid-cols-2 gap-4 text-sm mb-4">
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">Downloads:</span>
-              <span className="font-medium text-gray-900 flex items-center gap-1">
+              <span className="text-slate-600">Downloads:</span>
+              <span className="font-medium text-slate-900 flex items-center gap-1">
                 <Download className="w-3 h-3" />
                 {material.downloads?.toLocaleString() || 'N/A'}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">Views:</span>
-              <span className="font-medium text-gray-900 flex items-center gap-1">
+              <span className="text-slate-600">Views:</span>
+              <span className="font-medium text-slate-900 flex items-center gap-1">
                 <Eye className="w-3 h-3" />
                 {material.views?.toLocaleString() || 'N/A'}
               </span>
             </div>
             {material.completionRate && (
               <div className="flex items-center justify-between col-span-2">
-                <span className="text-gray-600">Completion Rate:</span>
+                <span className="text-slate-600">Completion Rate:</span>
                 <span className="font-medium text-green-600">{material.completionRate}%</span>
               </div>
             )}
             {isPaper && material.avgScore && (
               <div className="flex items-center justify-between col-span-2">
-                <span className="text-gray-600">Average Score:</span>
+                <span className="text-slate-600">Average Score:</span>
                 <span className="font-medium text-blue-600">{material.avgScore}%</span>
               </div>
             )}
@@ -559,17 +608,17 @@ const EnhancedLibraryPage = () => {
 
           {/* Action buttons */}
           <div className="flex items-center space-x-2">
-            <Button className={`bg-gradient-to-r ${theme.gradient} hover:opacity-90 flex-1 text-sm`}>
+            <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white flex-1 text-sm shadow-md hover:shadow-lg transition-all duration-300">
               <Eye className="w-4 h-4 mr-2" />
               {isNote ? 'Study Now' : isPaper ? 'View Paper' : 'Read Book'}
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="border-slate-200 hover:bg-slate-50 text-slate-600">
               <Download className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="border-slate-200 hover:bg-slate-50 text-slate-600">
               <Bookmark className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="border-slate-200 hover:bg-slate-50 text-slate-600">
               <Share className="w-4 h-4" />
             </Button>
           </div>
@@ -579,52 +628,51 @@ const EnhancedLibraryPage = () => {
   };
 
   return (
-    <div className={`min-h-screen ${theme.background} pt-16 py-8`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
         {/* Enhanced Header */}
-        <div className="mb-8">
-          <div className="text-center mb-8">
-            <div className={`w-20 h-20 mx-auto rounded-2xl bg-gradient-to-r ${theme.gradient} flex items-center justify-center shadow-xl mb-4`}>
+        <div className="mb-12">
+          <div className="text-center mb-12">
+            <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center shadow-xl mb-6 transform rotate-3 hover:rotate-0 transition-all duration-300">
               <Library className="w-10 h-10 text-white" />
             </div>
-            <h1 className={`text-5xl font-bold ${theme.textPrimary} mb-2`}>
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
               Digital Learning Library
             </h1>
-            <p className={`text-xl ${theme.textSecondary} max-w-2xl mx-auto mb-6`}>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-8">
               Access premium educational content, interactive study materials, and comprehensive exam resources powered by AI
             </p>
             
             {/* Enhanced Search Bar */}
             <div className="max-w-4xl mx-auto">
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 bg-white/80 backdrop-blur-sm p-4 rounded-3xl shadow-lg border border-slate-200">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                   <Input
-                    type="text"
                     placeholder="Search notes, papers, books, or ask AI anything..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-12 h-14 bg-white border-gray-200 text-lg rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="pl-12 h-12 bg-slate-50 border-slate-200 text-lg rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-blue-50 rounded-xl"
                   >
                     <Brain className="w-5 h-5 text-blue-500" />
                   </Button>
                 </div>
                 <Button 
                   variant="outline" 
-                  className="h-14 px-6 rounded-xl border-gray-200"
+                  className="h-12 px-6 rounded-2xl border-slate-200 hover:bg-slate-50 text-slate-700"
                   onClick={() => setShowFilters(!showFilters)}
                 >
                   <Filter className="w-5 h-5 mr-2" />
                   Filters
                 </Button>
-                <Button className={`h-14 px-8 bg-gradient-to-r ${theme.gradient} hover:opacity-90 rounded-xl`}>
+                <Button className="h-12 px-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300">
                   <Upload className="w-5 h-5 mr-2" />
-                  Upload Content
+                  Upload
                 </Button>
               </div>
             </div>
@@ -632,15 +680,15 @@ const EnhancedLibraryPage = () => {
 
           {/* Filter Panel */}
           {showFilters && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Filter & Sort</h3>
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-slate-200 p-6 mb-8 shadow-xl">
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">Filter & Sort</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Category</label>
                   <select 
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                   >
                     {categories.map(category => (
                       <option key={category.id} value={category.id}>
@@ -650,11 +698,11 @@ const EnhancedLibraryPage = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Sort By</label>
                   <select 
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                   >
                     <option value="rating">Highest Rated</option>
                     <option value="downloads">Most Downloaded</option>
@@ -663,13 +711,13 @@ const EnhancedLibraryPage = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">View Mode</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">View Mode</label>
                   <div className="flex gap-2">
                     <Button 
                       variant={viewMode === 'grid' ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setViewMode('grid')}
-                      className="flex-1"
+                      className={`flex-1 rounded-xl ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'border-slate-200 text-slate-600'}`}
                     >
                       <Layers className="w-4 h-4 mr-2" />
                       Grid
@@ -678,7 +726,7 @@ const EnhancedLibraryPage = () => {
                       variant={viewMode === 'list' ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setViewMode('list')}
-                      className="flex-1"
+                      className={`flex-1 rounded-xl ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'border-slate-200 text-slate-600'}`}
                     >
                       <FileText className="w-4 h-4 mr-2" />
                       List
@@ -691,47 +739,47 @@ const EnhancedLibraryPage = () => {
         </div>
 
         {/* Enhanced Stats Dashboard */}
-        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
-          <Card className={`${theme.cardBg} border ${theme.border} shadow-sm hover:shadow-md transition-shadow`}>
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-12">
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl group">
             <CardContent className="p-4 text-center">
-              <div className={`text-2xl font-bold ${theme.accent1} mb-1`}>348</div>
-              <div className={`text-xs ${theme.textSecondary}`}>Study Materials</div>
-              <div className="text-xs text-green-600 mt-1">+12 this week</div>
+              <div className="text-2xl font-bold text-blue-600 mb-1 group-hover:scale-110 transition-transform">348</div>
+              <div className="text-xs text-slate-600 font-medium">Study Materials</div>
+              <div className="text-xs text-green-600 mt-1 font-medium">+12 this week</div>
             </CardContent>
           </Card>
-          <Card className={`${theme.cardBg} border ${theme.border} shadow-sm hover:shadow-md transition-shadow`}>
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl group">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-600 mb-1">156</div>
-              <div className={`text-xs ${theme.textSecondary}`}>Exam Papers</div>
-              <div className="text-xs text-green-600 mt-1">+8 this week</div>
+              <div className="text-2xl font-bold text-green-600 mb-1 group-hover:scale-110 transition-transform">156</div>
+              <div className="text-xs text-slate-600 font-medium">Exam Papers</div>
+              <div className="text-xs text-green-600 mt-1 font-medium">+8 this week</div>
             </CardContent>
           </Card>
-          <Card className={`${theme.cardBg} border ${theme.border} shadow-sm hover:shadow-md transition-shadow`}>
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl group">
             <CardContent className="p-4 text-center">
-              <div className={`text-2xl font-bold ${theme.accent2} mb-1`}>892</div>
-              <div className={`text-xs ${theme.textSecondary}`}>Reference Books</div>
-              <div className="text-xs text-green-600 mt-1">+5 this week</div>
+              <div className="text-2xl font-bold text-purple-600 mb-1 group-hover:scale-110 transition-transform">892</div>
+              <div className="text-xs text-slate-600 font-medium">Reference Books</div>
+              <div className="text-xs text-green-600 mt-1 font-medium">+5 this week</div>
             </CardContent>
           </Card>
-          <Card className={`${theme.cardBg} border ${theme.border} shadow-sm hover:shadow-md transition-shadow`}>
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl group">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-orange-600 mb-1">12.8k</div>
-              <div className={`text-xs ${theme.textSecondary}`}>Monthly Downloads</div>
-              <div className="text-xs text-green-600 mt-1">+23% growth</div>
+              <div className="text-2xl font-bold text-orange-600 mb-1 group-hover:scale-110 transition-transform">12.8k</div>
+              <div className="text-xs text-slate-600 font-medium">Monthly Downloads</div>
+              <div className="text-xs text-green-600 mt-1 font-medium">+23% growth</div>
             </CardContent>
           </Card>
-          <Card className={`${theme.cardBg} border ${theme.border} shadow-sm hover:shadow-md transition-shadow`}>
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl group">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-purple-600 mb-1">4.8</div>
-              <div className={`text-xs ${theme.textSecondary}`}>Avg Rating</div>
-              <div className="text-xs text-green-600 mt-1">+0.1 this month</div>
+              <div className="text-2xl font-bold text-pink-600 mb-1 group-hover:scale-110 transition-transform">4.8</div>
+              <div className="text-xs text-slate-600 font-medium">Avg Rating</div>
+              <div className="text-xs text-green-600 mt-1 font-medium">+0.1 this month</div>
             </CardContent>
           </Card>
-          <Card className={`${theme.cardBg} border ${theme.border} shadow-sm hover:shadow-md transition-shadow`}>
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl group">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600 mb-1">89%</div>
-              <div className={`text-xs ${theme.textSecondary}`}>Success Rate</div>
-              <div className="text-xs text-green-600 mt-1">+3% this month</div>
+              <div className="text-2xl font-bold text-cyan-600 mb-1 group-hover:scale-110 transition-transform">89%</div>
+              <div className="text-xs text-slate-600 font-medium">Success Rate</div>
+              <div className="text-xs text-green-600 mt-1 font-medium">+3% this month</div>
             </CardContent>
           </Card>
         </div>
@@ -740,30 +788,30 @@ const EnhancedLibraryPage = () => {
           {/* Main Content */}
           <div className="xl:col-span-3">
             <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-8">
-              <TabsList className="grid w-full grid-cols-4 bg-gray-100 p-1 rounded-xl">
-                <TabsTrigger value="all" className="flex items-center gap-2 text-sm font-medium rounded-lg">
+              <TabsList className="grid w-full grid-cols-4 bg-white/50 backdrop-blur-sm p-1 rounded-2xl border border-slate-200">
+                <TabsTrigger value="all" className="flex items-center gap-2 text-sm font-medium rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300">
                   <Library className="w-4 h-4" />
-                  All Content
+                  <span className="hidden sm:inline">All Content</span>
                 </TabsTrigger>
-                <TabsTrigger value="notes" className="flex items-center gap-2 text-sm font-medium rounded-lg">
+                <TabsTrigger value="notes" className="flex items-center gap-2 text-sm font-medium rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300">
                   <FileText className="w-4 h-4" />
-                  Study Notes
+                  <span className="hidden sm:inline">Study Notes</span>
                 </TabsTrigger>
-                <TabsTrigger value="papers" className="flex items-center gap-2 text-sm font-medium rounded-lg">
+                <TabsTrigger value="papers" className="flex items-center gap-2 text-sm font-medium rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300">
                   <GraduationCap className="w-4 h-4" />
-                  Exam Papers
+                  <span className="hidden sm:inline">Exam Papers</span>
                 </TabsTrigger>
-                <TabsTrigger value="books" className="flex items-center gap-2 text-sm font-medium rounded-lg">
+                <TabsTrigger value="books" className="flex items-center gap-2 text-sm font-medium rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300">
                   <Book className="w-4 h-4" />
-                  Reference Books
+                  <span className="hidden sm:inline">Reference Books</span>
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="all" className="space-y-6 mt-8">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">All Learning Materials</h2>
-                    <p className="text-gray-600">{filteredMaterials.length} resources found</p>
+                    <h2 className="text-2xl font-bold text-slate-900">All Learning Materials</h2>
+                    <p className="text-slate-600">{filteredMaterials.length} resources found</p>
                   </div>
                 </div>
                 <div className={`grid grid-cols-1 ${viewMode === 'grid' ? 'md:grid-cols-2 xl:grid-cols-2' : 'md:grid-cols-1'} gap-6`}>
@@ -774,8 +822,8 @@ const EnhancedLibraryPage = () => {
               <TabsContent value="notes" className="space-y-6 mt-8">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Study Notes</h2>
-                    <p className="text-gray-600">Premium educational content with AI-powered insights</p>
+                    <h2 className="text-2xl font-bold text-slate-900">Study Notes</h2>
+                    <p className="text-slate-600">Premium educational content with AI-powered insights</p>
                   </div>
                 </div>
                 <div className={`grid grid-cols-1 ${viewMode === 'grid' ? 'md:grid-cols-2 xl:grid-cols-2' : 'md:grid-cols-1'} gap-6`}>
@@ -786,8 +834,8 @@ const EnhancedLibraryPage = () => {
               <TabsContent value="papers" className="space-y-6 mt-8">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Exam Papers</h2>
-                    <p className="text-gray-600">Practice with real exam papers from top universities</p>
+                    <h2 className="text-2xl font-bold text-slate-900">Exam Papers</h2>
+                    <p className="text-slate-600">Practice with real exam papers from top universities</p>
                   </div>
                 </div>
                 <div className={`grid grid-cols-1 ${viewMode === 'grid' ? 'md:grid-cols-2 xl:grid-cols-2' : 'md:grid-cols-1'} gap-6`}>
@@ -798,8 +846,8 @@ const EnhancedLibraryPage = () => {
               <TabsContent value="books" className="space-y-6 mt-8">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Reference Books</h2>
-                    <p className="text-gray-600">Comprehensive textbooks and reference materials</p>
+                    <h2 className="text-2xl font-bold text-slate-900">Reference Books</h2>
+                    <p className="text-slate-600">Comprehensive textbooks and reference materials</p>
                   </div>
                 </div>
                 <div className={`grid grid-cols-1 ${viewMode === 'grid' ? 'md:grid-cols-2 xl:grid-cols-2' : 'md:grid-cols-1'} gap-6`}>
@@ -812,32 +860,34 @@ const EnhancedLibraryPage = () => {
           {/* Enhanced Sidebar */}
           <div className="xl:col-span-1 space-y-6">
             {/* Quick Categories */}
-            <Card className="bg-white border border-gray-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
-                  <Target className="w-5 h-5" />
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden">
+              <CardHeader className="bg-slate-50 border-b border-slate-100">
+                <CardTitle className="text-slate-900 text-lg flex items-center gap-2">
+                  <Target className="w-5 h-5 text-blue-600" />
                   Quick Categories
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-3 p-4">
                 {categories.slice(1, 6).map((category) => {
                   const IconComponent = category.icon;
                   return (
                     <div 
                       key={category.id}
-                      className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${
-                        selectedCategory === category.id ? 'bg-blue-50 border border-blue-200' : 'hover:bg-gray-50'
+                      className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 ${
+                        selectedCategory === category.id ? 'bg-blue-50 border border-blue-200 shadow-sm' : 'hover:bg-slate-50 border border-transparent hover:border-slate-100'
                       }`}
                       onClick={() => setSelectedCategory(category.id)}
                     >
                       <div className="flex items-center gap-3">
-                        <IconComponent className={`w-4 h-4 ${selectedCategory === category.id ? 'text-blue-600' : 'text-gray-500'}`} />
-                        <span className={`text-sm font-medium ${selectedCategory === category.id ? 'text-blue-900' : 'text-gray-700'}`}>
+                        <div className={`p-2 rounded-lg ${selectedCategory === category.id ? 'bg-blue-100' : 'bg-slate-100'}`}>
+                          <IconComponent className={`w-4 h-4 ${selectedCategory === category.id ? 'text-blue-600' : 'text-slate-500'}`} />
+                        </div>
+                        <span className={`text-sm font-medium ${selectedCategory === category.id ? 'text-blue-900' : 'text-slate-700'}`}>
                           {category.name}
                         </span>
                       </div>
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        selectedCategory === category.id ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                        selectedCategory === category.id ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'
                       }`}>
                         {category.count}
                       </span>
@@ -848,23 +898,23 @@ const EnhancedLibraryPage = () => {
             </Card>
 
             {/* AI Study Assistant */}
-            <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-purple-900 text-lg flex items-center gap-2">
+            <Card className="bg-gradient-to-br from-purple-600 to-pink-600 text-white shadow-xl rounded-3xl overflow-hidden border-none">
+              <CardHeader className="border-b border-white/10">
+                <CardTitle className="text-white text-lg flex items-center gap-2">
                   <Brain className="w-5 h-5" />
                   AI Study Assistant
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-purple-700">
+              <CardContent className="space-y-4 p-6">
+                <p className="text-sm text-purple-100">
                   Get personalized study recommendations and instant answers to your questions.
                 </p>
-                <div className="space-y-2">
-                  <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                <div className="space-y-3">
+                  <Button className="w-full bg-white text-purple-600 hover:bg-purple-50 border-none shadow-md">
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Ask AI Anything
                   </Button>
-                  <Button variant="outline" className="w-full border-purple-200 text-purple-700 hover:bg-purple-50">
+                  <Button variant="outline" className="w-full border-white/30 text-white hover:bg-white/10 hover:text-white">
                     <Lightbulb className="w-4 h-4 mr-2" />
                     Get Study Plan
                   </Button>
@@ -873,44 +923,44 @@ const EnhancedLibraryPage = () => {
             </Card>
 
             {/* Learning Progress */}
-            <Card className="bg-white border border-gray-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5" />
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden">
+              <CardHeader className="bg-slate-50 border-b border-slate-100">
+                <CardTitle className="text-slate-900 text-lg flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-green-600" />
                   Learning Progress
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
+              <CardContent className="space-y-5 p-6">
+                <div className="space-y-4">
                   <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600">JavaScript Course</span>
-                      <span className="text-gray-900 font-medium">85%</span>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-slate-600 font-medium">JavaScript Course</span>
+                      <span className="text-slate-900 font-bold">85%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-blue-600 h-2 rounded-full" style={{ width: '85%' }}></div>
+                    <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                      <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '85%' }}></div>
                     </div>
                   </div>
                   <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600">React Patterns</span>
-                      <span className="text-gray-900 font-medium">92%</span>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-slate-600 font-medium">React Patterns</span>
+                      <span className="text-slate-900 font-bold">92%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-600 h-2 rounded-full" style={{ width: '92%' }}></div>
+                    <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                      <div className="bg-green-600 h-2.5 rounded-full" style={{ width: '92%' }}></div>
                     </div>
                   </div>
                   <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600">Algorithms</span>
-                      <span className="text-gray-900 font-medium">68%</span>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-slate-600 font-medium">Algorithms</span>
+                      <span className="text-slate-900 font-bold">68%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-orange-600 h-2 rounded-full" style={{ width: '68%' }}></div>
+                    <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                      <div className="bg-orange-600 h-2.5 rounded-full" style={{ width: '68%' }}></div>
                     </div>
                   </div>
                 </div>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl">
                   <Activity className="w-4 h-4 mr-2" />
                   View Full Report
                 </Button>
@@ -918,28 +968,28 @@ const EnhancedLibraryPage = () => {
             </Card>
 
             {/* Quick Actions */}
-            <Card className="bg-white border border-gray-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
-                  <Zap className="w-5 h-5" />
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden">
+              <CardHeader className="bg-slate-50 border-b border-slate-100">
+                <CardTitle className="text-slate-900 text-lg flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-yellow-500" />
                   Quick Actions
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4">
                 <div className="space-y-3">
-                  <Button className={`w-full bg-gradient-to-r ${theme.gradient} hover:opacity-90`}>
+                  <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md rounded-xl">
                     <Upload className="w-4 h-4 mr-2" />
                     Upload Content
                   </Button>
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl">
                     <BookMarked className="w-4 h-4 mr-2" />
                     My Bookmarks
                   </Button>
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl">
                     <Download className="w-4 h-4 mr-2" />
                     My Downloads
                   </Button>
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl">
                     <Users className="w-4 h-4 mr-2" />
                     Study Groups
                   </Button>
@@ -948,39 +998,39 @@ const EnhancedLibraryPage = () => {
             </Card>
 
             {/* Recent Activity */}
-            <Card className="bg-white border border-gray-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
-                  <Activity className="w-5 h-5" />
+            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden">
+              <CardHeader className="bg-slate-50 border-b border-slate-100">
+                <CardTitle className="text-slate-900 text-lg flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-blue-500" />
                   Recent Activity
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-                    <Download className="w-4 h-4 text-blue-600" />
+              <CardContent className="space-y-4 p-4">
+                <div className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-xl transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100">
+                    <Download className="w-5 h-5 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Downloaded React Notes</p>
-                    <p className="text-xs text-gray-500">2 hours ago</p>
+                    <p className="text-sm font-medium text-slate-900">Downloaded React Notes</p>
+                    <p className="text-xs text-slate-500">2 hours ago</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                <div className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-xl transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center border border-green-100">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Completed JS Course</p>
-                    <p className="text-xs text-gray-500">1 day ago</p>
+                    <p className="text-sm font-medium text-slate-900">Completed JS Course</p>
+                    <p className="text-xs text-slate-500">1 day ago</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center">
-                    <Star className="w-4 h-4 text-purple-600" />
+                <div className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-xl transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center border border-purple-100">
+                    <Star className="w-5 h-4 text-purple-600" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Rated ML Course</p>
-                    <p className="text-xs text-gray-500">3 days ago</p>
+                    <p className="text-sm font-medium text-slate-900">Rated ML Course</p>
+                    <p className="text-xs text-slate-500">3 days ago</p>
                   </div>
                 </div>
               </CardContent>

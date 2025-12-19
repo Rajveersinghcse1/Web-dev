@@ -30,7 +30,8 @@ import {
   ExternalLink,
   Headphones,
   Globe,
-  Rocket
+  Rocket,
+  Activity
 } from 'lucide-react';
 
 const HelpSupportPage = () => {
@@ -304,6 +305,15 @@ const HelpSupportPage = () => {
             <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
               We're here to support your journey. Find answers, get help, or connect with our amazing support team.
             </p>
+            
+            {/* System Status Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-white mb-8 animate-fade-in">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+              </span>
+              <span className="text-sm font-medium">All Systems Operational</span>
+            </div>
             
             {/* Search Bar */}
             <div className="max-w-2xl mx-auto relative">
@@ -742,6 +752,11 @@ const HelpSupportPage = () => {
               <ExternalLink className="w-5 h-5 mr-2" />
               Visit Community Forum
             </Button>
+          </div>
+          
+          <div className="mt-12 pt-8 border-t border-white/10 flex items-center justify-center gap-2 text-blue-100">
+            <Activity className="w-4 h-4 text-green-400" />
+            <span className="text-sm font-medium">System Status: All Systems Operational</span>
           </div>
         </div>
       </div>

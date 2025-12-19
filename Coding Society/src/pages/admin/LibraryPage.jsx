@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 import { 
     Book, 
     Plus, 
@@ -37,77 +39,11 @@ const LibraryPage = () => {
     const [currentContent, setCurrentContent] = useState(null);
     const [loading, setLoading] = useState(false);
     const [viewMode, setViewMode] = useState('grid'); // grid or list
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
     const categories = ['All', 'Programming', 'Web Development', 'Mobile Dev', 'AI/ML', 'Database', 'DevOps', 'UI/UX'];
     const contentTypes = ['All', 'Article', 'Video', 'PDF', 'Code', 'Tutorial', 'Documentation'];
     const difficulties = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
-
-    // Enhanced mock data
-    const mockContents = [
-        {
-            id: '1',
-            title: 'React Hooks Complete Guide',
-            description: 'Comprehensive guide to React Hooks with practical examples and best practices',
-            category: 'Web Development',
-            type: 'Article',
-            difficulty: 'Intermediate',
-            author: 'John Doe',
-            authorAvatar: '/api/placeholder/32/32',
-            createdAt: '2024-01-15',
-            updatedAt: '2024-01-20',
-            views: 1250,
-            likes: 89,
-            downloads: 45,
-            tags: ['React', 'Hooks', 'JavaScript', 'Frontend'],
-            thumbnail: '/api/placeholder/300/200',
-            fileSize: '2.5 MB',
-            readTime: '15 min',
-            rating: 4.8,
-            status: 'published'
-        },
-        {
-            id: '2',
-            title: 'Machine Learning Fundamentals',
-            description: 'Introduction to machine learning concepts, algorithms, and practical implementation',
-            category: 'AI/ML',
-            type: 'Video',
-            difficulty: 'Beginner',
-            author: 'Jane Smith',
-            authorAvatar: '/api/placeholder/32/32',
-            createdAt: '2024-01-10',
-            updatedAt: '2024-01-18',
-            views: 2100,
-            likes: 156,
-            downloads: 78,
-            tags: ['Machine Learning', 'Python', 'Data Science', 'AI'],
-            thumbnail: '/api/placeholder/300/200',
-            fileSize: '150 MB',
-            readTime: '45 min',
-            rating: 4.9,
-            status: 'published'
-        },
-        {
-            id: '3',
-            title: 'Advanced Node.js Patterns',
-            description: 'Deep dive into advanced Node.js development patterns and architectural approaches',
-            category: 'Programming',
-            type: 'PDF',
-            difficulty: 'Advanced',
-            author: 'Mike Johnson',
-            authorAvatar: '/api/placeholder/32/32',
-            createdAt: '2024-01-05',
-            updatedAt: '2024-01-15',
-            views: 890,
-            likes: 67,
-            downloads: 123,
-            tags: ['Node.js', 'Backend', 'Architecture', 'JavaScript'],
-            thumbnail: '/api/placeholder/300/200',
-            fileSize: '8.2 MB',
-            readTime: '30 min',
-            rating: 4.7,
-            status: 'draft'
-        }
-    ];
 
     useEffect(() => {
         fetchContents();
@@ -117,14 +53,21 @@ const LibraryPage = () => {
         filterContents();
     }, [searchQuery, selectedCategory, selectedType, contents]);
 
+    const getAuthHeader = () => {
+        const token = localStorage.getItem('token');
+        return { headers: { Authorization: `Bearer ${token}` } };
+    };
+
     const fetchContents = async () => {
         setLoading(true);
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            setContents(mockContents);
+            const response = await axios.get('http://localhost:5000/api/v1/admin/library', getAuthHeader());
+            if (response.data.success) {
+                setContents(response.data.data.content);
+            }
         } catch (error) {
             console.error('Error fetching contents:', error);
+            toast.error('Failed to fetch library content');
         } finally {
             setLoading(false);
         }
@@ -137,7 +80,7 @@ const LibraryPage = () => {
             filtered = filtered.filter(content =>
                 content.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 content.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                content.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+                content.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
             );
         }
 
@@ -160,14 +103,16 @@ const LibraryPage = () => {
             type: 'Article',
             difficulty: 'Beginner',
             tags: [],
-            status: 'Draft'
+            status: 'published'
         });
+        setSelectedFiles([]);
         setModalMode('create');
         setShowModal(true);
     };
 
     const handleEdit = (content) => {
         setCurrentContent({ ...content });
+        setSelectedFiles([]);
         setModalMode('edit');
         setShowModal(true);
     };
@@ -180,36 +125,79 @@ const LibraryPage = () => {
 
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this content?')) {
-            setContents(prev => prev.filter(content => content.id !== id));
+            try {
+                await axios.delete(`http://localhost:5000/api/v1/admin/library/${id}`, getAuthHeader());
+                setContents(prev => prev.filter(content => content._id !== id));
+                toast.success('Content deleted successfully');
+            } catch (error) {
+                console.error('Error deleting content:', error);
+                toast.error('Failed to delete content');
+            }
         }
+    };
+
+    const handleFileChange = (e) => {
+        setSelectedFiles(Array.from(e.target.files));
     };
 
     const handleSave = async () => {
         setLoading(true);
         try {
+            const formData = new FormData();
+            formData.append('title', currentContent.title);
+            formData.append('description', currentContent.description);
+            formData.append('category', currentContent.category);
+            formData.append('type', currentContent.type);
+            formData.append('difficulty', currentContent.difficulty);
+            formData.append('status', currentContent.status || 'published');
+            
+            if (currentContent.tags && Array.isArray(currentContent.tags)) {
+                formData.append('tags', currentContent.tags.join(','));
+            }
+
+            selectedFiles.forEach(file => {
+                formData.append('files', file);
+            });
+
             if (modalMode === 'create') {
-                const newContent = {
-                    ...currentContent,
-                    id: Date.now().toString(),
-                    author: 'Current User',
-                    createdAt: new Date().toISOString().split('T')[0],
-                    updatedAt: new Date().toISOString().split('T')[0],
-                    views: 0,
-                    rating: 0
-                };
-                setContents(prev => [...prev, newContent]);
-            } else if (modalMode === 'edit') {
-                setContents(prev =>
-                    prev.map(content =>
-                        content.id === currentContent.id
-                            ? { ...currentContent, updatedAt: new Date().toISOString().split('T')[0] }
-                            : content
-                    )
+                const response = await axios.post(
+                    'http://localhost:5000/api/v1/admin/library', 
+                    formData, 
+                    {
+                        headers: {
+                            ...getAuthHeader().headers,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }
                 );
+                if (response.data.success) {
+                    setContents(prev => [response.data.data, ...prev]);
+                    toast.success('Content created successfully');
+                }
+            } else if (modalMode === 'edit') {
+                const response = await axios.put(
+                    `http://localhost:5000/api/v1/admin/library/${currentContent._id}`, 
+                    formData,
+                    {
+                        headers: {
+                            ...getAuthHeader().headers,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }
+                );
+                if (response.data.success) {
+                    setContents(prev =>
+                        prev.map(content =>
+                            content._id === currentContent._id ? response.data.data : content
+                        )
+                    );
+                    toast.success('Content updated successfully');
+                }
             }
             setShowModal(false);
         } catch (error) {
             console.error('Error saving content:', error);
+            toast.error(error.response?.data?.message || 'Failed to save content');
         } finally {
             setLoading(false);
         }
@@ -232,6 +220,16 @@ const LibraryPage = () => {
             case 'Advanced': return 'bg-orange-100 text-orange-800';
             case 'Expert': return 'bg-red-100 text-red-800';
             default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'Published': return 'bg-green-100 text-green-800 border-green-200';
+            case 'Draft': return 'bg-gray-100 text-gray-800 border-gray-200';
+            case 'Review': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+            case 'Archived': return 'bg-red-100 text-red-800 border-red-200';
+            default: return 'bg-gray-100 text-gray-800 border-gray-200';
         }
     };
 
@@ -380,24 +378,24 @@ const LibraryPage = () => {
                         <AnimatePresence>
                             {filteredContents.map((content, index) => (
                                 viewMode === 'grid' ? (
-                                <motion.div
-                                    key={content.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
-                                    transition={{ delay: index * 0.1 }}
-                                    className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
-                                >
-                                    <div className="relative">
-                                        <img 
-                                            src={content.thumbnail} 
-                                            alt={content.title}
-                                            className="w-full h-48 object-cover bg-gradient-to-br from-purple-400 to-blue-500"
-                                            onError={(e) => {
-                                                e.target.style.display = 'none';
-                                                e.target.nextSibling.style.display = 'flex';
-                                            }}
-                                        />
+                                    <motion.div
+                                        key={content._id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
+                                    >
+                                        <div className="relative">
+                                            <img 
+                                                src={content.thumbnailUrl || '/api/placeholder/300/200'} 
+                                                alt={content.title}
+                                                className="w-full h-48 object-cover bg-gradient-to-br from-purple-400 to-blue-500"
+                                                onError={(e) => {
+                                                    e.target.style.display = 'none';
+                                                    e.target.nextSibling.style.display = 'flex';
+                                                }}
+                                            />
                                         <div className="w-full h-48 bg-gradient-to-br from-purple-400 to-blue-500 hidden items-center justify-center">
                                             <div className="text-white">
                                                 {getTypeIcon(content.type)}
@@ -504,13 +502,19 @@ const LibraryPage = () => {
                                         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                                             <div className="flex items-center space-x-3">
                                                 <img 
-                                                    src={content.authorAvatar} 
-                                                    alt={content.author}
+                                                    src={content.uploadedBy?.profile?.avatar || '/api/placeholder/32/32'} 
+                                                    alt={content.uploadedBy?.username || 'User'}
                                                     className="w-8 h-8 rounded-full object-cover"
                                                 />
                                                 <div>
-                                                    <p className="text-sm font-medium text-gray-900">{content.author}</p>
-                                                    <p className="text-xs text-gray-500">{content.updatedAt}</p>
+                                                    <p className="text-sm font-medium text-gray-900">
+                                                        {content.uploadedBy?.profile?.firstName 
+                                                            ? `${content.uploadedBy.profile.firstName} ${content.uploadedBy.profile.lastName || ''}`
+                                                            : (content.uploadedBy?.username || 'Unknown Author')}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {new Date(content.updatedAt).toLocaleDateString()}
+                                                    </p>
                                                 </div>
                                             </div>
                                             <div className="flex space-x-1">
@@ -525,7 +529,7 @@ const LibraryPage = () => {
                                                 <motion.button
                                                     whileHover={{ scale: 1.05 }}
                                                     whileTap={{ scale: 0.95 }}
-                                                    onClick={() => handleDelete(content.id)}
+                                                    onClick={() => handleDelete(content._id)}
                                                     className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -544,7 +548,7 @@ const LibraryPage = () => {
                                 ) : (
                                     // List View
                                     <motion.div
-                                        key={content.id}
+                                        key={content._id}
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: 20 }}
@@ -554,7 +558,7 @@ const LibraryPage = () => {
                                         <div className="flex items-center space-x-6">
                                             <div className="flex-shrink-0">
                                                 <img 
-                                                    src={content.thumbnail} 
+                                                    src={content.thumbnailUrl || '/api/placeholder/300/200'} 
                                                     alt={content.title}
                                                     className="w-24 h-24 object-cover rounded-lg bg-gradient-to-br from-purple-400 to-blue-500"
                                                     onError={(e) => {
@@ -603,7 +607,7 @@ const LibraryPage = () => {
                                                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                                                         <div className="flex items-center space-x-1">
                                                             <User className="w-4 h-4" />
-                                                            <span>{content.author}</span>
+                                                            <span>{content.uploadedBy?.username || 'Unknown'}</span>
                                                         </div>
                                                         <div className="flex items-center space-x-1">
                                                             <Eye className="w-4 h-4" />
@@ -639,7 +643,7 @@ const LibraryPage = () => {
                                                         <motion.button
                                                             whileHover={{ scale: 1.05 }}
                                                             whileTap={{ scale: 0.95 }}
-                                                            onClick={() => handleDelete(content.id)}
+                                                            onClick={() => handleDelete(content._id)}
                                                             className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                         >
                                                             <Trash2 className="w-4 h-4" />
@@ -780,12 +784,13 @@ const LibraryPage = () => {
                                                     id="file-upload"
                                                     multiple
                                                     accept=".pdf,.doc,.docx,.mp4,.avi,.jpg,.jpeg,.png,.zip"
+                                                    onChange={handleFileChange}
                                                 />
                                                 <label
                                                     htmlFor="file-upload"
                                                     className="inline-block px-4 py-2 bg-purple-100 text-purple-700 rounded-lg cursor-pointer hover:bg-purple-200 transition-colors"
                                                 >
-                                                    Choose Files
+                                                    {selectedFiles.length > 0 ? `${selectedFiles.length} files selected` : 'Choose Files'}
                                                 </label>
                                             </div>
                                         </div>

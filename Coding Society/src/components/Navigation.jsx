@@ -173,24 +173,8 @@ function Navigation() {
     },
   ];
 
-  // Admin navigation items - Only shown for admin users
-  const adminNavigation = [
-    { 
-      name: 'Admin Panel', 
-      path: '/admin', 
-      icon: UserCog, 
-      description: 'Administrative dashboard and controls',
-      adminOnly: true
-    }
-  ];
-
   // Get current navigation items based on mode and role
-  let baseNavigationItems = isStudyMode ? studyModeNavigation : professionalModeNavigation;
-  
-  // Add admin navigation for admin users
-  const navigationItems = user?.role === 'ADMIN' 
-    ? [...baseNavigationItems, ...adminNavigation]
-    : baseNavigationItems;
+  const navigationItems = isStudyMode ? studyModeNavigation : professionalModeNavigation;
 
   // Profile menu items - Enhanced with role-based options
   const baseProfileMenuItems = [

@@ -40,6 +40,11 @@ const adminRoutes = require('./routes/admin');
 const uploadRoutes = require('./routes/upload');
 const filesRoutes = require('./routes/files');
 const feedbackRoutes = require('./routes/feedback');
+const resumeRoutes = require('./routes/resume');
+const internshipRoutes = require('./routes/internships');
+const hackathonRoutes = require('./routes/hackathons');
+const innovationRoutes = require('./routes/innovation');
+const libraryRoutes = require('./routes/library');
 
 // Import MinIO configuration
 const { initializeBuckets } = require('./config/minio');
@@ -186,10 +191,17 @@ app.use(`${apiPrefix}/analytics`, authMiddleware, analyticsRoutes);
 app.use(`${apiPrefix}/feed`, feedRoutes);
 app.use(`${apiPrefix}/stories`, storiesRoutes);
 app.use(`${apiPrefix}/feedback`, feedbackRoutes);
+app.use(`${apiPrefix}/internships`, internshipRoutes);
+app.use(`${apiPrefix}/hackathons`, hackathonRoutes);
+app.use(`${apiPrefix}/innovation`, innovationRoutes);
+app.use(`${apiPrefix}/library`, libraryRoutes);
 app.use(`${apiPrefix}/admin`, adminRoutes);
 app.use(`${apiPrefix}/admin/upload`, uploadRoutes);
 app.use(`${apiPrefix}/upload`, uploadRoutes);  // General upload endpoint
 app.use(`${apiPrefix}/files`, filesRoutes);
+app.use('/api/files', filesRoutes);
+app.use('/api/feedback', feedbackRoutes);
+app.use('/api/resume', resumeRoutes);
 
 // Welcome endpoint
 app.get('/', (req, res) => {

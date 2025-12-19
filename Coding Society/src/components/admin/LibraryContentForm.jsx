@@ -22,7 +22,7 @@ const LibraryContentForm = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    subject: '',
+    category: '',
     type: '',
     difficulty: '',
     tags: '',
@@ -40,20 +40,35 @@ const LibraryContentForm = () => {
   const [error, setError] = useState(null);
   const [dragActive, setDragActive] = useState(false);
 
-  const subjects = [
+  const categories = [
     { value: 'programming', label: 'Programming' },
     { value: 'computer_science', label: 'Computer Science' },
     { value: 'ai_ml', label: 'AI/ML' },
+    { value: 'data_science', label: 'Data Science' },
+    { value: 'web_development', label: 'Web Development' },
+    { value: 'mobile_development', label: 'Mobile Development' },
     { value: 'devops', label: 'DevOps' },
-    { value: 'mathematics', label: 'Mathematics' }
+    { value: 'cybersecurity', label: 'Cybersecurity' },
+    { value: 'algorithms', label: 'Algorithms' },
+    { value: 'databases', label: 'Databases' },
+    { value: 'networking', label: 'Networking' },
+    { value: 'mathematics', label: 'Mathematics' },
+    { value: 'other', label: 'Other' }
   ];
 
   const contentTypes = [
-    { value: 'notes', label: 'Notes' },
-    { value: 'exam_papers', label: 'Exam Papers' },
-    { value: 'reference_books', label: 'Reference Books' },
-    { value: 'tutorials', label: 'Tutorials' },
-    { value: 'assignments', label: 'Assignments' }
+    { value: 'study_notes', label: 'Study Notes' },
+    { value: 'exam_paper', label: 'Exam Paper' },
+    { value: 'book', label: 'Book' },
+    { value: 'tutorial', label: 'Tutorial' },
+    { value: 'practice_problems', label: 'Practice Problems' },
+    { value: 'article', label: 'Article' },
+    { value: 'video', label: 'Video' },
+    { value: 'course', label: 'Course' },
+    { value: 'reference', label: 'Reference' },
+    { value: 'documentation', label: 'Documentation' },
+    { value: 'guide', label: 'Guide' },
+    { value: 'cheatsheet', label: 'Cheatsheet' }
   ];
 
   const difficulties = [
@@ -84,7 +99,7 @@ const LibraryContentForm = () => {
         setFormData({
           title: content.title || '',
           description: content.description || '',
-          subject: content.subject || '',
+          category: content.category || content.subject || '',
           type: content.type || '',
           difficulty: content.difficulty || '',
           tags: content.tags?.join(', ') || '',
@@ -170,7 +185,8 @@ const LibraryContentForm = () => {
       
       const submitData = adminService.createFormData({
         ...formData,
-        files: files.length > 0 ? files : undefined
+        files: files.length > 0 ? files : undefined,
+        existingFiles: JSON.stringify(existingFiles)
       });
 
       if (isEdit) {
@@ -280,23 +296,23 @@ const LibraryContentForm = () => {
               />
             </div>
 
-            {/* Subject */}
+            {/* Category */}
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                Subject *
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                Category *
               </label>
               <select
-                id="subject"
-                name="subject"
-                value={formData.subject}
+                id="category"
+                name="category"
+                value={formData.category}
                 onChange={handleInputChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">Select subject</option>
-                {subjects.map(subject => (
-                  <option key={subject.value} value={subject.value}>
-                    {subject.label}
+                <option value="">Select category</option>
+                {categories.map(category => (
+                  <option key={category.value} value={category.value}>
+                    {category.label}
                   </option>
                 ))}
               </select>

@@ -1,24 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Progress } from '../components/ui/progress';
-import { useMode } from '../context/ModeContext';
 import studentService from '../services/studentService';
 import {
   Lightbulb, Plus, Heart, MessageSquare, Share, Code, Atom, Calculator, Globe, Cpu, Zap,
-  Target, Users, Clock, Star, Filter, Search, TrendingUp, Award, Eye, Bookmark, Brain,
-  Rocket, Activity, Sparkles, Download, DollarSign, CheckCircle, MoreVertical, X, RefreshCw,
-  AlertCircle, FileText, Calendar, Phone
+  Target, Users, Search, TrendingUp, Award, Eye, Bookmark, Brain,
+  Rocket, Sparkles, DollarSign, MoreVertical, RefreshCw,
+  FileText, Phone, ArrowRight, AlertCircle, Star
 } from 'lucide-react';
 
 const IdeasPage = () => {
-  const { getCurrentTheme } = useMode();
-  const theme = getCurrentTheme();
-  
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [showAddIdea, setShowAddIdea] = useState(false);
-  const [showFeedback, setShowFeedback] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [animatedStats, setAnimatedStats] = useState({ ideas: 0, projects: 0, contributors: 0, completed: 0 });
   
@@ -37,15 +30,16 @@ const IdeasPage = () => {
         const response = await studentService.getInnovationProjects();
         
         if (response.success && response.data) {
-          setInnovationProjects(response.data);
+          const projectsData = response.data.projects || [];
+          setInnovationProjects(projectsData);
           
           // Calculate stats from real data
-          const activeProjects = response.data.filter(p => p.status === 'in_progress').length;
-          const completedProjects = response.data.filter(p => p.status === 'completed').length;
-          const totalContributors = new Set(response.data.flatMap(p => p.collaborators || [])).size;
+          const activeProjects = projectsData.filter(p => p.status === 'in_progress').length;
+          const completedProjects = projectsData.filter(p => p.status === 'completed').length;
+          const totalContributors = new Set(projectsData.flatMap(p => p.collaborators || [])).size;
           
           setAnimatedStats({
-            ideas: response.data.length,
+            ideas: projectsData.length,
             projects: activeProjects,
             contributors: totalContributors,
             completed: completedProjects
@@ -319,79 +313,79 @@ const IdeasPage = () => {
     return (
       <Card 
         key={idea.id} 
-        className={`group bg-white border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer ${
+        className={`group bg-white border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer rounded-3xl overflow-hidden ${
           idea.featured ? 'ring-2 ring-yellow-400 ring-opacity-50' : ''
         }`}
         onClick={handleViewClick}
       >
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-3 relative">
           {/* Featured badge */}
           {idea.featured && (
-            <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-3 py-1 rounded-full font-semibold shadow-lg z-10">
+            <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-3 py-1 rounded-full font-semibold shadow-lg z-10">
               ⭐ Featured
             </div>
           )}
 
           <div className="flex items-start justify-between">
-            <div className="flex items-start space-x-3 flex-1">
-              <div className="text-2xl">{idea.avatar}</div>
+            <div className="flex items-start space-x-4 flex-1">
+              <div className="text-3xl bg-slate-50 p-3 rounded-2xl">{idea.avatar}</div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-gray-900 text-sm sm:text-base line-clamp-2 mb-1">
+                <h3 className="font-bold text-slate-900 text-lg line-clamp-2 mb-1 group-hover:text-blue-600 transition-colors">
                   {idea.title}
                 </h3>
-                <p className="text-sm text-gray-700 mb-2">
+                <p className="text-sm text-slate-500 mb-3">
                   by {idea.author}
                 </p>
                 
                 {/* Status and Progress */}
                 <div className="flex items-center gap-3 mb-3">
-                  <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(idea.status)}`}>
+                  <span className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusColor(idea.status)}`}>
                     {getStatusLabel(idea.status)}
                   </span>
-                  <span className="text-xs text-gray-600">{idea.progress}% complete</span>
+                  <span className="text-xs text-slate-500 font-medium">{idea.progress}% complete</span>
                 </div>
 
                 {/* Progress bar */}
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
+                <div className="w-full bg-slate-100 rounded-full h-2 mb-4 overflow-hidden">
                   <div 
-                    className="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full transition-all duration-500"
+                    className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-500"
                     style={{ width: `${idea.progress}%` }}
                   ></div>
                 </div>
 
                 {/* Project metadata */}
-                <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 mb-3">
-                  <span className="flex items-center gap-1">
-                    <Users className="w-3 h-3" />
+                <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 mb-4">
+                  <span className="flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5" />
                     {idea.teamSize} members
                   </span>
-                  <span className="flex items-center gap-1">
-                    <Target className="w-3 h-3" />
+                  <span className="flex items-center gap-1.5">
+                    <Target className="w-3.5 h-3.5" />
                     {idea.milestones} milestones
                   </span>
-                  <span className="flex items-center gap-1">
-                    <DollarSign className="w-3 h-3" />
+                  <span className="flex items-center gap-1.5">
+                    <DollarSign className="w-3.5 h-3.5" />
                     {idea.funding}
                   </span>
                   {idea.mentorPhone && (
-                    <span className="flex items-center gap-1 text-green-600">
-                      <Phone className="w-3 h-3" />
+                    <span className="flex items-center gap-1.5 text-green-600 font-medium">
+                      <Phone className="w-3.5 h-3.5" />
                       Mentor: {idea.mentorPhone}
                     </span>
                   )}
                 </div>
 
                 {/* Difficulty badge */}
-                <div className="flex items-center gap-2 mb-3">
-                  <span className={`text-xs px-2 py-1 rounded-full border ${
-                    idea.difficulty === 'Beginner' ? 'bg-green-100 text-green-800 border-green-200' :
-                    idea.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
-                    'bg-red-100 text-red-800 border-red-200'
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${
+                    idea.difficulty === 'Beginner' ? 'bg-green-50 text-green-700 border-green-200' :
+                    idea.difficulty === 'Intermediate' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                    'bg-red-50 text-red-700 border-red-200'
                   }`}>
                     {idea.difficulty}
                   </span>
                   {idea.projectFile && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200 flex items-center gap-1">
+                    <span className="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1 font-medium">
                       <FileText className="w-3 h-3" />
                       Project File
                     </span>
@@ -401,11 +395,11 @@ const IdeasPage = () => {
             </div>
             
             <div className="flex flex-col items-end space-y-2">
-              <div className="flex items-center space-x-1">
-                <Heart className="w-4 h-4 text-red-500" />
-                <span className="text-sm font-medium text-gray-900">{idea.likes}</span>
+              <div className="flex items-center space-x-1 bg-red-50 px-2 py-1 rounded-full">
+                <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" />
+                <span className="text-xs font-bold text-red-600">{idea.likes}</span>
               </div>
-              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-800" onClick={(e) => {
+              <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full h-8 w-8 p-0" onClick={(e) => {
                 e.stopPropagation();
                 console.log('More options clicked for:', idea.title);
                 alert('More options menu would appear here!');
@@ -418,22 +412,22 @@ const IdeasPage = () => {
         
         <CardContent>
           {/* Description */}
-          <p className="text-sm text-gray-700 mb-4 line-clamp-3">
+          <p className="text-sm text-slate-600 mb-5 line-clamp-3 leading-relaxed">
             {idea.description}
           </p>
 
           {/* Skills Required */}
           {idea.skills.length > 0 && (
-            <div className="mb-4">
-              <h4 className="text-xs font-semibold text-gray-600 mb-2">Skills Required:</h4>
-              <div className="flex flex-wrap gap-1">
+            <div className="mb-5">
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Skills Required</h4>
+              <div className="flex flex-wrap gap-2">
                 {idea.skills.slice(0, 4).map((skill, index) => (
-                  <span key={index} className="text-xs px-2 py-1 bg-blue-50 text-blue-700 rounded-full">
+                  <span key={index} className="text-xs px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg font-medium">
                     {skill}
                   </span>
                 ))}
                 {idea.skills.length > 4 && (
-                  <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
+                  <span className="text-xs px-2.5 py-1 bg-slate-50 text-slate-400 rounded-lg font-medium">
                     +{idea.skills.length - 4} more
                   </span>
                 )}
@@ -443,91 +437,86 @@ const IdeasPage = () => {
 
           {/* Tags */}
           {idea.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-5">
               {idea.tags.slice(0, 3).map((tag, index) => (
                 <span 
                   key={index} 
-                  className="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 hover:from-blue-100 hover:to-blue-200 hover:text-blue-800 cursor-pointer transition-colors"
+                  className="text-xs px-2.5 py-1 rounded-full bg-slate-50 text-slate-500 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors border border-slate-100"
                   onClick={(e) => {
                     e.stopPropagation();
                     setSearchTerm(tag);
                   }}
                 >
-                  {tag}
+                  #{tag}
                 </span>
               ))}
-              {idea.tags.length > 3 && (
-                <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
-                  +{idea.tags.length - 3} more
-                </span>
-              )}
             </div>
           )}
 
           {/* Collaborators */}
           {idea.collaborators.length > 0 && (
-            <div className="mb-4">
-              <h4 className="text-xs font-semibold text-gray-600 mb-2">Team Members:</h4>
+            <div className="mb-5">
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Team</h4>
               <div className="flex items-center gap-2">
                 {idea.collaborators.slice(0, 3).map((collaborator, index) => (
-                  <div key={index} className="flex items-center gap-1 text-xs bg-gray-50 px-2 py-1 rounded-full">
+                  <div key={index} className="flex items-center gap-1.5 text-xs bg-slate-50 px-2 py-1 rounded-full border border-slate-100">
                     <span>{collaborator.avatar}</span>
-                    <span className="text-gray-700">{collaborator.name}</span>
+                    <span className="text-slate-600 font-medium">{collaborator.name}</span>
                   </div>
                 ))}
                 {idea.collaborators.length > 3 && (
-                  <span className="text-xs text-gray-600">+{idea.collaborators.length - 3} more</span>
+                  <span className="text-xs text-slate-400 font-medium">+{idea.collaborators.length - 3} more</span>
                 )}
               </div>
             </div>
           )}
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 text-sm mb-4">
+          <div className="grid grid-cols-3 gap-4 text-sm mb-5 py-3 border-t border-slate-100">
             <div className="text-center">
-              <div className="flex items-center justify-center gap-1 text-red-500">
-                <Heart className="w-3 h-3" />
-                <span className="font-medium">{idea.likes}</span>
+              <div className="flex items-center justify-center gap-1.5 text-slate-700 mb-1">
+                <Heart className="w-4 h-4 text-red-500" />
+                <span className="font-bold">{idea.likes}</span>
               </div>
-              <span className="text-xs text-gray-600">Likes</span>
+              <span className="text-xs text-slate-400 font-medium">Likes</span>
             </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 text-blue-500">
-                <MessageSquare className="w-3 h-3" />
-                <span className="font-medium">{idea.comments}</span>
+            <div className="text-center border-l border-slate-100">
+              <div className="flex items-center justify-center gap-1.5 text-slate-700 mb-1">
+                <MessageSquare className="w-4 h-4 text-blue-500" />
+                <span className="font-bold">{idea.comments}</span>
               </div>
-              <span className="text-xs text-gray-600">Comments</span>
+              <span className="text-xs text-slate-400 font-medium">Comments</span>
             </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 text-gray-500">
-                <Eye className="w-3 h-3" />
-                <span className="font-medium">{idea.views}</span>
+            <div className="text-center border-l border-slate-100">
+              <div className="flex items-center justify-center gap-1.5 text-slate-700 mb-1">
+                <Eye className="w-4 h-4 text-indigo-500" />
+                <span className="font-bold">{idea.views}</span>
               </div>
-              <span className="text-xs text-gray-600">Views</span>
+              <span className="text-xs text-slate-400 font-medium">Views</span>
             </div>
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <Button 
-              className={`bg-gradient-to-r ${theme.gradient} hover:opacity-90 flex-1 text-sm text-white`}
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-300 flex-1 rounded-xl h-10"
               onClick={handleJoinClick}
             >
               <Users className="w-4 h-4 mr-2" />
               Join Project
             </Button>
-            <Button variant="outline" size="sm" className="border-gray-300 hover:bg-gray-50" onClick={handleLikeClick}>
-              <Heart className="w-4 h-4 text-red-500" />
+            <Button variant="outline" size="sm" className="border-slate-200 hover:bg-slate-50 hover:text-red-600 rounded-xl h-10 w-10 p-0" onClick={handleLikeClick}>
+              <Heart className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="sm" className="border-gray-300 hover:bg-gray-50" onClick={handleShareClick}>
-              <Share className="w-4 h-4 text-gray-600" />
+            <Button variant="outline" size="sm" className="border-slate-200 hover:bg-slate-50 hover:text-blue-600 rounded-xl h-10 w-10 p-0" onClick={handleShareClick}>
+              <Share className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="sm" className="border-gray-300 hover:bg-gray-50" onClick={(e) => {
+            <Button variant="outline" size="sm" className="border-slate-200 hover:bg-slate-50 hover:text-yellow-600 rounded-xl h-10 w-10 p-0" onClick={(e) => {
               e.stopPropagation();
               console.log('Bookmarking:', idea.title);
               alert(`${idea.title} bookmarked!`);
             }}>
-              <Bookmark className="w-4 h-4 text-gray-600" />
+              <Bookmark className="w-4 h-4" />
             </Button>
           </div>
         </CardContent>
@@ -538,174 +527,174 @@ const IdeasPage = () => {
   // Show loading state
   if (isLoading) {
     return (
-      <div className={`min-h-screen ${theme.background} pt-16 py-8`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className={`w-20 h-20 mx-auto rounded-2xl bg-gradient-to-r ${theme.gradient} flex items-center justify-center shadow-xl mb-4`}>
-              <RefreshCw className="w-10 h-10 text-white animate-spin" />
-            </div>
-            <h1 className={`text-3xl font-bold ${theme.textPrimary} mb-2`}>Loading Innovation Projects...</h1>
-            <p className={`text-lg ${theme.textSecondary}`}>Fetching the latest project ideas</p>
+      <div className="min-h-screen bg-slate-50 pt-20 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center shadow-xl mb-6 animate-pulse">
+            <RefreshCw className="w-8 h-8 text-white animate-spin" />
           </div>
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">Loading Innovation Projects...</h1>
+          <p className="text-slate-500">Fetching the latest ideas from the community</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen ${theme.background} pt-16 py-8`}>
+    <div className="min-h-screen bg-slate-50 pt-20 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Enhanced Header */}
-        <div className="mb-8">
-          <div className="text-center mb-8">
-            <div className={`w-20 h-20 mx-auto rounded-2xl bg-gradient-to-r ${theme.gradient} flex items-center justify-center shadow-xl mb-4`}>
-              <Lightbulb className="w-10 h-10 text-white" />
+        <div className="mb-12 text-center">
+          <div className="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-xl mb-6 ring-1 ring-slate-100">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center">
+              <Lightbulb className="w-6 h-6 text-white" />
             </div>
-            <h1 className={`text-5xl font-bold ${theme.textPrimary} mb-2`}>
-              Innovation Hub
-            </h1>
-            <p className={`text-xl ${theme.textSecondary} max-w-2xl mx-auto mb-6`}>
-              Discover groundbreaking ideas, collaborate on cutting-edge projects, and transform innovation into reality
-            </p>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
+            Innovation <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Hub</span>
+          </h1>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-8 leading-relaxed">
+            Discover groundbreaking ideas, collaborate on cutting-edge projects, and transform innovation into reality.
+          </p>
             
-            {/* Admin Content Status */}
-            {innovationProjects.length > 0 && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6 max-w-md mx-auto">
-                <p className="text-sm text-green-800">
-                  💡 Showing {innovationProjects.length} projects from admin panel
-                </p>
-              </div>
-            )}
-            
-            {error && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6 max-w-md mx-auto">
-                <p className="text-sm text-yellow-800">
-                  ⚠️ Admin content unavailable, showing demo projects
-                </p>
-              </div>
-            )}
+          {/* Admin Content Status */}
+          {innovationProjects.length > 0 && (
+            <div className="inline-flex items-center gap-2 bg-green-50 border border-green-100 rounded-full px-4 py-1.5 mb-8">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              <p className="text-sm font-medium text-green-700">
+                Showing {innovationProjects.length} active projects
+              </p>
+            </div>
+          )}
+          
+          {error && (
+            <div className="inline-flex items-center gap-2 bg-yellow-50 border border-yellow-100 rounded-full px-4 py-1.5 mb-8">
+              <AlertCircle className="w-4 h-4 text-yellow-600" />
+              <p className="text-sm font-medium text-yellow-700">
+                Demo Mode
+              </p>
+            </div>
+          )}
 
-            {/* Enhanced Search Bar */}
-            <div className="max-w-4xl mx-auto mb-6">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <Input
-                    type="text"
-                    placeholder="Search innovation projects, skills, or ideas..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-12 h-14 bg-white border-gray-200 text-lg rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-blue-50"
-                    onClick={() => {
-                      console.log('AI Search clicked with query:', searchTerm);
-                      alert('AI-powered project matching would process your query: "' + searchTerm + '"');
-                    }}
-                  >
-                    <Brain className="w-5 h-5 text-blue-500" />
-                  </Button>
-                </div>
+          {/* Enhanced Search Bar */}
+          <div className="max-w-3xl mx-auto relative z-10">
+            <div className="bg-white p-2 rounded-2xl shadow-xl ring-1 ring-slate-100 flex flex-col sm:flex-row gap-2">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                <Input
+                  type="text"
+                  placeholder="Search innovation projects, skills, or ideas..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-12 h-12 bg-transparent border-none text-slate-900 placeholder:text-slate-400 focus:ring-0 text-base w-full"
+                />
                 <Button 
-                  className={`h-14 px-8 bg-gradient-to-r ${theme.gradient} hover:opacity-90 rounded-xl text-white`}
+                  variant="ghost" 
+                  size="sm"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-blue-50 text-blue-600 rounded-lg"
                   onClick={() => {
-                    console.log('Submit Idea clicked');
-                    alert('Submit Innovation Idea modal would open here!');
+                    console.log('AI Search clicked with query:', searchTerm);
+                    alert('AI-powered project matching would process your query: "' + searchTerm + '"');
                   }}
                 >
-                  <Plus className="w-5 h-5 mr-2" />
-                  Submit Idea
+                  <Brain className="w-5 h-5" />
                 </Button>
               </div>
+              <Button 
+                className="h-12 px-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-md transition-all duration-300"
+                onClick={() => {
+                  console.log('Submit Idea clicked');
+                  alert('Submit Innovation Idea modal would open here!');
+                }}
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Submit Idea
+              </Button>
             </div>
           </div>
         </div>
 
         {/* Enhanced Stats Dashboard */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card className={`${theme.cardBg} border ${theme.border} shadow-sm hover:shadow-md transition-shadow`}>
-            <CardContent className="p-4 text-center">
-              <div className={`text-2xl font-bold ${theme.accent1} mb-1`}>{animatedStats.ideas}</div>
-              <div className={`text-xs ${theme.textSecondary}`}>Total Ideas</div>
-              <div className="text-xs text-green-600 mt-1">+12 this week</div>
-            </CardContent>
-          </Card>
-          <Card className={`${theme.cardBg} border ${theme.border} shadow-sm hover:shadow-md transition-shadow`}>
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600 mb-1">{animatedStats.projects}</div>
-              <div className={`text-xs ${theme.textSecondary}`}>Active Projects</div>
-              <div className="text-xs text-green-600 mt-1">+8 this week</div>
-            </CardContent>
-          </Card>
-          <Card className={`${theme.cardBg} border ${theme.border} shadow-sm hover:shadow-md transition-shadow`}>
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-purple-600 mb-1">{animatedStats.contributors}</div>
-              <div className={`text-xs ${theme.textSecondary}`}>Contributors</div>
-              <div className="text-xs text-green-600 mt-1">+23 this week</div>
-            </CardContent>
-          </Card>
-          <Card className={`${theme.cardBg} border ${theme.border} shadow-sm hover:shadow-md transition-shadow`}>
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-600 mb-1">{animatedStats.completed}</div>
-              <div className={`text-xs ${theme.textSecondary}`}>Completed</div>
-              <div className="text-xs text-green-600 mt-1">+5 this month</div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+          {[
+            { label: 'Total Ideas', value: animatedStats.ideas, change: '+12 this week', color: 'text-blue-600', bg: 'bg-blue-50' },
+            { label: 'Active Projects', value: animatedStats.projects, change: '+8 this week', color: 'text-indigo-600', bg: 'bg-indigo-50' },
+            { label: 'Contributors', value: animatedStats.contributors, change: '+23 this week', color: 'text-purple-600', bg: 'bg-purple-50' },
+            { label: 'Completed', value: animatedStats.completed, change: '+5 this month', color: 'text-green-600', bg: 'bg-green-50' }
+          ].map((stat, index) => (
+            <Card key={index} className="bg-white border-none shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className={`w-12 h-12 mx-auto rounded-xl ${stat.bg} flex items-center justify-center mb-3`}>
+                  <TrendingUp className={`w-6 h-6 ${stat.color}`} />
+                </div>
+                <div className={`text-3xl font-bold ${stat.color} mb-1`}>{stat.value}</div>
+                <div className="text-sm font-medium text-slate-600">{stat.label}</div>
+                <div className="text-xs text-green-600 mt-2 font-medium bg-green-50 inline-block px-2 py-0.5 rounded-full">
+                  {stat.change}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
           {/* Main Content */}
           <div className="xl:col-span-3">
             {/* Category Filter */}
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Browse by Category</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-slate-900">Browse by Category</h2>
+                <Button variant="ghost" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                  View All Categories <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {categories.map((category) => {
                   const IconComponent = category.icon;
+                  const isSelected = selectedCategory === category.id;
                   return (
-                    <Card
+                    <button
                       key={category.id}
-                      className={`cursor-pointer transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 ${
-                        selectedCategory === category.id 
-                          ? 'ring-2 ring-blue-500 bg-blue-50' 
-                          : 'hover:border-blue-300'
-                      }`}
                       onClick={() => setSelectedCategory(category.id)}
+                      className={`relative p-4 rounded-2xl text-left transition-all duration-300 group ${
+                        isSelected 
+                          ? 'bg-white shadow-lg ring-2 ring-blue-600 scale-105 z-10' 
+                          : 'bg-white shadow-sm hover:shadow-md hover:scale-105 border border-slate-100'
+                      }`}
                     >
-                      <CardContent className="p-4 text-center">
-                        <div className={`w-12 h-12 mx-auto rounded-xl bg-gradient-to-r ${category.color} flex items-center justify-center mb-3 shadow-lg`}>
-                          <IconComponent className="w-6 h-6 text-white" />
-                        </div>
-                        <h3 className="font-semibold text-sm text-gray-900 mb-1">{category.label}</h3>
-                        <p className="text-xs text-gray-600 mb-2 line-clamp-2">{category.description}</p>
-                        <div className="flex items-center justify-center gap-2">
-                          <span className={`text-xs px-2 py-1 rounded-full ${
-                            selectedCategory === category.id ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
-                          }`}>
-                            {category.count} ideas
-                          </span>
-                          {category.trending && (
-                            <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
-                              🔥 Trending
-                            </span>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
+                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-r ${category.color} flex items-center justify-center mb-3 shadow-md group-hover:scale-110 transition-transform`}>
+                        <IconComponent className="w-5 h-5 text-white" />
+                      </div>
+                      <h3 className={`font-bold text-sm mb-1 ${isSelected ? 'text-blue-900' : 'text-slate-900'}`}>
+                        {category.label}
+                      </h3>
+                      <div className="flex items-center justify-between">
+                        <span className={`text-xs font-medium ${isSelected ? 'text-blue-600' : 'text-slate-500'}`}>
+                          {category.count} ideas
+                        </span>
+                        {category.trending && (
+                          <Sparkles className="w-3 h-3 text-yellow-500" />
+                        )}
+                      </div>
+                    </button>
                   );
                 })}
               </div>
             </div>
 
             {/* Ideas Grid */}
-            <div className="mb-6">
+            <div className="mb-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Innovation Projects</h2>
-                  <p className="text-gray-600">{filteredIdeas.length} projects found</p>
+                  <h2 className="text-2xl font-bold text-slate-900">Innovation Projects</h2>
+                  <p className="text-slate-500 text-sm mt-1">Found {filteredIdeas.length} projects matching your criteria</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" className="rounded-lg border-slate-200 text-slate-600">
+                    Most Popular
+                  </Button>
+                  <Button variant="outline" size="sm" className="rounded-lg border-slate-200 text-slate-600">
+                    Newest
+                  </Button>
                 </div>
               </div>
               
@@ -714,20 +703,22 @@ const IdeasPage = () => {
               </div>
 
               {filteredIdeas.length === 0 && (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                    <Search className="w-8 h-8 text-gray-400" />
+                <div className="text-center py-16 bg-white rounded-3xl shadow-sm border border-slate-100">
+                  <div className="w-20 h-20 mx-auto bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                    <Search className="w-10 h-10 text-slate-300" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No projects found</h3>
-                  <p className="text-gray-600 mb-6">Try adjusting your search terms or category filter</p>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">No projects found</h3>
+                  <p className="text-slate-500 mb-8 max-w-md mx-auto">
+                    We couldn't find any projects matching your search criteria. Try adjusting your filters or search terms.
+                  </p>
                   <Button 
                     onClick={() => {
                       setSearchTerm('');
                       setSelectedCategory('all');
                     }}
-                    className={`bg-gradient-to-r ${theme.gradient} hover:opacity-90 text-white`}
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl px-8"
                   >
-                    Clear Filters
+                    Clear All Filters
                   </Button>
                 </div>
               )}
@@ -737,47 +728,49 @@ const IdeasPage = () => {
           {/* Enhanced Sidebar */}
           <div className="xl:col-span-1 space-y-6">
             {/* Quick Stats */}
-            <Card className="bg-white border border-gray-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
-                  Quick Stats
+            <Card className="bg-white border-none shadow-lg rounded-3xl overflow-hidden">
+              <CardHeader className="bg-slate-50 border-b border-slate-100 pb-4">
+                <CardTitle className="text-slate-900 text-lg flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-blue-600" />
+                  Platform Insights
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Success Rate</span>
-                  <span className="text-sm font-bold text-green-600">78%</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Avg Team Size</span>
-                  <span className="text-sm font-bold text-blue-600">4.2</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Avg Funding</span>
-                  <span className="text-sm font-bold text-purple-600">$18k</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Weekly Growth</span>
-                  <span className="text-sm font-bold text-orange-600">+12.5%</span>
+              <CardContent className="p-0">
+                <div className="divide-y divide-slate-100">
+                  <div className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
+                    <span className="text-sm text-slate-600 font-medium">Success Rate</span>
+                    <span className="text-sm font-bold text-green-600 bg-green-50 px-2 py-1 rounded-lg">78%</span>
+                  </div>
+                  <div className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
+                    <span className="text-sm text-slate-600 font-medium">Avg Team Size</span>
+                    <span className="text-sm font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">4.2</span>
+                  </div>
+                  <div className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
+                    <span className="text-sm text-slate-600 font-medium">Avg Funding</span>
+                    <span className="text-sm font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-lg">$18k</span>
+                  </div>
+                  <div className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
+                    <span className="text-sm text-slate-600 font-medium">Weekly Growth</span>
+                    <span className="text-sm font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-lg">+12.5%</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Featured Projects */}
-            <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-yellow-900 text-lg flex items-center gap-2">
-                  <Star className="w-5 h-5" />
+            <Card className="bg-gradient-to-br from-yellow-400 to-orange-500 border-none shadow-lg rounded-3xl overflow-hidden text-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-white text-lg flex items-center gap-2">
+                  <Star className="w-5 h-5 fill-white" />
                   Featured Projects
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-yellow-700">
-                  Discover the most innovative and impactful projects chosen by our community.
+                <p className="text-sm text-white/90 leading-relaxed">
+                  Discover the most innovative and impactful projects chosen by our community experts.
                 </p>
                 <Button 
-                  className="w-full bg-yellow-600 hover:bg-yellow-700 text-white"
+                  className="w-full bg-white text-orange-600 hover:bg-orange-50 border-none font-bold shadow-md"
                   onClick={() => {
                     setSelectedCategory('all');
                     setSearchTerm('');
@@ -791,84 +784,84 @@ const IdeasPage = () => {
             </Card>
 
             {/* Top Contributors */}
-            <Card className="bg-white border border-gray-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
-                  <Award className="w-5 h-5" />
+            <Card className="bg-white border-none shadow-lg rounded-3xl overflow-hidden">
+              <CardHeader className="bg-slate-50 border-b border-slate-100 pb-4">
+                <CardTitle className="text-slate-900 text-lg flex items-center gap-2">
+                  <Award className="w-5 h-5 text-purple-600" />
                   Top Contributors
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center">
+              <CardContent className="p-4 space-y-4">
+                <div className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer">
+                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center shadow-sm border border-yellow-200">
                     <span className="text-lg">🥇</span>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Alex Chen</p>
-                    <p className="text-xs text-gray-500">15 projects</p>
+                    <p className="text-sm font-bold text-slate-900">Alex Chen</p>
+                    <p className="text-xs text-slate-500">15 projects • 2.4k likes</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                <div className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer">
+                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shadow-sm border border-slate-200">
                     <span className="text-lg">🥈</span>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Sarah Kim</p>
-                    <p className="text-xs text-gray-500">12 projects</p>
+                    <p className="text-sm font-bold text-slate-900">Sarah Kim</p>
+                    <p className="text-xs text-slate-500">12 projects • 1.8k likes</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
+                <div className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer">
+                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shadow-sm border border-orange-200">
                     <span className="text-lg">🥉</span>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Mike Chen</p>
-                    <p className="text-xs text-gray-500">9 projects</p>
+                    <p className="text-sm font-bold text-slate-900">Mike Chen</p>
+                    <p className="text-xs text-slate-500">9 projects • 1.2k likes</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Quick Actions */}
-            <Card className="bg-white border border-gray-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
-                  <Rocket className="w-5 h-5" />
+            <Card className="bg-white border-none shadow-lg rounded-3xl overflow-hidden">
+              <CardHeader className="bg-slate-50 border-b border-slate-100 pb-4">
+                <CardTitle className="text-slate-900 text-lg flex items-center gap-2">
+                  <Rocket className="w-5 h-5 text-indigo-600" />
                   Quick Actions
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4">
                 <div className="space-y-3">
                   <Button 
-                    className={`w-full bg-gradient-to-r ${theme.gradient} hover:opacity-90 text-white`}
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md rounded-xl h-11"
                     onClick={() => {
                       console.log('Submit Idea clicked');
                       alert('Submit Innovation Idea modal would open here!');
                     }}
                   >
                     <Plus className="w-4 h-4 mr-2" />
-                    Submit Idea
+                    Submit New Idea
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="w-full border-gray-200 text-gray-700 hover:bg-gray-50"
+                    className="w-full border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 rounded-xl h-11 justify-start px-4"
                     onClick={() => {
                       console.log('My Projects clicked');
                       alert('My Projects page would open here!');
                     }}
                   >
-                    <Bookmark className="w-4 h-4 mr-2" />
+                    <Bookmark className="w-4 h-4 mr-3 text-slate-400" />
                     My Projects
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="w-full border-gray-200 text-gray-700 hover:bg-gray-50"
+                    className="w-full border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 rounded-xl h-11 justify-start px-4"
                     onClick={() => {
                       console.log('Find Collaborators clicked');
                       alert('Find Collaborators page would open here!');
                     }}
                   >
-                    <Users className="w-4 h-4 mr-2" />
+                    <Users className="w-4 h-4 mr-3 text-slate-400" />
                     Find Collaborators
                   </Button>
                 </div>

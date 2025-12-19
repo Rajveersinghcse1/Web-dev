@@ -25,6 +25,7 @@ const InnovationProjectForm = () => {
     title: '',
     description: '',
     category: '',
+    type: 'concept',
     difficulty: '',
     tags: '',
     requirements: '',
@@ -52,16 +53,29 @@ const InnovationProjectForm = () => {
   });
 
   const categories = [
-    { value: 'web_development', label: 'Web Development' },
-    { value: 'mobile_development', label: 'Mobile Development' },
-    { value: 'ai_ml', label: 'AI/Machine Learning' },
+    { value: 'web_application', label: 'Web Application' },
+    { value: 'mobile_app', label: 'Mobile App' },
+    { value: 'ai_ml', label: 'AI/ML' },
     { value: 'blockchain', label: 'Blockchain' },
     { value: 'iot', label: 'IoT' },
     { value: 'cybersecurity', label: 'Cybersecurity' },
-    { value: 'data_science', label: 'Data Science' },
-    { value: 'game_development', label: 'Game Development' },
-    { value: 'devops', label: 'DevOps' },
+    { value: 'fintech', label: 'FinTech' },
+    { value: 'healthtech', label: 'HealthTech' },
+    { value: 'edtech', label: 'EdTech' },
+    { value: 'gaming', label: 'Gaming' },
+    { value: 'social_impact', label: 'Social Impact' },
+    { value: 'sustainability', label: 'Sustainability' },
+    { value: 'productivity', label: 'Productivity' },
+    { value: 'entertainment', label: 'Entertainment' },
     { value: 'other', label: 'Other' }
+  ];
+
+  const projectTypes = [
+    { value: 'prototype', label: 'Prototype' },
+    { value: 'mvp', label: 'MVP' },
+    { value: 'full_product', label: 'Full Product' },
+    { value: 'research', label: 'Research' },
+    { value: 'concept', label: 'Concept' }
   ];
 
   const difficulties = [
@@ -72,11 +86,14 @@ const InnovationProjectForm = () => {
   ];
 
   const statuses = [
+    { value: 'idea', label: 'Idea' },
     { value: 'planning', label: 'Planning' },
     { value: 'in_progress', label: 'In Progress' },
-    { value: 'review', label: 'Under Review' },
+    { value: 'testing', label: 'Testing' },
     { value: 'completed', label: 'Completed' },
-    { value: 'on_hold', label: 'On Hold' },
+    { value: 'deployed', label: 'Deployed' },
+    { value: 'maintenance', label: 'Maintenance' },
+    { value: 'paused', label: 'Paused' },
     { value: 'cancelled', label: 'Cancelled' }
   ];
 
@@ -98,23 +115,26 @@ const InnovationProjectForm = () => {
     try {
       setLoading(true);
       const response = await adminService.getInnovationProjects({ id });
-      const project = response.data.projects[0];
       
-      if (project) {
+      if (response.success) {
+        const project = response.data;
         setFormData({
           title: project.title || '',
           description: project.description || '',
           category: project.category || '',
+          type: project.type || 'concept',
           difficulty: project.difficulty || '',
           tags: project.tags?.join(', ') || '',
-          requirements: project.requirements?.join(', ') || '',
-          objectives: project.objectives?.join(', ') || '',
-          techStack: project.techStack?.join(', ') || '',
+          requirements: project.requirements?.join('\n') || '',
+          objectives: project.objectives?.join('\n') || '',
+          techStack: project.techStack ? Object.entries(project.techStack)
+            .map(([key, values]) => `${key}: ${values.join(', ')}`)
+            .join('\n') : '',
           status: project.status || 'planning',
           timeline: {
-            startDate: adminService.formatDateForInput(project.timeline?.startDate),
-            endDate: adminService.formatDateForInput(project.timeline?.endDate),
-            milestones: project.timeline?.milestones || []
+            startDate: project.timeline?.startDate ? new Date(project.timeline.startDate).toISOString().split('T')[0] : '',
+            endDate: project.timeline?.endDate ? new Date(project.timeline.endDate).toISOString().split('T')[0] : '',
+            milestones: project.milestones || []
           }
         });
         setCollaborators(project.collaborators || []);
@@ -222,7 +242,8 @@ const InnovationProjectForm = () => {
         ...formData,
         collaborators: JSON.stringify(collaborators),
         timeline: JSON.stringify(formData.timeline),
-        files: files.length > 0 ? files : undefined
+        files: files,
+        existingFiles: JSON.stringify(existingFiles)
       });
 
       if (isEdit) {
@@ -350,6 +371,28 @@ const InnovationProjectForm = () => {
                 {categories.map(category => (
                   <option key={category.value} value={category.value}>
                     {category.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Type */}
+            <div>
+              <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-2">
+                Project Type *
+              </label>
+              <select
+                id="type"
+                name="type"
+                value={formData.type}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">Select project type</option>
+                {projectTypes.map(type => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
                   </option>
                 ))}
               </select>

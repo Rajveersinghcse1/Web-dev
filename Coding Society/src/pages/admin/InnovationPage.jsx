@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 import { 
     Lightbulb, 
     Plus, 
@@ -33,58 +35,13 @@ const InnovationPage = () => {
     const [modalMode, setModalMode] = useState('create');
     const [currentInnovation, setCurrentInnovation] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
-    const categories = ['All', 'AI/ML', 'Blockchain', 'IoT', 'Web3', 'FinTech', 'HealthTech', 'EdTech', 'GreenTech', 'Other'];
-    const statuses = ['All', 'Concept', 'In Development', 'Prototype', 'Testing', 'Launched', 'Paused'];
+    const categories = ['All', 'web_application', 'mobile_app', 'ai_ml', 'blockchain', 'iot', 'cybersecurity', 'fintech', 'healthtech', 'edtech', 'gaming', 'social_impact', 'sustainability', 'productivity', 'entertainment', 'other'];
+    const statuses = ['All', 'idea', 'planning', 'in_progress', 'testing', 'completed', 'deployed', 'maintenance', 'paused', 'cancelled'];
     const stages = ['Idea', 'Research', 'Development', 'Testing', 'Launch', 'Scaling'];
-
-    // Mock data
-    const mockInnovations = [
-        {
-            id: '1',
-            title: 'AI-Powered Code Review Assistant',
-            description: 'An intelligent system that automatically reviews code for bugs, security issues, and optimization opportunities using machine learning.',
-            category: 'AI/ML',
-            status: 'In Development',
-            stage: 'Development',
-            innovator: 'Alice Johnson',
-            team: ['Alice Johnson', 'Bob Smith', 'Carol Davis'],
-            startDate: '2024-01-15',
-            expectedLaunch: '2024-06-30',
-            progress: 65,
-            budget: 50000,
-            funding: 32500,
-            rating: 4.7,
-            votes: 156,
-            views: 2340,
-            tags: ['AI', 'Code Review', 'Machine Learning', 'DevTools'],
-            imageUrl: '/images/ai-code-review.jpg',
-            demoUrl: 'https://demo.ai-code-review.com',
-            githubUrl: 'https://github.com/innovation/ai-code-review'
-        },
-        {
-            id: '2',
-            title: 'Sustainable Energy Management Platform',
-            description: 'IoT-based platform for optimizing energy consumption in smart buildings using renewable energy sources.',
-            category: 'GreenTech',
-            status: 'Prototype',
-            stage: 'Testing',
-            innovator: 'David Wilson',
-            team: ['David Wilson', 'Emma Brown', 'Frank Miller'],
-            startDate: '2024-02-01',
-            expectedLaunch: '2024-08-15',
-            progress: 80,
-            budget: 75000,
-            funding: 60000,
-            rating: 4.9,
-            votes: 203,
-            views: 1876,
-            tags: ['IoT', 'Energy', 'Sustainability', 'Smart Buildings'],
-            imageUrl: '/images/energy-platform.jpg',
-            demoUrl: 'https://demo.energy-platform.com',
-            githubUrl: 'https://github.com/innovation/energy-platform'
-        }
-    ];
+    const difficulties = ['beginner', 'intermediate', 'advanced', 'expert'];
+    const types = ['prototype', 'mvp', 'full_product', 'research', 'concept'];
 
     useEffect(() => {
         fetchInnovations();
@@ -94,13 +51,21 @@ const InnovationPage = () => {
         filterInnovations();
     }, [searchQuery, selectedCategory, selectedStatus, innovations]);
 
+    const getAuthHeader = () => {
+        const token = localStorage.getItem('token');
+        return { headers: { Authorization: `Bearer ${token}` } };
+    };
+
     const fetchInnovations = async () => {
         setLoading(true);
         try {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            setInnovations(mockInnovations);
+            const response = await axios.get('http://localhost:5000/api/v1/admin/innovation', getAuthHeader());
+            if (response.data.success) {
+                setInnovations(response.data.data.projects);
+            }
         } catch (error) {
             console.error('Error fetching innovations:', error);
+            toast.error('Failed to fetch innovation projects');
         } finally {
             setLoading(false);
         }
@@ -113,7 +78,7 @@ const InnovationPage = () => {
             filtered = filtered.filter(innovation =>
                 innovation.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 innovation.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                innovation.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+                innovation.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
             );
         }
 
@@ -132,24 +97,24 @@ const InnovationPage = () => {
         setCurrentInnovation({
             title: '',
             description: '',
-            category: 'AI/ML',
-            status: 'Concept',
+            category: 'web_application',
+            status: 'idea',
             stage: 'Idea',
-            innovator: '',
-            team: [],
-            startDate: '',
-            expectedLaunch: '',
-            progress: 0,
-            budget: 0,
-            funding: 0,
-            tags: []
+            difficulty: 'intermediate',
+            type: 'concept',
+            tags: [],
+            techStack: [],
+            requirements: [],
+            objectives: []
         });
+        setSelectedFiles([]);
         setModalMode('create');
         setShowModal(true);
     };
 
     const handleEdit = (innovation) => {
         setCurrentInnovation({ ...innovation });
+        setSelectedFiles([]);
         setModalMode('edit');
         setShowModal(true);
     };
@@ -161,37 +126,89 @@ const InnovationPage = () => {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this innovation?')) {
-            setInnovations(prev => prev.filter(innovation => innovation.id !== id));
+        if (window.confirm('Are you sure you want to delete this innovation project?')) {
+            try {
+                const response = await axios.delete(`http://localhost:5000/api/v1/admin/innovation/${id}`, getAuthHeader());
+                if (response.data.success) {
+                    setInnovations(prev => prev.filter(inv => inv._id !== id));
+                    toast.success('Innovation project deleted successfully');
+                }
+            } catch (error) {
+                console.error('Error deleting innovation:', error);
+                toast.error('Failed to delete innovation project');
+            }
         }
+    };
+
+    const handleFileChange = (e) => {
+        setSelectedFiles(Array.from(e.target.files));
     };
 
     const handleSave = async () => {
         setLoading(true);
         try {
+            const formData = new FormData();
+            formData.append('title', currentInnovation.title);
+            formData.append('description', currentInnovation.description);
+            formData.append('category', currentInnovation.category);
+            formData.append('status', currentInnovation.status);
+            formData.append('difficulty', currentInnovation.difficulty);
+            formData.append('type', currentInnovation.type);
+            
+            if (currentInnovation.tags) formData.append('tags', Array.isArray(currentInnovation.tags) ? currentInnovation.tags.join(',') : currentInnovation.tags);
+            if (currentInnovation.techStack) formData.append('techStack', Array.isArray(currentInnovation.techStack) ? currentInnovation.techStack.join(',') : currentInnovation.techStack);
+            if (currentInnovation.requirements) formData.append('requirements', Array.isArray(currentInnovation.requirements) ? currentInnovation.requirements.join(',') : currentInnovation.requirements);
+            if (currentInnovation.objectives) formData.append('objectives', Array.isArray(currentInnovation.objectives) ? currentInnovation.objectives.join(',') : currentInnovation.objectives);
+
+            selectedFiles.forEach(file => {
+                formData.append('files', file);
+            });
+
             if (modalMode === 'create') {
-                const newInnovation = {
-                    ...currentInnovation,
-                    id: Date.now().toString(),
-                    rating: 0,
-                    votes: 0,
-                    views: 0
-                };
-                setInnovations(prev => [...prev, newInnovation]);
-            } else if (modalMode === 'edit') {
-                setInnovations(prev =>
-                    prev.map(innovation =>
-                        innovation.id === currentInnovation.id ? currentInnovation : innovation
-                    )
+                const response = await axios.post(
+                    'http://localhost:5000/api/v1/admin/innovation',
+                    formData,
+                    {
+                        headers: {
+                            ...getAuthHeader().headers,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }
                 );
+                if (response.data.success) {
+                    setInnovations(prev => [response.data.data, ...prev]);
+                    toast.success('Innovation project created successfully');
+                }
+            } else if (modalMode === 'edit') {
+                const response = await axios.put(
+                    `http://localhost:5000/api/v1/admin/innovation/${currentInnovation._id}`,
+                    formData,
+                    {
+                        headers: {
+                            ...getAuthHeader().headers,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }
+                );
+                if (response.data.success) {
+                    setInnovations(prev =>
+                        prev.map(inv =>
+                            inv._id === currentInnovation._id ? response.data.data : inv
+                        )
+                    );
+                    toast.success('Innovation project updated successfully');
+                }
             }
             setShowModal(false);
         } catch (error) {
             console.error('Error saving innovation:', error);
+            toast.error(error.response?.data?.message || 'Failed to save innovation project');
         } finally {
             setLoading(false);
         }
     };
+
+
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -287,36 +304,60 @@ const InnovationPage = () => {
                         <AnimatePresence>
                             {filteredInnovations.map((innovation, index) => (
                                 <motion.div
-                                    key={innovation.id}
+                                    key={innovation._id}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -20 }}
                                     transition={{ delay: index * 0.1 }}
-                                    className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+                                    className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
                                 >
+                                    <div className="relative h-48 overflow-hidden">
+                                        <img 
+                                            src={innovation.imageUrl || '/api/placeholder/400/300'} 
+                                            alt={innovation.title}
+                                            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                                e.target.nextSibling.style.display = 'flex';
+                                            }}
+                                        />
+                                        <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 hidden items-center justify-center">
+                                            <Lightbulb className="w-12 h-12 text-white" />
+                                        </div>
+                                        <div className="absolute top-4 left-4">
+                                            <span className={`px-3 py-1 rounded-full text-xs font-semibold bg-white/90 backdrop-blur-sm text-blue-600 shadow-lg`}>
+                                                {innovation.category}
+                                            </span>
+                                        </div>
+                                        <div className="absolute top-4 right-4">
+                                            <span className={`px-3 py-1 rounded-full text-xs font-semibold bg-white/90 backdrop-blur-sm ${
+                                                innovation.status === 'completed' ? 'text-green-600' : 'text-orange-600'
+                                            } shadow-lg`}>
+                                                {innovation.status}
+                                            </span>
+                                        </div>
+                                    </div>
+
                                     <div className="p-6">
                                         <div className="flex items-start justify-between mb-4">
                                             <div className="flex items-center space-x-3">
                                                 {getCategoryIcon(innovation.category)}
                                                 <div>
-                                                    <h3 className="text-xl font-bold text-gray-900">
+                                                    <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
                                                         {innovation.title}
                                                     </h3>
-                                                    <div className="flex items-center space-x-2 mt-1">
+                                                    <div className="flex items-center space-x-2">
                                                         <span className="text-sm text-gray-500">{innovation.category}</span>
-                                                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(innovation.status)}`}>
-                                                            {innovation.status}
-                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="flex items-center space-x-1">
                                                 <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                                                <span className="text-sm font-semibold">{innovation.rating}</span>
+                                                <span className="text-sm font-semibold">{innovation.rating || '0.0'}</span>
                                             </div>
                                         </div>
                                         
-                                        <p className="text-gray-600 mb-4 line-clamp-3">
+                                        <p className="text-gray-600 mb-4 line-clamp-3 text-sm">
                                             {innovation.description}
                                         </p>
                                         
@@ -324,12 +365,12 @@ const InnovationPage = () => {
                                         <div className="mb-4">
                                             <div className="flex items-center justify-between mb-2">
                                                 <span className="text-sm font-medium text-gray-700">Progress</span>
-                                                <span className="text-sm text-gray-500">{innovation.progress}%</span>
+                                                <span className="text-sm text-gray-500">{innovation.progress || 0}%</span>
                                             </div>
-                                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                                                 <div 
                                                     className="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full transition-all duration-300"
-                                                    style={{ width: `${innovation.progress}%` }}
+                                                    style={{ width: `${innovation.progress || 0}%` }}
                                                 ></div>
                                             </div>
                                         </div>
@@ -337,15 +378,15 @@ const InnovationPage = () => {
                                         {/* Stats */}
                                         <div className="grid grid-cols-3 gap-4 mb-4">
                                             <div className="text-center">
-                                                <div className="text-lg font-bold text-gray-900">${innovation.funding?.toLocaleString()}</div>
+                                                <div className="text-lg font-bold text-gray-900">${innovation.funding?.toLocaleString() || 0}</div>
                                                 <div className="text-xs text-gray-500">Funded</div>
                                             </div>
                                             <div className="text-center">
-                                                <div className="text-lg font-bold text-gray-900">{innovation.votes}</div>
+                                                <div className="text-lg font-bold text-gray-900">{innovation.votes || 0}</div>
                                                 <div className="text-xs text-gray-500">Votes</div>
                                             </div>
                                             <div className="text-center">
-                                                <div className="text-lg font-bold text-gray-900">{innovation.views}</div>
+                                                <div className="text-lg font-bold text-gray-900">{innovation.views || 0}</div>
                                                 <div className="text-xs text-gray-500">Views</div>
                                             </div>
                                         </div>
@@ -357,18 +398,22 @@ const InnovationPage = () => {
                                                 <span className="text-sm font-medium text-gray-700">Team</span>
                                             </div>
                                             <div className="flex -space-x-2">
-                                                {innovation.team?.slice(0, 4).map((member, idx) => (
+                                                {innovation.collaborators?.slice(0, 4).map((member, idx) => (
                                                     <div
                                                         key={idx}
                                                         className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-400 to-red-400 flex items-center justify-center text-white text-xs font-semibold border-2 border-white"
+                                                        title={member.name}
                                                     >
-                                                        {member.split(' ').map(n => n[0]).join('')}
+                                                        {member.name ? member.name[0] : 'U'}
                                                     </div>
                                                 ))}
-                                                {innovation.team?.length > 4 && (
+                                                {innovation.collaborators?.length > 4 && (
                                                     <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 text-xs font-semibold border-2 border-white">
-                                                        +{innovation.team.length - 4}
+                                                        +{innovation.collaborators.length - 4}
                                                     </div>
+                                                )}
+                                                {(!innovation.collaborators || innovation.collaborators.length === 0) && (
+                                                    <span className="text-sm text-gray-400 ml-2">No team members</span>
                                                 )}
                                             </div>
                                         </div>
@@ -386,16 +431,16 @@ const InnovationPage = () => {
                                         <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                                             <div className="flex items-center space-x-1">
                                                 <Calendar className="w-4 h-4" />
-                                                <span>Started: {innovation.startDate}</span>
+                                                <span>Started: {innovation.startDate ? new Date(innovation.startDate).toLocaleDateString() : 'N/A'}</span>
                                             </div>
                                             <div className="flex items-center space-x-1">
                                                 <TrendingUp className="w-4 h-4" />
-                                                <span>Launch: {innovation.expectedLaunch}</span>
+                                                <span>Launch: {innovation.expectedLaunch ? new Date(innovation.expectedLaunch).toLocaleDateString() : 'N/A'}</span>
                                             </div>
                                         </div>
                                         
                                         {/* Actions */}
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                                             <div className="flex space-x-2">
                                                 {innovation.demoUrl && (
                                                     <a
@@ -432,7 +477,7 @@ const InnovationPage = () => {
                                                     <Edit className="w-4 h-4" />
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDelete(innovation.id)}
+                                                    onClick={() => handleDelete(innovation._id)}
                                                     className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -538,6 +583,38 @@ const InnovationPage = () => {
                                             >
                                                 {stages.map(stage => (
                                                     <option key={stage} value={stage}>{stage}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Difficulty
+                                            </label>
+                                            <select
+                                                value={currentInnovation?.difficulty || ''}
+                                                onChange={(e) => setCurrentInnovation(prev => ({ ...prev, difficulty: e.target.value }))}
+                                                disabled={modalMode === 'view'}
+                                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-50"
+                                            >
+                                                {difficulties.map(diff => (
+                                                    <option key={diff} value={diff}>{diff}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Project Type
+                                            </label>
+                                            <select
+                                                value={currentInnovation?.type || ''}
+                                                onChange={(e) => setCurrentInnovation(prev => ({ ...prev, type: e.target.value }))}
+                                                disabled={modalMode === 'view'}
+                                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-50"
+                                            >
+                                                {types.map(type => (
+                                                    <option key={type} value={type}>{type}</option>
                                                 ))}
                                             </select>
                                         </div>
@@ -684,12 +761,13 @@ const InnovationPage = () => {
                                                     id="file-upload"
                                                     multiple
                                                     accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.ppt,.pptx"
+                                                    onChange={handleFileChange}
                                                 />
                                                 <label
                                                     htmlFor="file-upload"
                                                     className="inline-block px-4 py-2 bg-orange-100 text-orange-700 rounded-lg cursor-pointer hover:bg-orange-200 transition-colors"
                                                 >
-                                                    Choose Files
+                                                    {selectedFiles.length > 0 ? `${selectedFiles.length} files selected` : 'Choose Files'}
                                                 </label>
                                             </div>
                                         </div>

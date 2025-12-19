@@ -98,7 +98,10 @@ const initialGameState = {
     algorithms: { level: 1, xp: 0, points: 0 },
     databases: { level: 1, xp: 0, points: 0 }
   },
-  achievements: {},
+  achievements: {
+    unlocked: [],
+    inProgress: []
+  },
   inventory: {
     items: [],
     themes: ['classic'],
@@ -166,7 +169,20 @@ export const GameProvider = ({ children }) => {
       const savedState = localStorage.getItem('gamifiedLearning_state');
       if (savedState) {
         const parsedState = JSON.parse(savedState);
-        setGameState({ ...initialGameState, ...parsedState });
+        
+        // Ensure achievements structure exists even if loading old state
+        const mergedState = {
+          ...initialGameState,
+          ...parsedState,
+          achievements: {
+            ...initialGameState.achievements,
+            ...(parsedState.achievements || {}),
+            unlocked: parsedState.achievements?.unlocked || [],
+            inProgress: parsedState.achievements?.inProgress || []
+          }
+        };
+        
+        setGameState(mergedState);
       }
     } catch (error) {
       console.error('Failed to load game state:', error);

@@ -442,6 +442,15 @@ const innovationSchema = new mongoose.Schema({
     }
   }],
   
+  files: [{
+    originalName: String,
+    filename: String,
+    url: String,
+    size: Number,
+    mimetype: String,
+    uploadedAt: { type: Date, default: Date.now }
+  }],
+  
   // Mentor Information
   mentor: {
     name: {

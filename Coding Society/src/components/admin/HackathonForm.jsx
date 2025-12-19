@@ -31,7 +31,8 @@ const HackathonForm = () => {
     theme: '',
     location: '',
     venue: '',
-    type: 'hybrid',
+    eventFormat: 'hybrid',
+    type: 'general',
     maxParticipants: '',
     maxTeamSize: '',
     status: 'upcoming',
@@ -59,10 +60,29 @@ const HackathonForm = () => {
   const [newPrize, setNewPrize] = useState({ position: '', amount: '', description: '' });
   const [newSponsor, setNewSponsor] = useState({ name: '', logo: '', website: '', tier: 'bronze' });
 
-  const types = [
-    { value: 'online', label: 'Online' },
-    { value: 'offline', label: 'Offline' },
+  const eventFormats = [
+    { value: 'virtual', label: 'Virtual (Online)' },
+    { value: 'in_person', label: 'In Person (Offline)' },
     { value: 'hybrid', label: 'Hybrid' }
+  ];
+
+  const hackathonTypes = [
+    { value: 'general', label: 'General' },
+    { value: 'ai_ml', label: 'AI/ML' },
+    { value: 'web_development', label: 'Web Development' },
+    { value: 'mobile_development', label: 'Mobile Development' },
+    { value: 'blockchain', label: 'Blockchain' },
+    { value: 'cybersecurity', label: 'Cybersecurity' },
+    { value: 'fintech', label: 'FinTech' },
+    { value: 'healthtech', label: 'HealthTech' },
+    { value: 'edtech', label: 'EdTech' },
+    { value: 'gaming', label: 'Gaming' },
+    { value: 'social_good', label: 'Social Good' },
+    { value: 'sustainability', label: 'Sustainability' },
+    { value: 'iot', label: 'IoT' },
+    { value: 'ar_vr', label: 'AR/VR' },
+    { value: 'data_science', label: 'Data Science' },
+    { value: 'other', label: 'Other' }
   ];
 
   const statuses = [
@@ -98,22 +118,23 @@ const HackathonForm = () => {
         setFormData({
           title: hackathon.title || '',
           description: hackathon.description || '',
-          theme: hackathon.theme || '',
-          location: hackathon.location || '',
-          venue: hackathon.venue || '',
-          type: hackathon.type || 'hybrid',
+          theme: hackathon.themes?.[0] || hackathon.theme || '',
+          location: hackathon.location?.venue?.address?.city || '',
+          venue: hackathon.location?.venue?.name || '',
+          eventFormat: hackathon.eventFormat || 'hybrid',
+          type: hackathon.type || 'general',
           maxParticipants: hackathon.maxParticipants || '',
           maxTeamSize: hackathon.maxTeamSize || '',
           status: hackathon.status || 'upcoming',
-          registrationStartDate: adminService.formatDateForInput(hackathon.registrationStartDate),
-          registrationEndDate: adminService.formatDateForInput(hackathon.registrationEndDate),
-          eventStartDate: adminService.formatDateForInput(hackathon.eventStartDate),
-          eventEndDate: adminService.formatDateForInput(hackathon.eventEndDate),
-          requirements: hackathon.requirements?.join(', ') || '',
-          rules: hackathon.rules?.join(', ') || '',
-          schedule: hackathon.schedule || '',
+          registrationStartDate: hackathon.registrationStartDate ? new Date(hackathon.registrationStartDate).toISOString().slice(0, 16) : '',
+          registrationEndDate: hackathon.registrationEndDate ? new Date(hackathon.registrationEndDate).toISOString().slice(0, 16) : '',
+          eventStartDate: hackathon.startDate ? new Date(hackathon.startDate).toISOString().slice(0, 16) : '',
+          eventEndDate: hackathon.endDate ? new Date(hackathon.endDate).toISOString().slice(0, 16) : '',
+          requirements: hackathon.requirements?.join('\n') || '',
+          rules: hackathon.rules?.join('\n') || '',
+          schedule: hackathon.schedule ? JSON.stringify(hackathon.schedule, null, 2) : '',
           submissionGuidelines: hackathon.submissionGuidelines || '',
-          judgingCriteria: hackathon.judgingCriteria?.join(', ') || ''
+          judgingCriteria: hackathon.judgingCriteria ? JSON.stringify(hackathon.judgingCriteria, null, 2) : ''
         });
         setPrizes(hackathon.prizes || []);
         setSponsors(hackathon.sponsors || []);
@@ -221,7 +242,8 @@ const HackathonForm = () => {
         sponsors: JSON.stringify(sponsors),
         participants: JSON.stringify(participants),
         teams: JSON.stringify(teams),
-        files: files.length > 0 ? files : undefined
+        files: files.length > 0 ? files : undefined,
+        existingFiles: JSON.stringify(existingFiles)
       });
 
       if (isEdit) {
@@ -331,10 +353,31 @@ const HackathonForm = () => {
               />
             </div>
 
-            {/* Type */}
+            {/* Event Format */}
+            <div>
+              <label htmlFor="eventFormat" className="block text-sm font-medium text-gray-700 mb-2">
+                Event Format *
+              </label>
+              <select
+                id="eventFormat"
+                name="eventFormat"
+                value={formData.eventFormat}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                {eventFormats.map(format => (
+                  <option key={format.value} value={format.value}>
+                    {format.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Category (Type) */}
             <div>
               <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-2">
-                Event Type *
+                Category *
               </label>
               <select
                 id="type"
@@ -344,7 +387,7 @@ const HackathonForm = () => {
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
-                {types.map(type => (
+                {hackathonTypes.map(type => (
                   <option key={type.value} value={type.value}>
                     {type.label}
                   </option>

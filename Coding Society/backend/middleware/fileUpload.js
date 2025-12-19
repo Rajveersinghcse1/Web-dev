@@ -7,8 +7,15 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const { 
+  minioClient, 
+  BUCKETS, 
+  uploadFile, 
+  getPublicUrl, 
+  deleteFile 
+} = require('../config/minio');
 
-// Ensure upload directories exist
+// Ensure upload directories exist (fallback for local storage)
 const uploadDirs = {
   library: path.join(__dirname, '../uploads/library'),
   innovation: path.join(__dirname, '../uploads/innovation'),
@@ -23,6 +30,15 @@ Object.values(uploadDirs).forEach(dir => {
     fs.mkdirSync(dir, { recursive: true });
   }
 });
+
+// Map content types to MinIO buckets
+const bucketMap = {
+  library: BUCKETS.LIBRARY,
+  innovation: BUCKETS.INNOVATION,
+  internship: BUCKETS.INTERNSHIP,
+  hackathon: BUCKETS.HACKATHON,
+  temp: BUCKETS.GENERAL
+};
 
 // File type configurations
 const fileTypes = {
@@ -108,36 +124,17 @@ const createFileFilter = (allowedTypes = ['documents']) => {
 };
 
 /**
- * Storage configuration for different content types
+ * Storage configuration
+ * Uses memory storage to allow processing before saving (to MinIO or Disk)
  */
-const createStorage = (contentType) => {
-  return multer.diskStorage({
-    destination: (req, file, cb) => {
-      const uploadDir = uploadDirs[contentType] || uploadDirs.temp;
-      cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-      try {
-        const userId = req.user?._id?.toString() || 'anonymous';
-        const filename = generateFilename(file.originalname, userId);
-        
-        // Store filename in request for later use
-        req.uploadedFilename = filename;
-        
-        cb(null, filename);
-      } catch (error) {
-        cb(error);
-      }
-    }
-  });
-};
+const storage = multer.memoryStorage();
 
 /**
  * Create multer upload configurations
  */
 const uploadConfigs = {
   library: multer({
-    storage: createStorage('library'),
+    storage: storage,
     fileFilter: createFileFilter(['documents', 'images']),
     limits: {
       fileSize: fileTypes.documents.maxSize,
@@ -146,7 +143,7 @@ const uploadConfigs = {
   }),
   
   innovation: multer({
-    storage: createStorage('innovation'),
+    storage: storage,
     fileFilter: createFileFilter(['documents', 'images', 'code']),
     limits: {
       fileSize: fileTypes.documents.maxSize,
@@ -155,7 +152,7 @@ const uploadConfigs = {
   }),
   
   internship: multer({
-    storage: createStorage('internship'),
+    storage: storage,
     fileFilter: createFileFilter(['documents', 'images']),
     limits: {
       fileSize: fileTypes.documents.maxSize,
@@ -164,7 +161,7 @@ const uploadConfigs = {
   }),
   
   hackathon: multer({
-    storage: createStorage('hackathon'),
+    storage: storage,
     fileFilter: createFileFilter(['documents', 'images']),
     limits: {
       fileSize: fileTypes.documents.maxSize,
@@ -173,7 +170,7 @@ const uploadConfigs = {
   }),
   
   general: multer({
-    storage: createStorage('temp'),
+    storage: storage,
     fileFilter: createFileFilter(['documents', 'images']),
     limits: {
       fileSize: fileTypes.documents.maxSize,
@@ -183,13 +180,14 @@ const uploadConfigs = {
 };
 
 /**
- * File upload middleware with error handling
+ * File upload middleware with error handling and MinIO integration
  */
 const handleUpload = (contentType, fieldName = 'files') => {
   const upload = uploadConfigs[contentType] || uploadConfigs.general;
+  const bucketName = bucketMap[contentType] || BUCKETS.GENERAL;
   
   return (req, res, next) => {
-    upload.array(fieldName)(req, res, (err) => {
+    upload.array(fieldName)(req, res, async (err) => {
       if (err) {
         console.error('File upload error:', err);
         
@@ -229,19 +227,58 @@ const handleUpload = (contentType, fieldName = 'files') => {
         });
       }
       
-      // Add file information to request
+      // Process uploaded files
       if (req.files && req.files.length > 0) {
-        req.uploadedFiles = req.files.map(file => ({
-          originalName: file.originalname,
-          filename: file.filename,
-          path: file.path,
-          size: file.size,
-          mimetype: file.mimetype,
-          uploadedAt: new Date()
-        }));
+        try {
+          const processedFiles = [];
+          const userId = req.user?._id?.toString() || 'anonymous';
+
+          for (const file of req.files) {
+            const filename = generateFilename(file.originalname, userId);
+            let fileUrl;
+            let storageType;
+
+            try {
+              // Try uploading to MinIO
+              await uploadFile(bucketName, filename, file.buffer, file.mimetype);
+              fileUrl = await getPublicUrl(bucketName, filename);
+              storageType = 'minio';
+            } catch (minioError) {
+              console.warn('MinIO upload failed, falling back to local storage:', minioError.message);
+              
+              // Fallback to local storage
+              const uploadDir = uploadDirs[contentType] || uploadDirs.temp;
+              const filePath = path.join(uploadDir, filename);
+              fs.writeFileSync(filePath, file.buffer);
+              fileUrl = `/api/v1/files/${contentType}/${filename}`;
+              storageType = 'local';
+            }
+
+            processedFiles.push({
+              originalName: file.originalname,
+              filename: filename,
+              url: fileUrl,
+              path: fileUrl, // For backward compatibility
+              size: file.size,
+              mimetype: file.mimetype,
+              storageType: storageType,
+              bucket: bucketName,
+              uploadedAt: new Date()
+            });
+          }
+
+          req.uploadedFiles = processedFiles;
+          next();
+        } catch (processError) {
+          console.error('File processing error:', processError);
+          res.status(500).json({
+            success: false,
+            message: 'File processing failed'
+          });
+        }
+      } else {
+        next();
       }
-      
-      next();
     });
   };
 };
@@ -249,36 +286,35 @@ const handleUpload = (contentType, fieldName = 'files') => {
 /**
  * File validation middleware
  */
-const validateFiles = (req, res, next) => {
-  if (!req.files || req.files.length === 0) {
-    return next(); // No files to validate
+const validateFiles = async (req, res, next) => {
+  // If no files were uploaded/processed, skip
+  if (!req.uploadedFiles || req.uploadedFiles.length === 0) {
+    return next();
   }
 
   try {
     // Additional file validation
-    for (const file of req.files) {
-      // Check file size again
+    for (const file of req.uploadedFiles) {
+      // Check file size again (though multer limits should catch this)
       if (file.size > fileTypes.documents.maxSize) {
-        // Clean up uploaded file
-        fs.unlinkSync(file.path);
+        await cleanupFiles(req.uploadedFiles);
         return res.status(400).json({
           success: false,
-          message: `File ${file.originalname} is too large`
+          message: `File ${file.originalName} is too large`
         });
       }
 
       // Validate file extension matches mime type
-      const extension = path.extname(file.originalname).toLowerCase();
+      const extension = path.extname(file.originalName).toLowerCase();
       const mimeTypeValid = Object.values(fileTypes).some(type => 
         type.mimeTypes.includes(file.mimetype) && type.extensions.includes(extension)
       );
 
       if (!mimeTypeValid) {
-        // Clean up uploaded file
-        fs.unlinkSync(file.path);
+        await cleanupFiles(req.uploadedFiles);
         return res.status(400).json({
           success: false,
-          message: `Invalid file type: ${file.originalname}`
+          message: `Invalid file type: ${file.originalName}`
         });
       }
     }
@@ -288,17 +324,7 @@ const validateFiles = (req, res, next) => {
     console.error('File validation error:', error);
     
     // Clean up any uploaded files
-    if (req.files) {
-      req.files.forEach(file => {
-        try {
-          if (fs.existsSync(file.path)) {
-            fs.unlinkSync(file.path);
-          }
-        } catch (cleanupError) {
-          console.error('File cleanup error:', cleanupError);
-        }
-      });
-    }
+    await cleanupFiles(req.uploadedFiles);
     
     res.status(500).json({
       success: false,
@@ -310,27 +336,34 @@ const validateFiles = (req, res, next) => {
 /**
  * File cleanup utility
  */
-const cleanupFiles = (filePaths) => {
-  if (!Array.isArray(filePaths)) {
-    filePaths = [filePaths];
-  }
+const cleanupFiles = async (files) => {
+  if (!files) return;
+  
+  const fileList = Array.isArray(files) ? files : [files];
 
-  filePaths.forEach(filePath => {
+  for (const file of fileList) {
     try {
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-        console.log(`Cleaned up file: ${filePath}`);
+      if (file.storageType === 'minio') {
+        await deleteFile(file.bucket, file.filename);
+        console.log(`Cleaned up MinIO file: ${file.filename}`);
+      } else if (file.path && fs.existsSync(file.path)) {
+        // Check if it's a local file path (not a URL)
+        if (!file.path.startsWith('http') && !file.path.startsWith('/')) {
+           fs.unlinkSync(file.path);
+           console.log(`Cleaned up local file: ${file.path}`);
+        }
       }
     } catch (error) {
-      console.error(`Failed to cleanup file ${filePath}:`, error);
+      console.error(`Failed to cleanup file ${file.filename || 'unknown'}:`, error);
     }
-  });
+  }
 };
 
 /**
  * Get file URL for serving
  */
 const getFileUrl = (filename, contentType) => {
+  // This is mainly for local files. MinIO files will have their URL generated at upload time.
   return `/api/v1/files/${contentType}/${filename}`;
 };
 

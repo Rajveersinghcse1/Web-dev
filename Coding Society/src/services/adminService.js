@@ -99,9 +99,34 @@ class AdminService {
     });
   }
 
-  async deleteInnovationProject(id) {
-    return this.makeRequest(`/admin/innovation/${id}`, {
-      method: 'DELETE'
+  // ==========================================================================
+  // SYSTEM SETTINGS
+  // ==========================================================================
+
+  async getSettings() {
+    return this.makeRequest('/admin/settings');
+  }
+
+  async updateSettings(settings) {
+    return this.makeRequest('/admin/settings', {
+      method: 'PUT',
+      body: JSON.stringify(settings)
+    });
+  }
+
+  // ==========================================================================
+  // USER MANAGEMENT
+  // ==========================================================================
+
+  async getUsers(params = {}) {
+    const searchParams = new URLSearchParams(params);
+    return this.makeRequest(`/admin/users?${searchParams}`);
+  }
+
+  async updateUserRole(userId, role) {
+    return this.makeRequest(`/admin/users/${userId}/role`, {
+      method: 'PUT',
+      body: JSON.stringify({ role })
     });
   }
 
@@ -186,8 +211,15 @@ class AdminService {
         return;
       }
       
-      if (key === 'files' && value instanceof FileList) {
-        // Handle multiple files
+      if (key === 'files' && Array.isArray(value)) {
+        // Handle array of files
+        value.forEach(file => {
+          if (file instanceof File) {
+            formData.append('files', file);
+          }
+        });
+      } else if (key === 'files' && value instanceof FileList) {
+        // Handle FileList
         Array.from(value).forEach(file => {
           formData.append('files', file);
         });
@@ -195,7 +227,7 @@ class AdminService {
         // Handle single file
         formData.append(key, value);
       } else if (Array.isArray(value)) {
-        // Handle arrays (convert to comma-separated string)
+        // Handle other arrays (convert to comma-separated string)
         formData.append(key, value.join(','));
       } else if (typeof value === 'object') {
         // Handle objects (convert to JSON string)
@@ -259,6 +291,92 @@ class AdminService {
     if (!data.eventEndDate) errors.push('End date is required');
     
     return errors;
+  }
+
+  validateQuest(data) {
+    const errors = [];
+    
+    if (!data.title?.trim()) errors.push('Title is required');
+    if (!data.description?.trim()) errors.push('Description is required');
+    if (!data.shortDescription?.trim()) errors.push('Short description is required');
+    if (!data.category) errors.push('Category is required');
+    if (!data.difficulty) errors.push('Difficulty is required');
+    if (!data.story?.introduction?.trim()) errors.push('Story introduction is required');
+    if (!data.story?.objective?.trim()) errors.push('Story objective is required');
+    
+    return errors;
+  }
+
+  validateAchievement(data) {
+    const errors = [];
+    
+    if (!data.id?.trim()) errors.push('ID is required');
+    if (!data.name?.trim()) errors.push('Name is required');
+    if (!data.description?.trim()) errors.push('Description is required');
+    if (!data.category) errors.push('Category is required');
+    if (!data.type) errors.push('Type is required');
+    if (!data.rarity) errors.push('Rarity is required');
+    if (!data.icon?.trim()) errors.push('Icon is required');
+    
+    return errors;
+  }
+
+  // ==========================================================================
+  // QUESTS
+  // ==========================================================================
+  
+  async getQuests(params = {}) {
+    const searchParams = new URLSearchParams(params);
+    return this.makeRequest(`/admin/quests?${searchParams}`);
+  }
+
+  async createQuest(data) {
+    return this.makeRequest('/admin/quests', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  }
+
+  async updateQuest(id, data) {
+    return this.makeRequest(`/admin/quests/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+  }
+
+  async deleteQuest(id) {
+    return this.makeRequest(`/admin/quests/${id}`, {
+      method: 'DELETE'
+    });
+  }
+
+  // ==========================================================================
+  // ACHIEVEMENTS
+  // ==========================================================================
+  
+  async getAchievements(params = {}) {
+    const searchParams = new URLSearchParams(params);
+    return this.makeRequest(`/admin/achievements?${searchParams}`);
+  }
+
+  async createAchievement(data) {
+    return this.makeRequest('/admin/achievements', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  }
+
+  async updateAchievement(id, data) {
+    return this.makeRequest(`/admin/achievements/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+  }
+
+  async deleteAchievement(id) {
+    return this.makeRequest(`/admin/achievements/${id}`, {
+      method: 'DELETE'
+    });
   }
 
   // Format date for inputs

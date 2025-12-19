@@ -77,8 +77,8 @@ const HackathonsList = () => {
       setHackathons(response.data.hackathons);
       setPagination(prev => ({
         ...prev,
-        total: response.data.total,
-        pages: response.data.pages
+        total: response.data.pagination.totalItems,
+        pages: response.data.pagination.total
       }));
     } catch (err) {
       setError('Failed to fetch hackathons');
@@ -164,15 +164,8 @@ const HackathonsList = () => {
 
   if (loading && hackathons.length === 0) {
     return (
-      <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-96 bg-gray-200 rounded-lg"></div>
-            ))}
-          </div>
-        </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
       </div>
     );
   }
@@ -180,101 +173,79 @@ const HackathonsList = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Hackathon Events</h1>
           <p className="text-gray-600 mt-1">Manage hackathon competitions and events</p>
         </div>
         <Link
           to="/admin/hackathon/create"
-          className="mt-4 sm:mt-0 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center space-x-2"
+          className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
         >
-          <PlusIcon className="h-5 w-5" />
-          <span>New Hackathon</span>
+          <PlusIcon className="h-5 w-5 mr-2" />
+          New Hackathon
         </Link>
       </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-600">{error}</p>
-        </div>
-      )}
-
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Search */}
-          <div>
-            <div className="relative">
-              <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search hackathons..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          {/* Status Filter */}
-          <div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
-              {statuses.map(status => (
-                <option key={status.value} value={status.value}>
-                  {status.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Type Filter */}
-          <div>
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
-              {types.map(type => (
-                <option key={type.value} value={type.value}>
-                  {type.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Theme Filter */}
-          <div>
+      <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="relative">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Filter by theme..."
-              value={themeFilter}
-              onChange={(e) => setThemeFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="Search hackathons..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          >
+            {statuses.map(status => (
+              <option key={status.value} value={status.value}>{status.label}</option>
+            ))}
+          </select>
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          >
+            {types.map(type => (
+              <option key={type.value} value={type.value}>{type.label}</option>
+            ))}
+          </select>
+          <input
+            type="text"
+            placeholder="Filter by theme..."
+            value={themeFilter}
+            onChange={(e) => setThemeFilter(e.target.value)}
+            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          />
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center">
-            <TrophyIcon className="h-8 w-8 text-purple-600" />
+            <div className="p-3 rounded-full bg-purple-100 text-purple-600">
+              <TrophyIcon className="h-6 w-6" />
+            </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Total Events</p>
               <p className="text-2xl font-bold text-gray-900">{pagination.total}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center">
-            <ClockIcon className="h-8 w-8 text-green-600" />
+            <div className="p-3 rounded-full bg-green-100 text-green-600">
+              <ClockIcon className="h-6 w-6" />
+            </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Registration Open</p>
               <p className="text-2xl font-bold text-gray-900">
@@ -283,9 +254,11 @@ const HackathonsList = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center">
-            <UserGroupIcon className="h-8 w-8 text-blue-600" />
+            <div className="p-3 rounded-full bg-blue-100 text-blue-600">
+              <UserGroupIcon className="h-6 w-6" />
+            </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Total Participants</p>
               <p className="text-2xl font-bold text-gray-900">
@@ -294,13 +267,15 @@ const HackathonsList = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center">
-            <SparklesIcon className="h-8 w-8 text-yellow-600" />
+            <div className="p-3 rounded-full bg-yellow-100 text-yellow-600">
+              <SparklesIcon className="h-6 w-6" />
+            </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Active Events</p>
+              <p className="text-sm font-medium text-gray-600">Upcoming</p>
               <p className="text-2xl font-bold text-gray-900">
-                {hackathons.filter(h => h.status === 'in_progress' || h.status === 'judging').length}
+                {hackathons.filter(h => h.status === 'upcoming').length}
               </p>
             </div>
           </div>
@@ -308,261 +283,116 @@ const HackathonsList = () => {
       </div>
 
       {/* Hackathons Grid */}
-      {hackathons.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-          <TrophyIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No hackathons found</h3>
-          <p className="text-gray-600 mb-6">Get started by creating your first hackathon event</p>
-          <Link
-            to="/admin/hackathon/create"
-            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 inline-flex items-center space-x-2"
-          >
-            <PlusIcon className="h-5 w-5" />
-            <span>Create Hackathon</span>
-          </Link>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {hackathons.map((hackathon) => (
-            <div key={hackathon._id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-              <div className="p-6">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                      {hackathon.title}
-                    </h3>
-                    <div className="flex items-center space-x-2 mb-3">
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(hackathon.status)}`}>
-                        {hackathon.status.replace('_', ' ').split(' ').map(word => 
-                          word.charAt(0).toUpperCase() + word.slice(1)
-                        ).join(' ')}
-                      </span>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(hackathon.type)}`}>
-                        {hackathon.type.charAt(0).toUpperCase() + hackathon.type.slice(1)}
-                      </span>
-                      {isEventSoon(hackathon.eventStartDate) && (
-                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
-                          Soon
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Theme */}
-                {hackathon.theme && (
-                  <div className="mb-3">
-                    <div className="flex items-center text-sm text-purple-600">
-                      <SparklesIcon className="h-4 w-4 mr-1" />
-                      <span className="font-medium">{hackathon.theme}</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Location & Venue */}
-                <div className="space-y-1 mb-4">
-                  {hackathon.location && (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <MapPinIcon className="h-4 w-4 mr-2" />
-                      <span>{hackathon.location}</span>
-                    </div>
-                  )}
-                  {hackathon.venue && (
-                    <div className="text-sm text-gray-600 ml-6">
-                      {hackathon.venue}
-                    </div>
-                  )}
-                </div>
-
-                {/* Description */}
-                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                  {hackathon.description}
-                </p>
-
-                {/* Registration Status */}
-                {isRegistrationOpen(hackathon) && (
-                  <div className="mb-4 p-2 bg-green-50 text-green-700 rounded text-xs font-medium">
-                    🟢 Registration is open!
-                  </div>
-                )}
-
-                {/* Important Dates */}
-                <div className="mb-4 space-y-1">
-                  <div className="text-xs text-gray-600">
-                    <span className="font-medium">Registration:</span> {formatDate(hackathon.registrationStartDate)} - {formatDate(hackathon.registrationEndDate)}
-                  </div>
-                  <div className="text-xs text-gray-600">
-                    <span className="font-medium">Event:</span> {formatDate(hackathon.eventStartDate)} - {formatDate(hackathon.eventEndDate)}
-                  </div>
-                </div>
-
-                {/* Participants & Teams */}
-                <div className="mb-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center text-gray-600">
-                      <UserGroupIcon className="h-4 w-4 mr-1" />
-                      <span>
-                        {hackathon.participants?.length || 0}
-                        {hackathon.maxParticipants && `/${hackathon.maxParticipants}`} participants
-                      </span>
-                    </div>
-                    <div className="text-gray-600">
-                      {hackathon.teams?.length || 0} teams
-                    </div>
-                  </div>
-                  
-                  {/* Progress bar for participants */}
-                  {hackathon.maxParticipants && (
-                    <div className="mt-2">
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-purple-600 h-2 rounded-full" 
-                          style={{ 
-                            width: `${Math.min(
-                              ((hackathon.participants?.length || 0) / hackathon.maxParticipants) * 100, 
-                              100
-                            )}%` 
-                          }}
-                        ></div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Prizes */}
-                {hackathon.prizes && hackathon.prizes.length > 0 && (
-                  <div className="mb-4">
-                    <div className="flex items-center text-sm text-yellow-600 mb-2">
-                      <TrophyIcon className="h-4 w-4 mr-1" />
-                      <span className="font-medium">Prize Pool: ${getTotalPrizeValue(hackathon.prizes)}</span>
-                    </div>
-                    <div className="space-y-1">
-                      {hackathon.prizes.slice(0, 3).map((prize, index) => (
-                        <div key={index} className="text-xs text-gray-600">
-                          <span className="font-medium">{prize.position}:</span> {prize.amount}
-                        </div>
-                      ))}
-                      {hackathon.prizes.length > 3 && (
-                        <div className="text-xs text-gray-500">
-                          +{hackathon.prizes.length - 3} more prizes
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Sponsors */}
-                {hackathon.sponsors && hackathon.sponsors.length > 0 && (
-                  <div className="mb-4">
-                    <div className="flex items-center text-sm text-gray-600 mb-2">
-                      <GiftIcon className="h-4 w-4 mr-1" />
-                      <span>{hackathon.sponsors.length} sponsors</span>
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {hackathon.sponsors.slice(0, 3).map((sponsor, index) => (
-                        <span key={index} className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
-                          {sponsor.name}
-                        </span>
-                      ))}
-                      {hackathon.sponsors.length > 3 && (
-                        <span className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
-                          +{hackathon.sponsors.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Warnings */}
-                <div className="mb-4">
-                  {hackathon.status === 'cancelled' && (
-                    <div className="flex items-center text-xs text-red-600 bg-red-50 p-2 rounded">
-                      <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
-                      <span>Event cancelled</span>
-                    </div>
-                  )}
-                  {hackathon.maxParticipants && 
-                   hackathon.participants?.length >= hackathon.maxParticipants && (
-                    <div className="flex items-center text-xs text-orange-600 bg-orange-50 p-2 rounded">
-                      <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
-                      <span>Participant limit reached</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                  <div className="text-xs text-gray-500">
-                    Created {formatDate(hackathon.createdAt)}
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => {/* TODO: Implement view details */}}
-                      className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg"
-                      title="View details"
-                    >
-                      <EyeIcon className="h-4 w-4" />
-                    </button>
-                    <Link
-                      to={`/admin/hackathon/edit/${hackathon._id}`}
-                      className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
-                      title="Edit hackathon"
-                    >
-                      <PencilIcon className="h-4 w-4" />
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(hackathon._id)}
-                      className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg"
-                      title="Delete hackathon"
-                    >
-                      <TrashIcon className="h-4 w-4" />
-                    </button>
-                  </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {hackathons.map((hackathon) => (
+          <div key={hackathon._id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(hackathon.status)}`}>
+                  {hackathon.status.replace('_', ' ').toUpperCase()}
+                </span>
+                <div className="flex space-x-2">
+                  <Link
+                    to={`/admin/hackathon/edit/${hackathon._id}`}
+                    className="text-gray-400 hover:text-purple-600 transition-colors"
+                  >
+                    <PencilIcon className="h-5 w-5" />
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(hackathon._id)}
+                    className="text-gray-400 hover:text-red-600 transition-colors"
+                  >
+                    <TrashIcon className="h-5 w-5" />
+                  </button>
                 </div>
               </div>
+
+              <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-1">{hackathon.title}</h3>
+              <p className="text-sm text-gray-600 mb-4 line-clamp-2">{hackathon.description}</p>
+
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center text-sm text-gray-500">
+                  <CalendarIcon className="h-4 w-4 mr-2" />
+                  {formatDate(hackathon.eventStartDate)} - {formatDate(hackathon.eventEndDate)}
+                </div>
+                <div className="flex items-center text-sm text-gray-500">
+                  <MapPinIcon className="h-4 w-4 mr-2" />
+                  {hackathon.type.charAt(0).toUpperCase() + hackathon.type.slice(1)}
+                </div>
+                <div className="flex items-center text-sm text-gray-500">
+                  <UserGroupIcon className="h-4 w-4 mr-2" />
+                  {hackathon.participants?.length || 0} / {hackathon.maxParticipants || '∞'} Participants
+                </div>
+                <div className="flex items-center text-sm text-gray-500">
+                  <GiftIcon className="h-4 w-4 mr-2" />
+                  {getTotalPrizeValue(hackathon.prizes)} Total Prizes
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
+                <div className="text-xs text-gray-500">
+                  Theme: {hackathon.theme}
+                </div>
+                <Link
+                  to={`/admin/hackathon/participants/${hackathon._id}`}
+                  className="text-sm font-medium text-purple-600 hover:text-purple-700"
+                >
+                  View Participants
+                </Link>
+              </div>
             </div>
-          ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Empty State */}
+      {!loading && hackathons.length === 0 && (
+        <div className="text-center py-12 bg-white rounded-xl border border-gray-200 border-dashed">
+          <div className="mx-auto h-12 w-12 text-gray-400">
+            <PlusIcon />
+          </div>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">No hackathons found</h3>
+          <p className="mt-1 text-sm text-gray-500">Get started by creating a new hackathon event.</p>
+          <div className="mt-6">
+            <Link
+              to="/admin/hackathon/create"
+              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+            >
+              <PlusIcon className="-ml-1 mr-2 h-5 w-5" aria-hidden="true" />
+              New Hackathon
+            </Link>
+          </div>
         </div>
       )}
 
       {/* Pagination */}
       {pagination.pages > 1 && (
-        <div className="flex items-center justify-between bg-white rounded-lg shadow-sm border border-gray-200 px-6 py-4">
-          <div className="text-sm text-gray-700">
-            Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
-            {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-            {pagination.total} results
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => handlePageChange(pagination.page - 1)}
-              disabled={pagination.page === 1}
-              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Previous
-            </button>
-            {[...Array(pagination.pages)].map((_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => handlePageChange(i + 1)}
-                className={`px-3 py-2 text-sm font-medium rounded-md ${
-                  pagination.page === i + 1
-                    ? 'bg-purple-600 text-white'
-                    : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button
-              onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={pagination.page === pagination.pages}
-              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
-          </div>
+        <div className="flex justify-center space-x-2 mt-6">
+          <button
+            onClick={() => handlePageChange(pagination.page - 1)}
+            disabled={pagination.page === 1}
+            className={`px-3 py-1 rounded-md ${
+              pagination.page === 1
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+            }`}
+          >
+            Previous
+          </button>
+          <span className="px-3 py-1 text-gray-600">
+            Page {pagination.page} of {pagination.pages}
+          </span>
+          <button
+            onClick={() => handlePageChange(pagination.page + 1)}
+            disabled={pagination.page === pagination.pages}
+            className={`px-3 py-1 rounded-md ${
+              pagination.page === pagination.pages
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+            }`}
+          >
+            Next
+          </button>
         </div>
       )}
     </div>

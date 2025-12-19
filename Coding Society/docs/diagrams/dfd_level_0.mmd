@@ -1,0 +1,56 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#e0f2fe','primaryTextColor':'#0c4a6e','primaryBorderColor':'#0369a1','lineColor':'#0284c7','secondaryColor':'#fef3c7','tertiaryColor':'#f0fdf4'}}}%%
+flowchart TB
+    %% External Entities
+    Student["👨‍🎓 Student/End User<br/><small>Browse, Learn, Code</small>"]
+    Admin["👨‍💼 Admin<br/><small>Manage Content</small>"]
+    Recruiter["🏢 Recruiter<br/><small>Post Jobs</small>"]
+    External["🌐 External Services<br/><small>Email, OAuth, Code Exec</small>"]
+
+    %% System Core
+    subgraph CodingSociety ["🎓 CODING SOCIETY PLATFORM"]
+        direction TB
+        
+        subgraph Frontend ["Frontend Layer"]
+            ReactApp["⚛️ React SPA<br/><small>Vite + Tailwind</small>"]
+        end
+        
+        subgraph Backend ["Backend Layer"]
+            ExpressAPI["🔌 Express API<br/><small>REST + JWT Auth</small>"]
+        end
+        
+        subgraph DataLayer ["Data Layer"]
+            MongoDB[("💾 MongoDB<br/><small>Users, Content<br/>Analytics</small>")]
+            MinIO[("📦 MinIO S3<br/><small>Media Files<br/>Uploads</small>")]
+        end
+    end
+
+    %% User Flows
+    Student -->|"HTTP/HTTPS Requests"| ReactApp
+    Admin -->|"Admin Portal Access"| ReactApp
+    Recruiter -->|"Job Posting Interface"| ReactApp
+    
+    %% Frontend to Backend
+    ReactApp -->|"API Calls + JWT Token"| ExpressAPI
+    
+    %% Backend to Data
+    ExpressAPI -->|"CRUD Operations"| MongoDB
+    ExpressAPI -->|"File Upload/Download"| MinIO
+    
+    %% External Integrations
+    ExpressAPI <-->|"Email Notifications"| External
+    ExpressAPI <-->|"OAuth 2.0"| External
+    ExpressAPI <-->|"Code Execution Sandbox"| External
+    
+    %% Data to Frontend
+    MinIO -.->|"Direct File Access"| ReactApp
+
+    %% Styling
+    classDef userClass fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a8a
+    classDef systemClass fill:#e0f2fe,stroke:#0369a1,stroke-width:2px,color:#0c4a6e
+    classDef dataClass fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f
+    classDef externalClass fill:#f3f4f6,stroke:#374151,stroke-width:2px,color:#111827
+    
+    class Student,Admin,Recruiter userClass
+    class ReactApp,ExpressAPI systemClass
+    class MongoDB,MinIO dataClass
+    class External externalClass

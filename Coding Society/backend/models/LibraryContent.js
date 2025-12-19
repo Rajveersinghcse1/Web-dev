@@ -164,6 +164,15 @@ const libraryContentSchema = new mongoose.Schema({
       message: 'File URL must be a valid URL or local path'
     }
   },
+
+  files: [{
+    originalName: String,
+    filename: String,
+    url: String,
+    size: Number,
+    mimetype: String,
+    uploadedAt: { type: Date, default: Date.now }
+  }],
   
   externalUrl: {
     type: String,

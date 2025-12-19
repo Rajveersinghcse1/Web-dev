@@ -17,6 +17,19 @@ import {
   ArrowUpIcon,
   ArrowDownIcon
 } from '@heroicons/react/24/outline';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 import adminService from '../../services/adminService';
 
 const AdminDashboard = () => {
@@ -31,8 +44,8 @@ const AdminDashboard = () => {
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
-      const data = await adminService.getAnalytics();
-      setAnalytics(data);
+      const response = await adminService.getAnalytics();
+      setAnalytics(response.data);
     } catch (err) {
       setError('Failed to fetch analytics');
       console.error('Analytics error:', err);
@@ -88,6 +101,15 @@ const AdminDashboard = () => {
       changeType: 'increase'
     }
   ];
+
+  const chartData = [
+    { name: 'Library', count: analytics?.counts?.library || 0, fill: '#3B82F6' },
+    { name: 'Innovation', count: analytics?.counts?.innovation || 0, fill: '#EAB308' },
+    { name: 'Internships', count: analytics?.counts?.internship || 0, fill: '#22C55E' },
+    { name: 'Hackathons', count: analytics?.counts?.hackathon || 0, fill: '#A855F7' },
+  ];
+
+  const COLORS = ['#3B82F6', '#EAB308', '#22C55E', '#A855F7'];
 
   const quickActions = [
     {
@@ -194,6 +216,54 @@ const AdminDashboard = () => {
             </div>
           </Link>
         ))}
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Content Distribution</h3>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="count" fill="#3B82F6" name="Count" radius={[4, 4, 0, 0]}>
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Platform Overview</h3>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="count"
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
 
       {/* Quick Actions */}

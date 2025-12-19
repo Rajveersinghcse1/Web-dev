@@ -587,15 +587,15 @@ const CareerPage = () => {
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-16 py-8"
+      className="min-h-screen bg-slate-50 pt-20 pb-12 px-4 sm:px-6 lg:px-8"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
         {/* Enhanced Header with Real-time Stats */}
         <motion.div variants={itemVariants} className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
             Career & Growth Hub
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-8">
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-8">
             Accelerate your career with AI-powered insights, personalized recommendations, 
             and comprehensive tracking of your professional journey.
           </p>
@@ -604,31 +604,31 @@ const CareerPage = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm"
+              className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-slate-200"
             >
-              <div className="text-2xl font-bold text-blue-600">{realTimeData.activeJobs.toLocaleString()}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Active Jobs</div>
+              <div className="text-3xl font-bold text-blue-600 mb-1">{realTimeData.activeJobs.toLocaleString()}</div>
+              <div className="text-sm font-medium text-slate-600">Active Jobs</div>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm"
+              className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-slate-200"
             >
-              <div className="text-2xl font-bold text-green-600">{realTimeData.newOpportunities}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">New Today</div>
+              <div className="text-3xl font-bold text-green-600 mb-1">{realTimeData.newOpportunities}</div>
+              <div className="text-sm font-medium text-slate-600">New Today</div>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm"
+              className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-slate-200"
             >
-              <div className="text-2xl font-bold text-purple-600">{realTimeData.marketDemand.toFixed(0)}%</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Market Demand</div>
+              <div className="text-3xl font-bold text-purple-600 mb-1">{realTimeData.marketDemand.toFixed(0)}%</div>
+              <div className="text-sm font-medium text-slate-600">Market Demand</div>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm"
+              className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-slate-200"
             >
-              <div className="text-2xl font-bold text-yellow-600">{careerStats.profileViews}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Profile Views</div>
+              <div className="text-3xl font-bold text-yellow-600 mb-1">{careerStats.profileViews}</div>
+              <div className="text-sm font-medium text-slate-600">Profile Views</div>
             </motion.div>
           </div>
         </motion.div>
@@ -638,16 +638,16 @@ const CareerPage = () => {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6"
+            className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-8 shadow-sm"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <Bell className="w-5 h-5 text-blue-600" />
-                <span className="text-blue-800 dark:text-blue-200 font-medium">
+                <span className="text-blue-800 font-medium">
                   You have {notifications.filter(n => n.unread).length} new notifications
                 </span>
               </div>
-              <Button variant="ghost" size="sm" className="text-blue-600">
+              <Button variant="ghost" size="sm" className="text-blue-600 hover:bg-blue-100">
                 View All
               </Button>
             </div>
@@ -655,22 +655,30 @@ const CareerPage = () => {
         )}
 
         <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:grid-cols-none lg:inline-flex">
-            <TabsTrigger value="dashboard" className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4" />
-              Dashboard
+          <TabsList className="bg-white/50 backdrop-blur-sm p-1 rounded-2xl border border-slate-200 w-full max-w-4xl mx-auto grid grid-cols-4">
+            <TabsTrigger value="dashboard" className="rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-4 h-4" />
+                <span className="hidden sm:inline">Dashboard</span>
+              </div>
             </TabsTrigger>
-            <TabsTrigger value="opportunities" className="flex items-center gap-2">
-              <Briefcase className="w-4 h-4" />
-              Opportunities
+            <TabsTrigger value="opportunities" className="rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300">
+              <div className="flex items-center gap-2">
+                <Briefcase className="w-4 h-4" />
+                <span className="hidden sm:inline">Opportunities</span>
+              </div>
             </TabsTrigger>
-            <TabsTrigger value="hackathons" className="flex items-center gap-2">
-              <Trophy className="w-4 h-4" />
-              Hackathons
+            <TabsTrigger value="hackathons" className="rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300">
+              <div className="flex items-center gap-2">
+                <Trophy className="w-4 h-4" />
+                <span className="hidden sm:inline">Hackathons</span>
+              </div>
             </TabsTrigger>
-            <TabsTrigger value="portfolio" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              Portfolio
+            <TabsTrigger value="portfolio" className="rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300">
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                <span className="hidden sm:inline">Portfolio</span>
+              </div>
             </TabsTrigger>
           </TabsList>
 
@@ -685,27 +693,27 @@ const CareerPage = () => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Enhanced Progress Overview */}
                 <motion.div variants={itemVariants} className="lg:col-span-2 space-y-6">
-                  <Card className="overflow-hidden">
-                    <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700">
+                  <Card className="overflow-hidden bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl">
+                    <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
                       <CardTitle className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                            <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                          <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                            <TrendingUp className="w-6 h-6 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                            <h3 className="text-xl font-bold text-white">
                               Learning Progress
                             </h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                            <p className="text-sm text-blue-100">
                               {studentProgress.weeklyGrowth}% growth this week
                             </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-2xl font-bold text-blue-600">
+                          <div className="text-2xl font-bold text-white">
                             {studentProgress.overallProgress}%
                           </div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400">
+                          <div className="text-sm text-blue-100">
                             Overall
                           </div>
                         </div>
@@ -722,23 +730,23 @@ const CareerPage = () => {
                           >
                             <div className="flex justify-between items-center mb-2">
                               <div className="flex items-center gap-3">
-                                <span className="font-medium text-gray-900 dark:text-white">
+                                <span className="font-medium text-slate-900">
                                   {skill.name}
                                 </span>
-                                <span className={`px-2 py-1 text-xs rounded-full ${
+                                <span className={`px-2 py-1 text-xs rounded-full font-medium ${
                                   skill.certification === 'Advanced' ? 'bg-green-100 text-green-700' :
                                   skill.certification === 'Intermediate' ? 'bg-blue-100 text-blue-700' :
-                                  'bg-gray-100 text-gray-700'
+                                  'bg-slate-100 text-slate-700'
                                 }`}>
                                   {skill.certification}
                                 </span>
                               </div>
-                              <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                              <div className="flex items-center gap-4 text-sm text-slate-600">
                                 <span>{skill.level}%</span>
-                                <span className="text-green-600">+{skill.growth}%</span>
+                                <span className="text-green-600 font-medium">+{skill.growth}%</span>
                               </div>
                             </div>
-                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                            <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
                               <motion.div
                                 className={`${skill.color} h-3 rounded-full relative overflow-hidden`}
                                 initial={{ width: 0 }}
@@ -748,7 +756,7 @@ const CareerPage = () => {
                                 <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
                               </motion.div>
                             </div>
-                            <div className="flex justify-between text-xs text-gray-500 mt-1">
+                            <div className="flex justify-between text-xs text-slate-500 mt-2">
                               <span>{skill.projects} projects</span>
                               <span>{skill.endorsed} endorsements</span>
                               <span>{skill.marketDemand}% demand</span>
@@ -760,23 +768,23 @@ const CareerPage = () => {
                   </Card>
 
                   {/* Achievement Showcase */}
-                  <Card>
-                    <CardHeader>
+                  <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden">
+                    <CardHeader className="bg-gradient-to-r from-amber-500 to-orange-600 text-white p-6">
                       <CardTitle className="flex items-center gap-3">
-                        <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
-                          <Award className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+                        <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                          <Award className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                          <h3 className="text-xl font-bold text-white">
                             Achievement Gallery
                           </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                          <p className="text-sm text-amber-100">
                             Showcase your accomplishments and milestones
                           </p>
                         </div>
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {studentProgress.achievements.map((achievement, index) => (
                           <motion.div
@@ -784,38 +792,30 @@ const CareerPage = () => {
                             variants={cardVariants}
                             whileHover="hover"
                             whileTap="tap"
-                            className={`p-4 rounded-lg border-2 transition-all ${
+                            className={`p-4 rounded-2xl border transition-all ${
                               achievement.earned
-                                ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20'
-                                : 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50'
+                                ? 'border-green-200 bg-green-50/50'
+                                : 'border-slate-200 bg-slate-50/50'
                             }`}
                           >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                  {achievement.earned ? (
-                                    <CheckCircle className="w-5 h-5 text-green-600" />
-                                  ) : (
-                                    <XCircle className="w-5 h-5 text-gray-400" />
-                                  )}
-                                  <span className={`font-medium ${achievement.earned ? 'text-green-800 dark:text-green-200' : 'text-gray-600 dark:text-gray-400'}`}>
+                                  <span className={`font-medium ${achievement.earned ? 'text-green-800' : 'text-slate-600'}`}>
                                     {achievement.name}
                                   </span>
                                 </div>
-                                <p className={`text-sm ${achievement.earned ? 'text-green-700 dark:text-green-300' : 'text-gray-500 dark:text-gray-500'}`}>
+                                <p className={`text-sm ${achievement.earned ? 'text-green-700' : 'text-slate-500'}`}>
                                   {achievement.description}
                                 </p>
                                 {achievement.date && (
-                                  <p className="text-xs text-gray-500 mt-1">
+                                  <p className="text-xs text-slate-500 mt-1">
                                     Earned on {achievement.date}
                                   </p>
                                 )}
                               </div>
                               <div className="flex flex-col items-end gap-1">
-                                <span className={`px-2 py-1 text-xs rounded-full ${getRarityColor(achievement.rarity)} font-medium`}>
+                                <span className={`px-2 py-1 text-xs rounded-full ${getRarityColor(achievement.rarity)} font-medium bg-white/50`}>
                                   {achievement.rarity}
                                 </span>
-                                <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                <span className="text-xs font-medium text-slate-600">
                                   {achievement.points} pts
                                 </span>
                               </div>
@@ -830,86 +830,86 @@ const CareerPage = () => {
                 {/* Enhanced Career Stats Sidebar */}
                 <motion.div variants={itemVariants} className="space-y-6">
                   {/* Rank Progress */}
-                  <Card>
-                    <CardHeader>
+                  <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden">
+                    <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6">
                       <CardTitle className="flex items-center gap-2">
-                        <Crown className="w-5 h-5 text-yellow-500" />
+                        <Crown className="w-5 h-5 text-yellow-300" />
                         Current Rank
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-6">
                       <div className="text-center mb-4">
-                        <div className="text-2xl font-bold text-purple-600 mb-2">
+                        <div className="text-3xl font-bold text-purple-600 mb-2">
                           {studentProgress.rankInfo.currentRank}
                         </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                        <div className="text-sm text-slate-600">
                           Next: {studentProgress.rankInfo.nextRank}
                         </div>
                       </div>
-                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2">
+                      <div className="w-full bg-slate-100 rounded-full h-3 mb-2 overflow-hidden">
                         <div
                           className="bg-purple-600 h-3 rounded-full transition-all duration-300"
                           style={{ width: `${studentProgress.rankInfo.progressToNext}%` }}
                         ></div>
                       </div>
-                      <div className="text-xs text-gray-500 text-center">
+                      <div className="text-xs text-slate-500 text-center">
                         {studentProgress.rankInfo.pointsNeeded} points to next rank
                       </div>
                     </CardContent>
                   </Card>
 
                   {/* Career Metrics */}
-                  <Card>
-                    <CardHeader>
+                  <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden">
+                    <CardHeader className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-6">
                       <CardTitle className="flex items-center gap-2">
-                        <Activity className="w-5 h-5 text-blue-500" />
+                        <Activity className="w-5 h-5 text-white" />
                         Career Metrics
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="p-6 space-y-4">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Profile Views</span>
-                        <span className="font-semibold">{careerStats.profileViews}</span>
+                        <span className="text-sm text-slate-600">Profile Views</span>
+                        <span className="font-semibold text-slate-900">{careerStats.profileViews}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Applications Sent</span>
-                        <span className="font-semibold">{careerStats.applicationsSent}</span>
+                        <span className="text-sm text-slate-600">Applications Sent</span>
+                        <span className="font-semibold text-slate-900">{careerStats.applicationsSent}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Interviews</span>
+                        <span className="text-sm text-slate-600">Interviews</span>
                         <span className="font-semibold text-blue-600">{careerStats.interviewsScheduled}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Offers Received</span>
+                        <span className="text-sm text-slate-600">Offers Received</span>
                         <span className="font-semibold text-green-600">{careerStats.offersReceived}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Hackathons Won</span>
+                        <span className="text-sm text-slate-600">Hackathons Won</span>
                         <span className="font-semibold text-yellow-600">{careerStats.hackathonsWon}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Network Size</span>
-                        <span className="font-semibold">{careerStats.networkConnections}</span>
+                        <span className="text-sm text-slate-600">Network Size</span>
+                        <span className="font-semibold text-slate-900">{careerStats.networkConnections}</span>
                       </div>
                     </CardContent>
                   </Card>
 
                   {/* Learning Streak */}
-                  <Card>
-                    <CardHeader>
+                  <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden">
+                    <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-6">
                       <CardTitle className="flex items-center gap-2">
-                        <Zap className="w-5 h-5 text-orange-500" />
+                        <Zap className="w-5 h-5 text-yellow-300" />
                         Learning Streak
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="text-center">
-                      <div className="text-3xl font-bold text-orange-600 mb-2">
+                    <CardContent className="p-6 text-center">
+                      <div className="text-4xl font-bold text-orange-600 mb-2">
                         {studentProgress.streaks.current}
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                      <div className="text-sm text-slate-600 mb-4">
                         Days in a row
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-slate-500">
                         Best streak: {studentProgress.streaks.longest} days
                       </div>
                     </CardContent>
@@ -928,15 +928,15 @@ const CareerPage = () => {
               className="space-y-6"
             >
               {/* Search and Filter Controls */}
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-slate-200">
                 <div className="flex-1">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                     <Input
                       placeholder="Search opportunities..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 bg-slate-50 border-slate-200 focus:ring-blue-500 focus:border-blue-500 rounded-xl"
                     />
                   </div>
                 </div>
@@ -944,7 +944,7 @@ const CareerPage = () => {
                   <select
                     value={filterBy}
                     onChange={(e) => setFilterBy(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
+                    className="px-4 py-2 border border-slate-200 rounded-xl bg-slate-50 text-slate-700 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   >
                     <option value="all">All Types</option>
                     <option value="remote">Remote</option>
@@ -955,7 +955,7 @@ const CareerPage = () => {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
+                    className="px-4 py-2 border border-slate-200 rounded-xl bg-slate-50 text-slate-700 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   >
                     <option value="recent">Most Recent</option>
                     <option value="salary">Highest Salary</option>
@@ -977,19 +977,19 @@ const CareerPage = () => {
                       layout
                       className="h-full"
                     >
-                      <Card className="h-full flex flex-col">
-                        <CardHeader>
+                      <Card className="h-full flex flex-col bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300">
+                        <CardHeader className="p-6">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-3 mb-2">
                                 {internship.featured && (
-                                  <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">
+                                  <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium border border-yellow-200">
                                     Featured
                                   </span>
                                 )}
-                                <span className={`px-2 py-1 text-xs rounded-full font-medium ${
-                                  internship.urgency === 'High' ? 'bg-red-100 text-red-800' :
-                                  internship.urgency === 'Medium' ? 'bg-orange-100 text-orange-800' :
+                                <span className={`px-3 py-1 text-xs rounded-full font-medium border ${
+                                  internship.urgency === 'High' ? 'bg-red-100 text-red-800 border-red-200' :
+                                  internship.urgency === 'Medium' ? 'bg-orange-100 text-orange-800 border-orange-200' :
                                   'bg-gray-100 text-gray-800'
                                 }`}>
                                   {internship.urgency} Priority
@@ -998,7 +998,7 @@ const CareerPage = () => {
                               <CardTitle className="text-lg text-gray-900 dark:text-white">
                                 {internship.title}
                               </CardTitle>
-                              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mt-1">
+                              <div className="flex items-center gap-2 text-slate-600 mt-1">
                                 <Building className="w-4 h-4" />
                                 <span className="font-medium">{internship.company}</span>
                                 <div className="flex items-center gap-1">
@@ -1011,28 +1011,28 @@ const CareerPage = () => {
                               variant="ghost"
                               size="sm"
                               onClick={() => toggleFavorite(internship.id, 'internship')}
-                              className={favorites.has(`internship_${internship.id}`) ? 'text-red-600' : 'text-gray-400'}
+                              className={favorites.has(`internship_${internship.id}`) ? 'text-red-600 hover:bg-red-50' : 'text-slate-400 hover:text-red-600 hover:bg-red-50'}
                             >
                               <Heart className="w-4 h-4" />
                             </Button>
                           </div>
                         </CardHeader>
-                        <CardContent className="flex-1">
-                          <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                        <CardContent className="flex-1 p-6 pt-0">
+                          <p className="text-slate-600 text-sm mb-4">
                             {internship.description}
                           </p>
                           
                           <div className="space-y-3 mb-4">
-                            <div className="flex items-center gap-2 text-sm">
-                              <MapPin className="w-4 h-4 text-gray-400" />
+                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                              <MapPin className="w-4 h-4 text-slate-400" />
                               <span>{internship.location} • {internship.type}</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm">
                               <DollarSign className="w-4 h-4 text-green-500" />
                               <span className="font-medium text-green-600">{internship.stipend}</span>
                             </div>
-                            <div className="flex items-center gap-2 text-sm">
-                              <Clock className="w-4 h-4 text-gray-400" />
+                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                              <Clock className="w-4 h-4 text-slate-400" />
                               <span>{internship.duration}</span>
                             </div>
                           </div>
@@ -1040,9 +1040,9 @@ const CareerPage = () => {
                           <div className="mb-4">
                             <div className="flex items-center gap-2 mb-2">
                               <Target className="w-4 h-4 text-blue-500" />
-                              <span className="text-sm font-medium">Skill Match: {internship.skillMatch}%</span>
+                              <span className="text-sm font-medium text-slate-700">Skill Match: {internship.skillMatch}%</span>
                             </div>
-                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                               <div
                                 className="bg-blue-600 h-2 rounded-full"
                                 style={{ width: `${internship.skillMatch}%` }}
@@ -1054,13 +1054,13 @@ const CareerPage = () => {
                             {internship.requirements.slice(0, 3).map((req, idx) => (
                               <span
                                 key={idx}
-                                className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs rounded-full"
+                                className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full font-medium border border-blue-100"
                               >
                                 {req}
                               </span>
                             ))}
                             {internship.requirements.length > 3 && (
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-slate-500">
                                 +{internship.requirements.length - 3} more
                               </span>
                             )}
@@ -1068,7 +1068,7 @@ const CareerPage = () => {
                         </CardContent>
                         <div className="p-6 pt-0">
                           <div className="flex items-center justify-between">
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-slate-500">
                               <span>{internship.applicants} applicants</span>
                               <span className="mx-2">•</span>
                               <span>Deadline: {new Date(internship.deadline).toLocaleDateString()}</span>
@@ -1076,7 +1076,7 @@ const CareerPage = () => {
                             <Button
                               onClick={() => applyToJob(internship.id)}
                               disabled={appliedJobs.has(internship.id)}
-                              className="ml-2"
+                              className={`ml-2 ${appliedJobs.has(internship.id) ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
                             >
                               {appliedJobs.has(internship.id) ? (
                                 <>
@@ -1117,71 +1117,71 @@ const CareerPage = () => {
                     whileTap="tap"
                     className="h-full"
                   >
-                    <Card className="h-full flex flex-col">
-                      <CardHeader>
+                    <Card className="h-full flex flex-col bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300">
+                      <CardHeader className="p-6">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <CardTitle className="text-lg text-gray-900 dark:text-white mb-2">
+                            <CardTitle className="text-lg text-slate-900 mb-2">
                               {hackathon.name}
                             </CardTitle>
-                            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                            <div className="flex items-center gap-2 text-slate-600">
                               <Users className="w-4 h-4" />
                               <span className="text-sm">{hackathon.organizer}</span>
                             </div>
                           </div>
-                          <span className={`px-3 py-1 text-xs rounded-full font-medium ${
-                            hackathon.status === 'Registration Open' ? 'bg-green-100 text-green-800' :
-                            hackathon.status === 'Coming Soon' ? 'bg-blue-100 text-blue-800' :
-                            'bg-gray-100 text-gray-800'
+                          <span className={`px-3 py-1 text-xs rounded-full font-medium border ${
+                            hackathon.status === 'Registration Open' ? 'bg-green-100 text-green-800 border-green-200' :
+                            hackathon.status === 'Coming Soon' ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                            'bg-slate-100 text-slate-800 border-slate-200'
                           }`}>
                             {hackathon.status}
                           </span>
                         </div>
                       </CardHeader>
-                      <CardContent className="flex-1">
-                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                      <CardContent className="flex-1 p-6 pt-0">
+                        <p className="text-slate-600 text-sm mb-4">
                           {hackathon.description}
                         </p>
                         
                         <div className="space-y-2 mb-4">
-                          <div className="flex items-center gap-2 text-sm">
-                            <Calendar className="w-4 h-4 text-gray-400" />
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <Calendar className="w-4 h-4 text-slate-400" />
                             <span>{new Date(hackathon.date).toLocaleDateString()}</span>
                           </div>
-                          <div className="flex items-center gap-2 text-sm">
-                            <Clock className="w-4 h-4 text-gray-400" />
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <Clock className="w-4 h-4 text-slate-400" />
                             <span>{hackathon.duration}</span>
                           </div>
                           <div className="flex items-center gap-2 text-sm">
                             <Trophy className="w-4 h-4 text-yellow-500" />
                             <span className="font-medium text-yellow-600">{hackathon.prize}</span>
                           </div>
-                          <div className="flex items-center gap-2 text-sm">
-                            <Users className="w-4 h-4 text-gray-400" />
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <Users className="w-4 h-4 text-slate-400" />
                             <span>{hackathon.participants.toLocaleString()} participants</span>
                           </div>
                         </div>
 
                         <div className="mb-4">
-                          <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Theme</h4>
-                          <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-sm rounded-full">
+                          <h4 className="text-sm font-medium text-slate-900 mb-2">Theme</h4>
+                          <span className="px-3 py-1 bg-purple-50 text-purple-700 text-sm rounded-full border border-purple-100 inline-block">
                             {hackathon.theme}
                           </span>
                         </div>
 
                         <div className="mb-4">
-                          <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Tracks</h4>
+                          <h4 className="text-sm font-medium text-slate-900 mb-2">Tracks</h4>
                           <div className="flex flex-wrap gap-1">
                             {hackathon.tracks.slice(0, 2).map((track, idx) => (
                               <span
                                 key={idx}
-                                className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs rounded"
+                                className="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded border border-slate-200"
                               >
                                 {track}
                               </span>
                             ))}
                             {hackathon.tracks.length > 2 && (
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-slate-500">
                                 +{hackathon.tracks.length - 2} more
                               </span>
                             )}
@@ -1192,7 +1192,7 @@ const CareerPage = () => {
                         <Button
                           onClick={() => registerForHackathon(hackathon.id)}
                           disabled={registeredHackathons.has(hackathon.id) || hackathon.status === 'Coming Soon'}
-                          className="w-full"
+                          className={`w-full ${registeredHackathons.has(hackathon.id) ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
                         >
                           {registeredHackathons.has(hackathon.id) ? (
                             <>
@@ -1228,10 +1228,10 @@ const CareerPage = () => {
               className="space-y-6"
             >
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">
                   Portfolio Builder
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-slate-600">
                   Create a professional portfolio to showcase your skills and projects
                 </p>
               </div>
@@ -1244,43 +1244,43 @@ const CareerPage = () => {
                     whileHover="hover"
                     className="h-full"
                   >
-                    <Card className="h-full">
+                    <Card className="h-full bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300">
                       <CardHeader>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${
-                              section.color === 'green' ? 'bg-green-100 dark:bg-green-900' :
-                              section.color === 'blue' ? 'bg-blue-100 dark:bg-blue-900' :
-                              section.color === 'purple' ? 'bg-purple-100 dark:bg-purple-900' :
-                              'bg-yellow-100 dark:bg-yellow-900'
+                            <div className={`p-2 rounded-xl ${
+                              section.color === 'green' ? 'bg-green-50' :
+                              section.color === 'blue' ? 'bg-blue-50' :
+                              section.color === 'purple' ? 'bg-purple-50' :
+                              'bg-yellow-50'
                             }`}>
                               <section.icon className={`w-5 h-5 ${
-                                section.color === 'green' ? 'text-green-600 dark:text-green-400' :
-                                section.color === 'blue' ? 'text-blue-600 dark:text-blue-400' :
-                                section.color === 'purple' ? 'text-purple-600 dark:text-purple-400' :
-                                'text-yellow-600 dark:text-yellow-400'
+                                section.color === 'green' ? 'text-green-600' :
+                                section.color === 'blue' ? 'text-blue-600' :
+                                section.color === 'purple' ? 'text-purple-600' :
+                                'text-yellow-600'
                               }`} />
                             </div>
                             <div>
-                              <CardTitle className="text-lg">{section.title}</CardTitle>
+                              <CardTitle className="text-lg text-slate-900">{section.title}</CardTitle>
                               <div className="flex items-center gap-2 mt-1">
-                                <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(section.status)}`}>
+                                <span className={`px-2 py-1 text-xs rounded-full font-medium ${getStatusColor(section.status)}`}>
                                   {section.status}
                                 </span>
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                <span className="text-sm text-slate-600">
                                   {section.progress}%
                                 </span>
                               </div>
                             </div>
                           </div>
-                          <Button variant="ghost" size="sm">
+                          <Button variant="ghost" size="sm" className="text-slate-400 hover:text-blue-600">
                             <Edit className="w-4 h-4" />
                           </Button>
                         </div>
                       </CardHeader>
                       <CardContent>
                         <div className="mb-4">
-                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                             <motion.div
                               className={`h-2 rounded-full ${
                                 section.color === 'green' ? 'bg-green-600' :
@@ -1302,12 +1302,12 @@ const CareerPage = () => {
                                 {item.completed ? (
                                   <CheckCircle className="w-4 h-4 text-green-600" />
                                 ) : (
-                                  <XCircle className="w-4 h-4 text-gray-400" />
+                                  <XCircle className="w-4 h-4 text-slate-400" />
                                 )}
                                 <span className={`text-sm ${
                                   item.completed 
-                                    ? 'text-gray-900 dark:text-white' 
-                                    : 'text-gray-500 dark:text-gray-400'
+                                    ? 'text-slate-900 font-medium' 
+                                    : 'text-slate-500'
                                 }`}>
                                   {item.name}
                                 </span>
@@ -1316,7 +1316,7 @@ const CareerPage = () => {
                                 )}
                               </div>
                               {!item.completed && (
-                                <Button variant="ghost" size="sm">
+                                <Button variant="ghost" size="sm" className="text-blue-600 hover:bg-blue-50">
                                   <Plus className="w-3 h-3" />
                                 </Button>
                               )}

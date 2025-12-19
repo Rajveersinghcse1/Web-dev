@@ -181,7 +181,7 @@ router.get('/', auth, async (req, res) => {
 
     // Add user interaction data
     const postsWithInteractions = posts.map(post => {
-      const userLike = post.likes?.find(like => like.user?.toString() === req.user._id.toString());
+      const userLike = post.likes?.find(like => like && like.user && like.user.toString() === req.user._id.toString());
       return {
         ...post,
         hasLiked: !!userLike,
@@ -192,6 +192,7 @@ router.get('/', auth, async (req, res) => {
         sharesCount: post.shares?.length || 0,
         commentsCount: post.comments?.length || 0,
         reactions: post.likes?.reduce((acc, like) => {
+          if (!like || !like.reaction) return acc;
           acc[like.reaction] = (acc[like.reaction] || 0) + 1;
           return acc;
         }, {}) || {}
@@ -286,6 +287,36 @@ router.post('/', auth, upload.array('files', 5), async (req, res) => {
         }
 
         post.media.push(mediaItem);
+      }
+    }
+
+    // Handle pre-uploaded media (from frontend direct upload)
+    if (req.body.media) {
+      let mediaData = req.body.media;
+      if (typeof mediaData === 'string') {
+        try {
+          mediaData = JSON.parse(mediaData);
+        } catch (e) {
+          console.error('Failed to parse media JSON:', e);
+          mediaData = [];
+        }
+      }
+
+      if (Array.isArray(mediaData)) {
+        mediaData.forEach(item => {
+          // Ensure we have the required fields
+          if (item.url && item.originalName) {
+             post.media.push({
+              type: item.type || 'image',
+              url: item.url,
+              filename: item.filename || item.originalName,
+              originalName: item.originalName,
+              size: item.size || 0,
+              mimeType: item.mimeType || 'application/octet-stream',
+              thumbnail: item.thumbnail
+            });
+          }
+        });
       }
     }
 
@@ -486,7 +517,7 @@ router.post('/:id/like', auth, async (req, res) => {
     
     // Find existing like from this user
     const existingLikeIndex = post.likes.findIndex(like => 
-      like.user.toString() === userId.toString()
+      like && like.user && like.user.toString() === userId.toString()
     );
 
     if (existingLikeIndex !== -1) {
@@ -511,6 +542,7 @@ router.post('/:id/like', auth, async (req, res) => {
     
     // Calculate reaction counts
     const reactions = post.likes.reduce((acc, like) => {
+      if (!like || !like.reaction) return acc;
       acc[like.reaction] = (acc[like.reaction] || 0) + 1;
       return acc;
     }, {});
@@ -519,8 +551,8 @@ router.post('/:id/like', auth, async (req, res) => {
       success: true,
       likesCount: post.likes.length,
       reactions,
-      hasLiked: post.likes.some(like => like.user.toString() === userId.toString()),
-      userReaction: post.likes.find(like => like.user.toString() === userId.toString())?.reaction || null
+      hasLiked: post.likes.some(like => like && like.user && like.user.toString() === userId.toString()),
+      userReaction: post.likes.find(like => like && like.user && like.user.toString() === userId.toString())?.reaction || null
     });
   } catch (error) {
     console.error('Like toggle error:', error);

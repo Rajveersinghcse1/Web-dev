@@ -14,7 +14,9 @@ import InternshipsList from '../components/admin/InternshipsList';
 import InternshipForm from '../components/admin/InternshipForm';
 import HackathonsList from '../components/admin/HackathonsList';
 import HackathonForm from '../components/admin/HackathonForm';
-// Note: Other admin components will be created in subsequent implementations
+import UsersList from '../components/admin/UsersList';
+import AdminSettings from '../components/admin/AdminSettings';
+import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
 
 const AdminRoutes = [
   {
@@ -22,6 +24,30 @@ const AdminRoutes = [
     element: (
       <AdminLayout>
         <AdminDashboard />
+      </AdminLayout>
+    )
+  },
+  {
+    path: '/admin/analytics',
+    element: (
+      <AdminLayout>
+        <AnalyticsDashboard />
+      </AdminLayout>
+    )
+  },
+  {
+    path: '/admin/users',
+    element: (
+      <AdminLayout>
+        <UsersList />
+      </AdminLayout>
+    )
+  },
+  {
+    path: '/admin/settings',
+    element: (
+      <AdminLayout>
+        <AdminSettings />
       </AdminLayout>
     )
   },
@@ -120,11 +146,7 @@ const AdminRoutes = [
         <HackathonForm />
       </AdminLayout>
     )
-  },
-  // Additional routes will be added here:
-  // - /admin/users
-  // - /admin/analytics
-  // - /admin/settings
+  }
 ];
 
 export default AdminRoutes;

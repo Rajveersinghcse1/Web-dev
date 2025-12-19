@@ -766,7 +766,16 @@ const internshipSchema = new mongoose.Schema({
   deletedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
-  }
+  },
+  
+  files: [{
+    originalName: String,
+    filename: String,
+    url: String,
+    size: Number,
+    mimetype: String,
+    uploadedAt: { type: Date, default: Date.now }
+  }]
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

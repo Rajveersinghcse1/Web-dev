@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coding Society - Data Flow Diagrams</title>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ 
+      startOnLoad: true,
+      theme: 'base',
+      securityLevel: 'loose'
+    });
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    .diagram-section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .diagram-section h2 {
+      color: #667eea;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #667eea;
+    }
+    .mermaid {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      overflow-x: auto;
+    }
+    .note {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 4px;
+    }
+    .download-btn {
+      background: #667eea;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 10px 10px 0 0;
+      font-size: 14px;
+    }
+    .download-btn:hover {
+      background: #5568d3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎓 Coding Society - Data Flow Diagrams</h1>
+    
+    <div class="diagram-section">
+      <h2>DFD Level 0 - Context Diagram</h2>
+      <p>This diagram shows the system boundary and external entities interacting with the Coding Society platform.</p>
+      <button class="download-btn" onclick="downloadSVG('diagram1', 'dfd_level_0.svg')">Download SVG</button>
+      <button class="download-btn" onclick="downloadPNG('diagram1', 'dfd_level_0.png')">Download PNG</button>
+      <div id="diagram1" class="mermaid">
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#e0f2fe','primaryTextColor':'#0c4a6e','primaryBorderColor':'#0369a1','lineColor':'#0284c7','secondaryColor':'#fef3c7','tertiaryColor':'#f0fdf4'}}}%%
+flowchart TB
+    %% External Entities
+    Student["👨‍🎓 Student/End User<br/><small>Browse, Learn, Code</small>"]
+    Admin["👨‍💼 Admin<br/><small>Manage Content</small>"]
+    Recruiter["🏢 Recruiter<br/><small>Post Jobs</small>"]
+    External["🌐 External Services<br/><small>Email, OAuth, Code Exec</small>"]
+
+    %% System Core
+    subgraph CodingSociety ["🎓 CODING SOCIETY PLATFORM"]
+        direction TB
+        
+        subgraph Frontend ["Frontend Layer"]
+            ReactApp["⚛️ React SPA<br/><small>Vite + Tailwind</small>"]
+        end
+        
+        subgraph Backend ["Backend Layer"]
+            ExpressAPI["🔌 Express API<br/><small>REST + JWT Auth</small>"]
+        end
+        
+        subgraph DataLayer ["Data Layer"]
+            MongoDB[("💾 MongoDB<br/><small>Users, Content<br/>Analytics</small>")]
+            MinIO[("📦 MinIO S3<br/><small>Media Files<br/>Uploads</small>")]
+        end
+    end
+
+    %% User Flows
+    Student -->|"HTTP/HTTPS Requests"| ReactApp
+    Admin -->|"Admin Portal Access"| ReactApp
+    Recruiter -->|"Job Posting Interface"| ReactApp
+    
+    %% Frontend to Backend
+    ReactApp -->|"API Calls + JWT Token"| ExpressAPI
+    
+    %% Backend to Data
+    ExpressAPI -->|"CRUD Operations"| MongoDB
+    ExpressAPI -->|"File Upload/Download"| MinIO
+    
+    %% External Integrations
+    ExpressAPI <-->|"Email Notifications"| External
+    ExpressAPI <-->|"OAuth 2.0"| External
+    ExpressAPI <-->|"Code Execution Sandbox"| External
+    
+    %% Data to Frontend
+    MinIO -.->|"Direct File Access"| ReactApp
+
+    %% Styling
+    classDef userClass fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a8a
+    classDef systemClass fill:#e0f2fe,stroke:#0369a1,stroke-width:2px,color:#0c4a6e
+    classDef dataClass fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f
+    classDef externalClass fill:#f3f4f6,stroke:#374151,stroke-width:2px,color:#111827
+    
+    class Student,Admin,Recruiter userClass
+    class ReactApp,ExpressAPI systemClass
+    class MongoDB,MinIO dataClass
+    class External externalClass
+
+      </div>
+    </div>
+    
+    <div class="diagram-section">
+      <h2>DFD Level 1 - Detailed Process Diagram</h2>
+      <p>This diagram shows the internal processes, data flows, and data stores within the system.</p>
+      <button class="download-btn" onclick="downloadSVG('diagram2', 'dfd_level_1.svg')">Download SVG</button>
+      <button class="download-btn" onclick="downloadPNG('diagram2', 'dfd_level_1.png')">Download PNG</button>
+      <div id="diagram2" class="mermaid">
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#dbeafe','primaryTextColor':'#1e3a8a','primaryBorderColor':'#2563eb','lineColor':'#3b82f6','secondaryColor':'#fef3c7','tertiaryColor':'#f0fdf4'}}}%%
+flowchart TB
+    %% External Entities
+    Student["👨‍🎓 Student"]
+    Admin["👨‍💼 Admin"]
+    Recruiter["🏢 Recruiter"]
+    EmailSvc["📧 Email Service"]
+    OAuthSvc["🔐 OAuth Provider"]
+    CodeExec["⚙️ Code Sandbox"]
+
+    %% Main Processes
+    subgraph Platform ["🎓 CODING SOCIETY - DETAILED PROCESSES"]
+        direction TB
+        
+        P1["<b>P1: Authentication</b><br/>━━━━━━━━━━<br/>• Register/Login<br/>• JWT Token Mgmt<br/>• Password Reset<br/>• Session Control"]
+        
+        P2["<b>P2: Content Management</b><br/>━━━━━━━━━━<br/>• Library Content<br/>• Innovation Projects<br/>• Internships<br/>• Hackathons"]
+        
+        P3["<b>P3: Social Feed</b><br/>━━━━━━━━━━<br/>• Create Posts<br/>• Like/Comment<br/>• Follow Users<br/>• Share Content"]
+        
+        P4["<b>P4: Learning Engine</b><br/>━━━━━━━━━━<br/>• Roadmaps<br/>• Quizzes<br/>• Code Editor<br/>• Progress Tracking"]
+        
+        P5["<b>P5: Career Services</b><br/>━━━━━━━━━━<br/>• Job Search<br/>• Applications<br/>• ATS Resume<br/>• Portfolio Builder"]
+        
+        P6["<b>P6: Admin Dashboard</b><br/>━━━━━━━━━━<br/>• Analytics<br/>• User Management<br/>• Settings<br/>• Moderation"]
+    end
+
+    %% Data Stores
+    MongoDB[("💾 <b>MongoDB</b><br/>━━━━━<br/>D1: Users<br/>D2: Posts<br/>D3: Content<br/>D4: Jobs<br/>D5: Analytics")]
+    MinIO[("📦 <b>MinIO S3</b><br/>━━━━━<br/>D6: Media<br/>D7: Uploads<br/>D8: Files")]
+
+    %% User Interactions
+    Student -->|"1.1 Register/Login"| P1
+    Student -->|"2.1 Browse Content"| P2
+    Student -->|"3.1 Create/View Posts"| P3
+    Student -->|"4.1 Learn/Code"| P4
+    Student -->|"5.1 Search Jobs"| P5
+    
+    Admin -->|"1.2 Admin Login"| P1
+    Admin -->|"2.2 Manage Content"| P2
+    Admin -->|"6.1 View Analytics"| P6
+    
+    Recruiter -->|"1.3 Recruiter Login"| P1
+    Recruiter -->|"5.2 Post Jobs"| P5
+
+    %% Process to Data Store
+    P1 -->|"1.4 Store User Data"| MongoDB
+    P1 <-->|"1.5 Read User Profile"| MongoDB
+    
+    P2 -->|"2.3 Save Content"| MongoDB
+    P2 -->|"2.4 Upload Files"| MinIO
+    P2 <-->|"2.5 Retrieve Content"| MongoDB
+    
+    P3 -->|"3.2 Save Posts"| MongoDB
+    P3 <-->|"3.3 Load Feed"| MongoDB
+    P3 -->|"3.4 Upload Images"| MinIO
+    
+    P4 -->|"4.2 Save Progress"| MongoDB
+    P4 <-->|"4.3 Load Quizzes"| MongoDB
+    
+    P5 -->|"5.3 Store Applications"| MongoDB
+    P5 <-->|"5.4 Query Jobs"| MongoDB
+    P5 -->|"5.5 Save Resumes"| MinIO
+    
+    P6 <-->|"6.2 Aggregate Data"| MongoDB
+    P6 -->|"6.3 Export Reports"| MinIO
+
+    %% External Service Interactions
+    P1 -->|"1.6 Send Verification"| EmailSvc
+    P1 <-->|"1.7 OAuth Flow"| OAuthSvc
+    
+    P2 -->|"2.6 Notify Users"| EmailSvc
+    
+    P4 -->|"4.4 Execute Code"| CodeExec
+    
+    P6 -->|"6.4 Send Alerts"| EmailSvc
+
+    %% Inter-Process Communication
+    P1 -.->|"Auth Token"| P2
+    P1 -.->|"Auth Token"| P3
+    P1 -.->|"Auth Token"| P4
+    P1 -.->|"Auth Token"| P5
+    P1 -.->|"Admin Token"| P6
+    
+    P3 -.->|"User Activity"| P6
+    P4 -.->|"Learning Metrics"| P6
+    P5 -.->|"Application Stats"| P6
+
+    %% Styling
+    classDef processClass fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a8a,font-weight:bold
+    classDef dataClass fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f
+    classDef userClass fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,color:#14532d
+    classDef externalClass fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#831843
+    
+    class P1,P2,P3,P4,P5,P6 processClass
+    class MongoDB,MinIO dataClass
+    class Student,Admin,Recruiter userClass
+    class EmailSvc,OAuthSvc,CodeExec externalClass
+
+      </div>
+    </div>
+    
+    <div class="note">
+      <strong>Note:</strong> These diagrams represent the actual implementation of the Coding Society platform with React frontend, Express backend, MongoDB database, and MinIO object storage.
+    </div>
+  </div>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+  <script>
+    function downloadSVG(elementId, filename) {
+      const svgElement = document.querySelector('#' + elementId + ' svg');
+      if (!svgElement) {
+        alert('Diagram not found. Please wait for the diagram to render.');
+        return;
+      }
+      
+      // Clone and clean the SVG
+      const clone = svgElement.cloneNode(true);
+      clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      
+      const svgData = new XMLSerializer().serializeToString(clone);
+      const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+    }
+    
+    function downloadPNG(elementId, filename) {
+      const node = document.querySelector('#' + elementId);
+      if (!node) {
+        alert('Diagram container not found');
+        return;
+      }
+      
+      // Show loading state
+      const btn = event ? event.target : null;
+      let originalText = '';
+      if (btn) {
+        originalText = btn.innerText;
+        btn.innerText = 'Generating...';
+        btn.disabled = true;
+        btn.style.cursor = 'wait';
+      }
+
+      // Use html-to-image library which is more robust
+      if (typeof htmlToImage === 'undefined') {
+        alert('Library not loaded yet. Please check your internet connection or wait a moment.');
+        if (btn) {
+          btn.innerText = originalText;
+          btn.disabled = false;
+          btn.style.cursor = 'pointer';
+        }
+        return;
+      }
+
+      htmlToImage.toPng(node, { backgroundColor: 'white', quality: 1.0, pixelRatio: 2 })
+        .then(function (dataUrl) {
+          const link = document.createElement('a');
+          link.download = filename;
+          link.href = dataUrl;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          if (btn) {
+            btn.innerText = originalText;
+            btn.disabled = false;
+            btn.style.cursor = 'pointer';
+          }
+        })
+        .catch(function (error) {
+          console.error('PNG generation failed:', error);
+          alert('PNG generation failed: ' + error.message + '\n\nTry the SVG download instead.');
+          if (btn) {
+            btn.innerText = originalText;
+            btn.disabled = false;
+            btn.style.cursor = 'pointer';
+          }
+        });
+    }
+    
+    // Wait for diagrams to render
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        const diagrams = document.querySelectorAll('.mermaid svg');
+        if (diagrams.length === 0) {
+          console.warn('Diagrams not rendered yet. Please wait a moment before downloading.');
+        } else {
+          console.log('✓ Diagrams rendered successfully. Download buttons are ready!');
+        }
+      }, 2000);
+    });
+  </script>
+</body>
+</html>

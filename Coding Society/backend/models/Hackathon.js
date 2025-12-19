@@ -788,6 +788,15 @@ const hackathonSchema = new mongoose.Schema({
   }],
   
   // Files and Media
+  files: [{
+    originalName: String,
+    filename: String,
+    url: String,
+    size: Number,
+    mimetype: String,
+    uploadedAt: { type: Date, default: Date.now }
+  }],
+  
   fileUrl: {
     type: String
   },

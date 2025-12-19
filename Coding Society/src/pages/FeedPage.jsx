@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { useAuth } from '../context/AuthContext';
+import { useMode } from '../context/ModeContext';
 import { useNotifications } from '../context/NotificationContext';
 import CreatePostModal from '../components/ui/CreatePostModal';
 import AuthenticationOverlay from '../components/AuthenticationOverlay';
@@ -47,7 +48,14 @@ import {
   Edit3,
   Trash2,
   Flag,
+  Briefcase,
+  CheckCircle,
   Copy,
+  Star,
+  Clock,
+  Link,
+  Info,
+  Loader2,
   Download,
   ExternalLink,
   Zap,
@@ -59,11 +67,9 @@ import {
   TrendingUp,
   Hash,
   AtSign,
-  Star,
   Award,
   Trophy,
   Target,
-  Clock,
   Calendar,
   Bell,
   BellOff,
@@ -72,11 +78,7 @@ import {
   Upload,
   Link as LinkIcon,
   Paperclip,
-  CheckCircle,
   AlertCircle,
-  Info,
-  Loader2,
-  Link,
   Share,
   Mail,
   MessageSquare,
@@ -86,7 +88,6 @@ import {
   Images,
   Bell as Notification,
   BookOpen,
-  Briefcase,
   Coffee
 } from 'lucide-react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
@@ -298,6 +299,117 @@ const PostSkeleton = () => (
   </Card>
 );
 
+// User Hover Card Component
+const UserHoverCard = ({ user, onConnect, onDisconnect, isConnected, isPending }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+    animate={{ opacity: 1, y: 0, scale: 1 }}
+    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+    transition={{ duration: 0.2 }}
+    className="absolute left-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden"
+  >
+    <div className="h-20 bg-gradient-to-r from-blue-500 to-purple-600"></div>
+    <div className="px-4 pb-4 -mt-10">
+      <div className="flex justify-between items-end">
+        <img
+          src={user?.avatar || '/default-avatar.png'}
+          alt={user?.username}
+          className="w-20 h-20 rounded-full border-4 border-white shadow-md object-cover bg-white"
+        />
+        <div className="mb-1">
+           {/* Connection Button in Card */}
+           {isConnected ? (
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="text-green-600 border-green-200 hover:bg-green-50"
+                onClick={(e) => { e.stopPropagation(); onDisconnect(user._id); }}
+              >
+                <UserCheck className="w-4 h-4 mr-1" /> Connected
+              </Button>
+           ) : (
+              <Button 
+                size="sm" 
+                className={`${isPending ? 'bg-gray-100 text-gray-500' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+                onClick={(e) => { e.stopPropagation(); onConnect(user._id); }}
+                disabled={isPending}
+              >
+                <UserPlus className="w-4 h-4 mr-1" /> {isPending ? 'Pending' : 'Connect'}
+              </Button>
+           )}
+        </div>
+      </div>
+      <div className="mt-3">
+        <h3 className="font-bold text-lg text-gray-900">{user?.username}</h3>
+        <p className="text-sm text-gray-600 leading-snug">{user?.title || 'Software Developer'}</p>
+        {user?.company && (
+          <p className="text-xs text-gray-500 mt-1 flex items-center">
+            <Briefcase className="w-3 h-3 mr-1" /> {user.company}
+          </p>
+        )}
+        
+        <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+          <div className="flex items-center">
+            <Users className="w-3 h-3 mr-1" />
+            <span>{user?.mutualConnections || 0} mutual connections</span>
+          </div>
+          <div className="flex items-center">
+            <MapPin className="w-3 h-3 mr-1" />
+            <span>{user?.location || 'Remote'}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
+
+// Code Preview Component
+const CodePreview = ({ code, language }) => {
+  const [copied, setCopied] = useState(false);
+  
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="relative group rounded-xl overflow-hidden border border-gray-800 bg-[#1e1e1e] shadow-lg my-4">
+      <div className="flex items-center justify-between px-4 py-2 bg-[#252526] border-b border-gray-700">
+        <div className="flex items-center space-x-2">
+          <div className="flex space-x-1.5">
+            <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+            <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+          </div>
+          <span className="text-xs text-gray-400 font-mono ml-2">{language}</span>
+        </div>
+        <div className="flex items-center space-x-2">
+           <button 
+            onClick={handleCopy}
+            className="p-1.5 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-700"
+            title="Copy code"
+          >
+            {copied ? <CheckCircle className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+          </button>
+          <button 
+            className="flex items-center space-x-1 px-2 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded transition-colors"
+            onClick={() => alert('Opening in Code Playground...')}
+          >
+            <Play className="w-3 h-3" />
+            <span>Run</span>
+          </button>
+        </div>
+      </div>
+      <div className="p-4 overflow-x-auto">
+        <pre className="text-sm font-mono text-gray-300 leading-relaxed">
+          <code>{code}</code>
+        </pre>
+      </div>
+    </div>
+  );
+};
+
 // Enhanced Post Component
 const EnhancedPost = ({ 
   post, 
@@ -311,11 +423,12 @@ const EnhancedPost = ({
   onDisconnect,
   onViewProfile,
   onMessageUser,
-  pendingConnections = new Set()
+  pendingConnections = new Set(),
+  onTagSelect
 }) => {
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState('');
-  const [isBookmarked, setIsBookmarked] = useState(post.bookmarked || false);
+  const [isBookmarked, setIsBookmarked] = useState(post.hasBookmarked || false);
   const [showReactions, setShowReactions] = useState(false);
   const [selectedReaction, setSelectedReaction] = useState(post.userReaction || null);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
@@ -329,9 +442,18 @@ const EnhancedPost = ({
   const [showNetworkActivity, setShowNetworkActivity] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [showReadMore, setShowReadMore] = useState(false);
+  const [showUserCard, setShowUserCard] = useState(false);
   const ref = useRef();
   const optionsRef = useRef();
   const isInView = useInView(ref, { once: true, margin: "0px 0px -100px 0px" });
+
+  // Sync state with props
+  useEffect(() => {
+    setLikesCount(post.likesCount || 0);
+    setIsLiked(post.hasLiked || false);
+    setSelectedReaction(post.userReaction || null);
+    setIsBookmarked(post.hasBookmarked || false);
+  }, [post.likesCount, post.hasLiked, post.userReaction, post.hasBookmarked]);
 
   // Close options menu when clicking outside
   useEffect(() => {
@@ -430,6 +552,14 @@ const EnhancedPost = ({
     return showReadMore ? content : content.substring(0, maxLength) + '...';
   };
 
+  const getContextBadge = () => {
+    if (post.likesCount > 50) return { text: 'Trending in your network', icon: TrendingUp, color: 'text-blue-600 bg-blue-50' };
+    if (post.tags?.some(t => ['React', 'JavaScript', 'WebDev'].includes(t))) return { text: 'Suggested based on your interests', icon: Star, color: 'text-purple-600 bg-purple-50' };
+    return null;
+  };
+
+  const contextBadge = getContextBadge();
+
   return (
     <>
       <motion.div
@@ -441,10 +571,20 @@ const EnhancedPost = ({
       >
         <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-200 bg-white rounded-xl">
           <CardHeader className="pb-3">
+            {contextBadge && (
+              <div className={`flex items-center space-x-2 text-xs font-medium mb-3 px-3 py-1.5 rounded-full w-fit ${contextBadge.color}`}>
+                <contextBadge.icon className="w-3 h-3" />
+                <span>{contextBadge.text}</span>
+              </div>
+            )}
             <div className="flex items-start justify-between">
-              {/* Professional Profile Section */}
-              <div className="flex items-start space-x-4 flex-1">
-                <div className="relative">
+              {/* Professional Profile Section with Hover Card */}
+              <div 
+                className="flex items-start space-x-4 flex-1 relative"
+                onMouseEnter={() => setShowUserCard(true)}
+                onMouseLeave={() => setShowUserCard(false)}
+              >
+                <div className="relative cursor-pointer" onClick={() => onViewProfile?.(post.author?._id)}>
                   <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 p-0.5">
                     <img
                       src={post.author?.avatar || '/default-avatar.png'}
@@ -536,6 +676,19 @@ const EnhancedPost = ({
                     </div>
                   )}
                 </div>
+
+                {/* Hover Card */}
+                <AnimatePresence>
+                  {showUserCard && (
+                    <UserHoverCard 
+                      user={post.author} 
+                      onConnect={onConnect} 
+                      onDisconnect={onDisconnect}
+                      isConnected={post.author?.connectionStatus === 'connected'}
+                      isPending={pendingConnections.has(post.author?._id)}
+                    />
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Action Menu */}
@@ -643,13 +796,14 @@ const EnhancedPost = ({
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-4">
                 {post.tags.map((tag, index) => (
-                  <motion.span
+                  <motion.button
                     key={index}
                     whileHover={{ scale: 1.05 }}
+                    onClick={() => onTagSelect?.(tag)}
                     className="px-3 py-1 bg-blue-50 text-blue-700 text-sm font-medium rounded-full hover:bg-blue-100 cursor-pointer transition-colors border border-blue-200"
                   >
                     #{tag}
-                  </motion.span>
+                  </motion.button>
                 ))}
               </div>
             )}
@@ -761,26 +915,12 @@ const EnhancedPost = ({
             </div>
           )}
 
-          {/* Code Block */}
+          {/* Code Block with Preview */}
           {post.type === 'code' && post.codeSnippet && (
-            <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-400 text-sm">
-                  {post.codeSnippet.language || 'code'}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigator.clipboard.writeText(post.codeSnippet.code)}
-                  className="text-gray-400 hover:text-white p-1"
-                >
-                  <Copy className="w-4 h-4" />
-                </Button>
-              </div>
-              <pre className="text-green-400 text-sm overflow-x-auto">
-                <code>{post.codeSnippet.code}</code>
-              </pre>
-            </div>
+            <CodePreview 
+              code={post.codeSnippet.code} 
+              language={post.codeSnippet.language || 'javascript'} 
+            />
           )}
 
           {/* Separate Connection Actions Section */}
@@ -1281,8 +1421,13 @@ const EnhancedPost = ({
 
 
 
+
+
+
+
 // Main Feed Component
 const UltraAdvancedFeedPage = () => {
+  const { currentMode, MODES } = useMode();
   // State management
   const [posts, setPosts] = useState([]);
   const [stories, setStories] = useState([]);
@@ -1557,9 +1702,19 @@ const UltraAdvancedFeedPage = () => {
       
       // Handle file uploads if any
       if (postData.media && postData.media.length > 0) {
-        postData.media.forEach(file => {
+        // Check if media items are Files (raw upload) or Objects (pre-uploaded)
+        const rawFiles = postData.media.filter(item => item instanceof File);
+        const preUploadedFiles = postData.media.filter(item => !(item instanceof File));
+
+        // Append raw files to 'files' field
+        rawFiles.forEach(file => {
           formData.append('files', file);
         });
+
+        // Append pre-uploaded files metadata to 'media' field as JSON
+        if (preUploadedFiles.length > 0) {
+          formData.append('media', JSON.stringify(preUploadedFiles));
+        }
       }
 
       console.log('Making request to:', `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/v1/feed`);
@@ -1621,7 +1776,13 @@ const UltraAdvancedFeedPage = () => {
         const data = await response.json();
         setPosts(prev => 
           prev.map(post => 
-            post._id === postId ? { ...post, reactions: data.reactions, userReaction: data.userReaction } : post
+            post._id === postId ? { 
+              ...post, 
+              reactions: data.reactions, 
+              userReaction: data.userReaction,
+              likesCount: data.likesCount,
+              hasLiked: data.hasLiked
+            } : post
           )
         );
       }
@@ -1647,7 +1808,11 @@ const UltraAdvancedFeedPage = () => {
         const data = await response.json();
         setPosts(prev => 
           prev.map(post => 
-            post._id === postId ? { ...post, comments: data.comments, commentsCount: data.commentsCount } : post
+            post._id === postId ? { 
+                ...post, 
+                comments: [...(post.comments || []), data.comment], 
+                commentsCount: (post.commentsCount || 0) + 1 
+            } : post
           )
         );
       }
@@ -1659,14 +1824,44 @@ const UltraAdvancedFeedPage = () => {
   // Handle share
   const handleShare = useCallback(async (postId) => {
     try {
-      await navigator.share({
-        title: 'Check out this post!',
-        url: `${window.location.origin}/post/${postId}`
-      });
+      // Track share in backend
+      const token = localStorage.getItem('authToken');
+      if (token) {
+          try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/v1/feed/${postId}/share`, {
+                method: 'POST',
+                headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setPosts(prev => 
+                    prev.map(post => 
+                        post._id === postId ? { ...post, sharesCount: data.sharesCount } : post
+                    )
+                );
+            }
+          } catch (err) {
+            console.error('Failed to track share:', err);
+          }
+      }
+
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Check out this post!',
+          url: `${window.location.origin}/post/${postId}`
+        });
+      } else {
+        throw new Error('Web Share API not supported');
+      }
     } catch (err) {
       // Fallback to clipboard
-      navigator.clipboard.writeText(`${window.location.origin}/post/${postId}`);
-      success('Link copied to clipboard!');
+      if (err.name !== 'AbortError') {
+        navigator.clipboard.writeText(`${window.location.origin}/post/${postId}`);
+        success('Link copied to clipboard!');
+      }
     }
   }, [success]);
 
@@ -1683,7 +1878,17 @@ const UltraAdvancedFeedPage = () => {
       });
 
       if (response.ok) {
-        success('Post bookmarked!');
+        const data = await response.json();
+        setPosts(prev => 
+          prev.map(post => 
+            post._id === postId ? { 
+                ...post, 
+                hasBookmarked: data.hasBookmarked, 
+                bookmarksCount: data.bookmarksCount 
+            } : post
+          )
+        );
+        success(data.message || 'Post bookmarked!');
       }
     } catch (err) {
       console.error('Bookmark error:', err);
@@ -1852,63 +2057,79 @@ const UltraAdvancedFeedPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 relative">
-      {/* No dark overlay - let feed show as background */}
+    <div className="min-h-screen bg-slate-50 relative font-sans">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            {/* Search Box instead of Feed text */}
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <Input
-                  placeholder="Search posts, people, topics..."
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-sm transition-all duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between gap-4">
+            {/* Search Box */}
+            <div className="flex-1 max-w-2xl">
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                </div>
+                <input
+                  type="text"
+                  placeholder={currentMode === MODES.STUDY ? "Search study groups, topics, questions..." : "Search posts, people, jobs..."}
                   onChange={(e) => debouncedSearch(e.target.value)}
-                  className="pl-10 py-3 bg-gray-50 border-gray-200 focus:bg-white text-lg"
+                  className="block w-full pl-11 pr-4 py-3 bg-gray-100/50 border-transparent text-gray-900 placeholder-gray-500 rounded-2xl focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 sm:text-sm"
                 />
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+
+            {/* Actions */}
+            <div className="flex items-center gap-3">
               <Button 
                 onClick={() => setShowCreatePost(true)}
-                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700"
+                className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/20 rounded-xl px-6 py-2.5 transition-all duration-300 transform hover:scale-[1.02]"
               >
-                <Plus className="w-4 h-4" />
-                <span>Create Post</span>
+                <Plus className="w-5 h-5" />
+                <span className="font-semibold">Create Post</span>
               </Button>
               
+              {/* Mobile Create Button */}
+              <Button 
+                onClick={() => setShowCreatePost(true)}
+                className="sm:hidden flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-xl shadow-lg"
+              >
+                <Plus className="w-5 h-5" />
+              </Button>
+
               {/* Settings Button */}
               <div className="relative">
                 <Button
                   onClick={() => setShowSettings(!showSettings)}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center space-x-2"
+                  variant="ghost"
+                  className="w-10 h-10 rounded-xl hover:bg-gray-100 text-gray-600 transition-colors"
                 >
-                  <Settings className="w-4 h-4" />
+                  <Settings className="w-5 h-5" />
                 </Button>
                 
                 {/* Settings Dropdown */}
                 <AnimatePresence>
                   {showSettings && (
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                      initial={{ opacity: 0, scale: 0.95, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                      className="absolute right-0 top-12 w-64 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50"
+                      exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                      className="absolute right-0 top-12 w-72 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 z-50 overflow-hidden"
                     >
+                      <div className="px-4 py-3 border-b border-gray-50 bg-gray-50/50">
+                        <p className="text-sm font-semibold text-gray-900">Quick Menu</p>
+                      </div>
                       <button 
                         onClick={() => {
                           setShowSavedPosts(true);
                           setShowSettings(false);
                         }}
-                        className="w-full text-left px-4 py-3 text-sm hover:bg-gray-50 flex items-center space-x-3"
+                        className="w-full text-left px-4 py-3 text-sm hover:bg-blue-50 transition-colors flex items-center gap-3 group"
                       >
-                        <Bookmark className="w-5 h-5 text-gray-600" />
+                        <div className="p-2 bg-blue-100 text-blue-600 rounded-lg group-hover:bg-blue-200 transition-colors">
+                          <Bookmark className="w-4 h-4" />
+                        </div>
                         <div>
-                          <div className="font-medium">Saved Posts</div>
-                          <div className="text-gray-500 text-xs">View your saved posts</div>
+                          <div className="font-medium text-gray-900">Saved Posts</div>
+                          <div className="text-gray-500 text-xs">View your collection</div>
                         </div>
                       </button>
                       
@@ -1917,12 +2138,14 @@ const UltraAdvancedFeedPage = () => {
                           setShowNotifications(true);
                           setShowSettings(false);
                         }}
-                        className="w-full text-left px-4 py-3 text-sm hover:bg-gray-50 flex items-center space-x-3"
+                        className="w-full text-left px-4 py-3 text-sm hover:bg-purple-50 transition-colors flex items-center gap-3 group"
                       >
-                        <Bell className="w-5 h-5 text-gray-600" />
+                        <div className="p-2 bg-purple-100 text-purple-600 rounded-lg group-hover:bg-purple-200 transition-colors">
+                          <Bell className="w-4 h-4" />
+                        </div>
                         <div>
-                          <div className="font-medium">Notifications</div>
-                          <div className="text-gray-500 text-xs">Manage your notifications</div>
+                          <div className="font-medium text-gray-900">Notifications</div>
+                          <div className="text-gray-500 text-xs">Check updates</div>
                         </div>
                       </button>
                       
@@ -1931,12 +2154,14 @@ const UltraAdvancedFeedPage = () => {
                           setShowGallery(true);
                           setShowSettings(false);
                         }}
-                        className="w-full text-left px-4 py-3 text-sm hover:bg-gray-50 flex items-center space-x-3"
+                        className="w-full text-left px-4 py-3 text-sm hover:bg-orange-50 transition-colors flex items-center gap-3 group"
                       >
-                        <Image className="w-5 h-5 text-gray-600" />
+                        <div className="p-2 bg-orange-100 text-orange-600 rounded-lg group-hover:bg-orange-200 transition-colors">
+                          <Image className="w-4 h-4" />
+                        </div>
                         <div>
-                          <div className="font-medium">Gallery</div>
-                          <div className="text-gray-500 text-xs">View, edit & delete your posts</div>
+                          <div className="font-medium text-gray-900">Gallery</div>
+                          <div className="text-gray-500 text-xs">Manage your media</div>
                         </div>
                       </button>
                     </motion.div>
@@ -1948,17 +2173,232 @@ const UltraAdvancedFeedPage = () => {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Sidebar - Clean */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* People You May Know */}
-            <Card className="p-4">
-              <h3 className="font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                <Users className="w-5 h-5 text-blue-600" />
-                <span>People You May Know</span>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left Sidebar */}
+          <div className="hidden lg:block lg:col-span-3 space-y-6">
+            {/* Quick Actions */}
+            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+              <h3 className="font-bold text-gray-900 mb-4 text-lg">
+                {currentMode === MODES.STUDY ? 'Study Actions' : 'Quick Actions'}
               </h3>
               <div className="space-y-3">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl h-12 px-4 transition-all duration-200"
+                  onClick={() => setShowCreatePost(true)}
+                >
+                  {currentMode === MODES.STUDY ? <MessageCircle className="w-5 h-5 mr-3" /> : <Plus className="w-5 h-5 mr-3" />}
+                  {currentMode === MODES.STUDY ? 'Ask Question' : 'Create Post'}
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-xl h-12 px-4 transition-all duration-200"
+                  onClick={() => navigate('/profile')}
+                >
+                  <User className="w-5 h-5 mr-3" />
+                  View Profile
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-sm font-medium text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl h-12 px-4 transition-all duration-200"
+                  onClick={() => setShowSavedPosts(true)}
+                >
+                  <Bookmark className="w-5 h-5 mr-3" />
+                  Saved Posts
+                </Button>
+              </div>
+            </div>
+
+            {/* Trending Topics */}
+            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-lg">
+                <TrendingUp className="w-5 h-5 text-blue-600" />
+                Trending Topics
+              </h3>
+              <div className="space-y-2">
+                {[
+                  { tag: 'React19', posts: 1247, trend: '+12%' },
+                  { tag: 'WebDev', posts: 892, trend: '+8%' },
+                  { tag: 'TypeScript', posts: 654, trend: '+15%' },
+                  { tag: 'AI', posts: 543, trend: '+22%' },
+                  { tag: 'JavaScript', posts: 421, trend: '+5%' }
+                ].map((topic, index) => (
+                  <motion.button
+                    key={topic.tag}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    onClick={() => handleTagSelect(topic.tag)}
+                    className="w-full text-left p-3 rounded-xl hover:bg-gray-50 transition-all duration-200 group"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">#{topic.tag}</span>
+                      <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">{topic.trend}</span>
+                    </div>
+                    <div className="text-xs text-gray-400">{topic.posts} posts</div>
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+
+            {/* Selected Tags */}
+            {selectedTags.length > 0 && (
+              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+                <h3 className="font-bold text-gray-900 mb-4 text-lg">Active Filters</h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedTags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full text-sm font-medium border border-blue-100"
+                    >
+                      <span>#{tag}</span>
+                      <button
+                        onClick={() => handleTagSelect(tag)}
+                        className="text-blue-400 hover:text-blue-700 transition-colors"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Main Content */}
+          <div className="lg:col-span-6">
+            {/* Stories (if available) */}
+            {stories.length > 0 && (
+              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm mb-8 p-6">
+                <h3 className="font-bold text-gray-900 mb-4 text-lg">Stories</h3>
+                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                  {stories.map((story, index) => (
+                    <div key={index} className="flex-shrink-0 group cursor-pointer">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 p-[2px] group-hover:scale-105 transition-transform duration-200">
+                        <div className="w-full h-full rounded-full border-2 border-white overflow-hidden">
+                          <img
+                            src={story.author?.avatar || '/default-avatar.png'}
+                            alt={story.author?.username}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </div>
+                      <p className="text-xs text-center mt-2 font-medium text-gray-700 max-w-[64px] truncate group-hover:text-blue-600 transition-colors">
+                        {story.author?.username}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Demo Mode Indicator */}
+            {posts === SAMPLE_POSTS && (
+              <div className="mb-8 p-4 rounded-2xl bg-blue-50 border border-blue-100 flex items-center gap-4">
+                <div className="p-2 bg-blue-100 rounded-xl">
+                  <Info className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-blue-900 text-sm font-medium">
+                    Demo Mode Active
+                  </p>
+                  <p className="text-blue-700 text-xs mt-0.5">
+                    Backend server is offline. Showing sample posts.
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => fetchPosts(1, false)} 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-blue-600 hover:bg-blue-100 hover:text-blue-700 font-medium"
+                >
+                  Retry Connection
+                </Button>
+              </div>
+            )}
+
+            {/* Loading State */}
+            {loading && posts.length === 0 && (
+              <div className="space-y-6">
+                {[...Array(3)].map((_, index) => (
+                  <PostSkeleton key={index} />
+                ))}
+              </div>
+            )}
+
+            {/* Posts */}
+            {posts.length > 0 && (
+              <div className="space-y-8">
+                {posts.map((post) => (
+                  <EnhancedPost
+                    key={post._id}
+                    post={post}
+                    onReact={handleReact}
+                    onComment={handleComment}
+                    onShare={handleShare}
+                    onBookmark={handleBookmark}
+                    onDelete={handleDelete}
+                    onConnect={handleConnect}
+                    onDisconnect={handleDisconnect}
+                    onViewProfile={handleViewProfile}
+                    onMessageUser={handleMessageUser}
+                    pendingConnections={pendingConnections}
+                    currentUser={user}
+                    onTagSelect={handleTagSelect}
+                  />
+                ))}
+
+                {/* Load More Trigger */}
+                {hasNextPage && (
+                  <div ref={loadMoreRef} className="flex justify-center py-8">
+                    {isLoadingMore ? (
+                      <div className="flex items-center gap-2 text-gray-500 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span className="text-sm font-medium">Loading more posts...</span>
+                      </div>
+                    ) : (
+                      <div className="text-gray-400 text-sm">Scroll for more posts</div>
+                    )}
+                  </div>
+                )}
+
+                {/* End of Posts */}
+                {!hasNextPage && posts.length > 0 && (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <CheckCircle className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <p className="text-gray-900 font-medium">You're all caught up!</p>
+                    <p className="text-gray-500 text-sm mt-1">Check back later for more updates.</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Empty State */}
+            {!loading && posts.length === 0 && !error && (
+              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-12 text-center">
+                <div className="max-w-md mx-auto">
+                  <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <MessageCircle className="w-10 h-10 text-blue-500" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">No posts yet</h3>
+                  <p className="text-gray-500">Your posts will appear here. Start creating!</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Sidebar */}
+          <div className="hidden lg:block lg:col-span-3 space-y-6">
+            {/* People You May Know */}
+            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-lg">
+                <Users className="w-5 h-5 text-blue-600" />
+                People You May Know
+              </h3>
+              <div className="space-y-4">
                 {[
                   {
                     id: 'suggest-1',
@@ -1989,242 +2429,45 @@ const UltraAdvancedFeedPage = () => {
                     key={person.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex items-start gap-3 p-3 rounded-2xl hover:bg-gray-50 transition-colors"
                   >
                     <img
                       src={person.avatar}
                       alt={person.name}
-                      className="w-10 h-10 rounded-full object-cover"
+                      className="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{person.name}</p>
-                      <p className="text-xs text-gray-500 truncate">{person.title}</p>
-                      <p className="text-xs text-gray-400">{person.mutualConnections} mutual</p>
+                      <p className="text-sm font-bold text-gray-900 truncate">{person.name}</p>
+                      <p className="text-xs text-gray-500 truncate font-medium">{person.title}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{person.mutualConnections} mutual connections</p>
                     </div>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => handleConnect(person.id)}
-                      className="text-xs px-3 py-1 border-blue-200 text-blue-600 hover:bg-blue-50"
+                      className="text-xs px-3 py-1.5 border-blue-100 text-blue-600 hover:bg-blue-50 hover:border-blue-200 rounded-lg transition-all duration-200"
                     >
-                      <UserPlus className="w-3 h-3 mr-1" />
-                      Connect
+                      <UserPlus className="w-3.5 h-3.5" />
                     </Button>
                   </motion.div>
                 ))}
-                <button className="w-full text-sm text-blue-600 hover:text-blue-800 font-medium pt-2">
+                <button className="w-full text-sm text-blue-600 hover:text-blue-700 font-semibold pt-2 hover:underline decoration-2 underline-offset-4 transition-all">
                   See all suggestions
                 </button>
               </div>
-            </Card>
+            </div>
 
-            {/* Trending Topics */}
-            <Card className="p-4">
-              <h3 className="font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                <TrendingUp className="w-5 h-5 text-green-600" />
-                <span>Trending Topics</span>
-              </h3>
-              <div className="space-y-2">
-                {[
-                  { tag: 'React19', posts: 1247 },
-                  { tag: 'WebDevelopment', posts: 892 },
-                  { tag: 'TypeScript', posts: 654 },
-                  { tag: 'AI', posts: 543 },
-                  { tag: 'JavaScript', posts: 421 }
-                ].map((topic, index) => (
-                  <motion.button
-                    key={topic.tag}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    onClick={() => handleTagSelect(topic.tag)}
-                    className="w-full text-left p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-gray-900">#{topic.tag}</span>
-                      <span className="text-xs text-gray-500">{topic.posts} posts</span>
-                    </div>
-                  </motion.button>
-                ))}
-              </div>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card className="p-4">
-              <h3 className="font-semibold text-gray-900 mb-4">Quick Actions</h3>
-              <div className="space-y-2">
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-sm"
-                  onClick={() => setShowCreatePost(true)}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Post
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-sm"
-                  onClick={() => navigate('/profile')}
-                >
-                  <User className="w-4 h-4 mr-2" />
-                  View Profile
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-sm"
-                  onClick={() => setShowSavedPosts(true)}
-                >
-                  <Bookmark className="w-4 h-4 mr-2" />
-                  Saved Posts
-                </Button>
-              </div>
-            </Card>
-
-            {/* Selected Tags */}
-            {selectedTags.length > 0 && (
-              <Card className="p-4">
-                <h3 className="font-semibold text-gray-900 mb-4">Active Tags</h3>
-                <div className="flex flex-wrap gap-2">
-                  {selectedTags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center space-x-1 px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm"
-                    >
-                      <span>#{tag}</span>
-                      <button
-                        onClick={() => handleTagSelect(tag)}
-                        className="text-blue-400 hover:text-blue-600"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              </Card>
-            )}
-          </div>
-
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            {/* Stories (if available) */}
-            {stories.length > 0 && (
-              <Card className="mb-6 p-4">
-                <h3 className="font-semibold text-gray-900 mb-4">Stories</h3>
-                <div className="flex space-x-4 overflow-x-auto pb-2">
-                  {stories.map((story, index) => (
-                    <div key={index} className="flex-shrink-0">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pink-500 to-orange-500 p-1">
-                        <img
-                          src={story.author?.avatar || '/default-avatar.png'}
-                          alt={story.author?.username}
-                          className="w-full h-full rounded-full object-cover border-2 border-white"
-                        />
-                      </div>
-                      <p className="text-xs text-center mt-2 max-w-[64px] truncate">
-                        {story.author?.username}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            )}
-
-            {/* Demo Mode Indicator - Only show if we have sample posts and no real connection */}
-            {posts === SAMPLE_POSTS && (
-              <Card className="mb-6 p-4 border-blue-200 bg-blue-50">
-                <div className="flex items-center space-x-3">
-                  <Info className="w-5 h-5 text-blue-600" />
-                  <div className="flex-1">
-                    <p className="text-blue-800 text-sm">
-                      <strong>Demo Mode:</strong> Backend server is offline. Showing sample posts.
-                    </p>
-                  </div>
-                  <Button 
-                    onClick={() => fetchPosts(1, false)} 
-                    variant="outline" 
-                    size="sm" 
-                    className="text-blue-600 border-blue-300 hover:bg-blue-100"
-                  >
-                    Retry Connection
-                  </Button>
-                </div>
-              </Card>
-            )}
-
-            {/* Loading State */}
-            {loading && posts.length === 0 && (
-              <div className="space-y-6">
-                {[...Array(3)].map((_, index) => (
-                  <PostSkeleton key={index} />
-                ))}
-              </div>
-            )}
-
-            {/* Posts */}
-            {posts.length > 0 && (
-              <div className="space-y-6">
-                {posts.map((post) => (
-                  <EnhancedPost
-                    key={post._id}
-                    post={post}
-                    onReact={handleReact}
-                    onComment={handleComment}
-                    onShare={handleShare}
-                    onBookmark={handleBookmark}
-                    onDelete={handleDelete}
-                    onConnect={handleConnect}
-                    onDisconnect={handleDisconnect}
-                    onViewProfile={handleViewProfile}
-                    onMessageUser={handleMessageUser}
-                    pendingConnections={pendingConnections}
-                    currentUser={user}
-                  />
-                ))}
-
-                {/* Load More Trigger */}
-                {hasNextPage && (
-                  <div ref={loadMoreRef} className="flex justify-center py-8">
-                    {isLoadingMore ? (
-                      <div className="flex items-center space-x-2 text-gray-600">
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>Loading more posts...</span>
-                      </div>
-                    ) : (
-                      <div className="text-gray-400">Scroll for more posts</div>
-                    )}
-                  </div>
-                )}
-
-                {/* End of Posts */}
-                {!hasNextPage && posts.length > 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    <CheckCircle className="w-8 h-8 mx-auto mb-2" />
-                    <p>You've reached the end of the feed!</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Empty State */}
-            {!loading && posts.length === 0 && !error && (
-              <Card className="p-12 text-center">
-                <div className="max-w-md mx-auto">
-                  <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <MessageCircle className="w-12 h-12 text-gray-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No posts yet</h3>
-                  <p className="text-gray-600 mb-6">
-                    Be the first to share something with the community!
-                  </p>
-                  <Button 
-                    onClick={() => setShowCreatePost(true)}
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    Create Your First Post
-                  </Button>
-                </div>
-              </Card>
-            )}
+            {/* Footer Links */}
+            <div className="flex flex-wrap gap-x-4 gap-y-2 px-4">
+              {['About', 'Accessibility', 'Help Center', 'Privacy & Terms', 'Ad Choices', 'Advertising', 'Business Services', 'Get the App', 'More'].map((link) => (
+                <a key={link} href="#" className="text-xs text-gray-400 hover:text-blue-600 hover:underline transition-colors">
+                  {link}
+                </a>
+              ))}
+            </div>
+            <div className="px-4 text-xs text-gray-400">
+              Coding Society © 2024
+            </div>
           </div>
         </div>
       </div>
@@ -2248,35 +2491,56 @@ const UltraAdvancedFeedPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-transparent flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
             onClick={() => setShowSavedPosts(false)}
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden"
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col"
               onClick={e => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
+              <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-100 rounded-xl">
                     <Bookmark className="w-6 h-6 text-blue-600" />
-                    <h2 className="text-xl font-semibold">Saved Posts</h2>
                   </div>
-                  <button
-                    onClick={() => setShowSavedPosts(false)}
-                    className="p-2 hover:bg-gray-100 rounded-full"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">Saved Posts</h2>
+                    <p className="text-sm text-gray-500">Your personal collection</p>
+                  </div>
                 </div>
+                <button
+                  onClick={() => setShowSavedPosts(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700"
+                >
+                  <X className="w-6 h-6" />
+                </button>
               </div>
-              <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-                <div className="text-center py-12">
-                  <Bookmark className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No saved posts yet</h3>
-                  <p className="text-gray-500">Posts you save will appear here for easy access later.</p>
+              <div className="p-0 overflow-y-auto flex-1">
+                <div className="divide-y divide-gray-100">
+                  <div className="flex items-start gap-4 p-4 hover:bg-gray-50 transition-colors">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-900"><span className="font-bold">John Doe</span> liked your post</p>
+                      <p className="text-xs text-gray-500 mt-1">2 minutes ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4 p-4 hover:bg-gray-50 transition-colors">
+                    <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-900"><span className="font-bold">Jane Smith</span> commented on your post</p>
+                      <p className="text-xs text-gray-500 mt-1">1 hour ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4 p-4 hover:bg-gray-50 transition-colors">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-900"><span className="font-bold">Mike Johnson</span> started following you</p>
+                      <p className="text-xs text-gray-500 mt-1">3 hours ago</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -2291,51 +2555,54 @@ const UltraAdvancedFeedPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-transparent flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
             onClick={() => setShowNotifications(false)}
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden"
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col"
               onClick={e => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Bell className="w-6 h-6 text-blue-600" />
-                    <h2 className="text-xl font-semibold">Notifications</h2>
+              <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-purple-100 rounded-xl">
+                    <Bell className="w-6 h-6 text-purple-600" />
                   </div>
-                  <button
-                    onClick={() => setShowNotifications(false)}
-                    className="p-2 hover:bg-gray-100 rounded-full"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">Notifications</h2>
+                    <p className="text-sm text-gray-500">Stay updated</p>
+                  </div>
                 </div>
+                <button
+                  onClick={() => setShowNotifications(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700"
+                >
+                  <X className="w-6 h-6" />
+                </button>
               </div>
-              <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg">
+              <div className="p-0 overflow-y-auto flex-1">
+                <div className="divide-y divide-gray-100">
+                  <div className="flex items-start gap-4 p-4 hover:bg-gray-50 transition-colors">
                     <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
                     <div className="flex-1">
-                      <p className="text-sm"><strong>John Doe</strong> liked your post</p>
-                      <p className="text-xs text-gray-500">2 minutes ago</p>
+                      <p className="text-sm text-gray-900"><span className="font-bold">John Doe</span> liked your post</p>
+                      <p className="text-xs text-gray-500 mt-1">2 minutes ago</p>
                     </div>
                   </div>
-                  <div className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg">
+                  <div className="flex items-start gap-4 p-4 hover:bg-gray-50 transition-colors">
                     <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
                     <div className="flex-1">
-                      <p className="text-sm"><strong>Jane Smith</strong> commented on your post</p>
-                      <p className="text-xs text-gray-500">1 hour ago</p>
+                      <p className="text-sm text-gray-900"><span className="font-bold">Jane Smith</span> commented on your post</p>
+                      <p className="text-xs text-gray-500 mt-1">1 hour ago</p>
                     </div>
                   </div>
-                  <div className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg">
+                  <div className="flex items-start gap-4 p-4 hover:bg-gray-50 transition-colors">
                     <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
                     <div className="flex-1">
-                      <p className="text-sm"><strong>Mike Johnson</strong> started following you</p>
-                      <p className="text-xs text-gray-500">3 hours ago</p>
+                      <p className="text-sm text-gray-900"><span className="font-bold">Mike Johnson</span> started following you</p>
+                      <p className="text-xs text-gray-500 mt-1">3 hours ago</p>
                     </div>
                   </div>
                 </div>
@@ -2352,59 +2619,62 @@ const UltraAdvancedFeedPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-transparent flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
             onClick={() => setShowGallery(false)}
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-lg shadow-xl max-w-6xl w-full mx-4 max-h-[90vh] overflow-hidden"
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-white rounded-3xl shadow-2xl max-w-6xl w-full max-h-[85vh] overflow-hidden flex flex-col"
               onClick={e => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Image className="w-6 h-6 text-blue-600" />
-                    <h2 className="text-xl font-semibold">Your Gallery</h2>
+              <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-orange-100 rounded-xl">
+                    <Image className="w-6 h-6 text-orange-600" />
                   </div>
-                  <button
-                    onClick={() => setShowGallery(false)}
-                    className="p-2 hover:bg-gray-100 rounded-full"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">Your Gallery</h2>
+                    <p className="text-sm text-gray-500">Manage your media</p>
+                  </div>
                 </div>
+                <button
+                  onClick={() => setShowGallery(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700"
+                >
+                  <X className="w-6 h-6" />
+                </button>
               </div>
-              <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {posts.filter(post => post.author?._id === user?._id).map((post) => (
-                    <div key={post._id} className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                    <div key={post._id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
-                          <p className="text-sm text-gray-800 line-clamp-2">{post.content}</p>
+                          <p className="text-sm text-gray-900 line-clamp-2 font-medium">{post.content}</p>
                           <p className="text-xs text-gray-500 mt-1">
                             {new Date(post.createdAt).toLocaleDateString()}
                           </p>
                         </div>
                         <div className="flex space-x-1 ml-2">
-                          <button className="p-1 text-gray-400 hover:text-blue-600">
+                          <button className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                             <Edit3 className="w-4 h-4" />
                           </button>
-                          <button className="p-1 text-gray-400 hover:text-red-600">
+                          <button className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
                       {post.media && post.media.length > 0 && (
-                        <div className="grid grid-cols-2 gap-1">
+                        <div className="grid grid-cols-2 gap-2 mt-3">
                           {post.media.slice(0, 4).map((media, index) => (
-                            <div key={index} className="aspect-square bg-gray-200 rounded overflow-hidden">
+                            <div key={index} className="aspect-square bg-gray-100 rounded-xl overflow-hidden">
                               {media.type === 'image' && (
                                 <img
                                   src={media.url}
                                   alt=""
-                                  className="w-full h-full object-cover"
+                                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
                                 />
                               )}
                             </div>
@@ -2415,9 +2685,11 @@ const UltraAdvancedFeedPage = () => {
                   ))}
                 </div>
                 {posts.filter(post => post.author?._id === user?._id).length === 0 && (
-                  <div className="text-center py-12">
-                    <Image className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No posts yet</h3>
+                  <div className="text-center py-16">
+                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Image className="w-10 h-10 text-gray-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">No posts yet</h3>
                     <p className="text-gray-500">Your posts will appear here. Start creating!</p>
                   </div>
                 )}

@@ -47,11 +47,11 @@ class StudentService {
       }
     });
     
-    return this.makeRequest(`/admin/library?${searchParams}`);
+    return this.makeRequest(`/library?${searchParams}`);
   }
 
   async getLibraryContentById(id) {
-    return this.makeRequest(`/admin/library/${id}`);
+    return this.makeRequest(`/library/${id}`);
   }
 
   // Get library content by category
@@ -96,11 +96,11 @@ class StudentService {
       }
     });
     
-    return this.makeRequest(`/admin/innovation?${searchParams}`);
+    return this.makeRequest(`/innovation?${searchParams}`);
   }
 
   async getInnovationProjectById(id) {
-    return this.makeRequest(`/admin/innovation/${id}`);
+    return this.makeRequest(`/innovation/${id}`);
   }
 
   // Get active innovation projects
@@ -133,7 +133,7 @@ class StudentService {
       }
     });
     
-    return this.makeRequest(`/admin/internship?${searchParams}`);
+    return this.makeRequest(`/internships?${searchParams}`);
   }
 
   async getInternshipById(id) {
@@ -176,11 +176,11 @@ class StudentService {
       }
     });
     
-    return this.makeRequest(`/admin/hackathon?${searchParams}`);
+    return this.makeRequest(`/hackathons?${searchParams}`);
   }
 
   async getHackathonById(id) {
-    return this.makeRequest(`/admin/hackathon/${id}`);
+    return this.makeRequest(`/hackathons/${id}`);
   }
 
   // Get upcoming hackathons

@@ -60,7 +60,7 @@ class CodeExecutionService {
     this.supportedRuntimes = null;
     this.runtimesCacheTime = 0;
     this.CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-    this.useRealAPI = false; // Set to false for simulation mode - changed to fix execution errors
+    this.useRealAPI = true; // Set to true for real execution
   }
 
   /**

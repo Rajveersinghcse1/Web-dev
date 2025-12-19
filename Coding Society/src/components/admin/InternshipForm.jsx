@@ -46,8 +46,8 @@ const InternshipForm = () => {
     name: '',
     email: '',
     phone: '',
-    position: '',
-    department: ''
+    title: '',
+    bio: ''
   });
 
   const [applicants, setApplicants] = useState([]);
@@ -108,12 +108,12 @@ const InternshipForm = () => {
           startDate: adminService.formatDateForInput(internship.startDate),
           endDate: adminService.formatDateForInput(internship.endDate)
         });
-        setMentorContact(internship.mentorContact || {
+        setMentorContact(internship.mentor || {
           name: '',
           email: '',
           phone: '',
-          position: '',
-          department: ''
+          title: '',
+          bio: ''
         });
         setApplicants(internship.applicants || []);
         setExistingFiles(internship.files || []);
@@ -202,7 +202,8 @@ const InternshipForm = () => {
         ...formData,
         mentorContact: JSON.stringify(mentorContact),
         applicants: JSON.stringify(applicants),
-        files: files.length > 0 ? files : undefined
+        files: files.length > 0 ? files : undefined,
+        existingFiles: JSON.stringify(existingFiles)
       });
 
       if (isEdit) {
@@ -517,14 +518,14 @@ const InternshipForm = () => {
 
             {/* Mentor Position */}
             <div>
-              <label htmlFor="mentorPosition" className="block text-sm font-medium text-gray-700 mb-2">
-                Position
+              <label htmlFor="mentorTitle" className="block text-sm font-medium text-gray-700 mb-2">
+                Title
               </label>
               <input
                 type="text"
-                id="mentorPosition"
-                name="position"
-                value={mentorContact.position}
+                id="mentorTitle"
+                name="title"
+                value={mentorContact.title}
                 onChange={handleMentorChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="Job title"
@@ -567,19 +568,19 @@ const InternshipForm = () => {
               />
             </div>
 
-            {/* Mentor Department */}
+            {/* Mentor Bio */}
             <div className="md:col-span-2">
-              <label htmlFor="mentorDepartment" className="block text-sm font-medium text-gray-700 mb-2">
-                Department
+              <label htmlFor="mentorBio" className="block text-sm font-medium text-gray-700 mb-2">
+                Bio
               </label>
-              <input
-                type="text"
-                id="mentorDepartment"
-                name="department"
-                value={mentorContact.department}
+              <textarea
+                id="mentorBio"
+                name="bio"
+                value={mentorContact.bio}
                 onChange={handleMentorChange}
+                rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="Department or team"
+                placeholder="Brief bio of the mentor"
               />
             </div>
           </div>

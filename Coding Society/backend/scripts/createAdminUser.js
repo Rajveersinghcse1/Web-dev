@@ -5,12 +5,15 @@
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const User = require('../models/User');
 
 // Database connection
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/coding-society', {
+    const uri = process.env.MONGODB_URI || 'mongodb://admin:admin123@localhost:27017/coding-society?authSource=admin';
+    await mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });

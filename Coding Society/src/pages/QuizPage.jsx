@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { 
   Clock, 
@@ -11,7 +10,12 @@ import {
   RotateCcw,
   Users,
   Target,
-  Zap
+  Zap,
+  Award,
+  BarChart2,
+  Flame,
+  ChevronRight,
+  Timer
 } from 'lucide-react';
 
 const QuizPage = () => {
@@ -191,115 +195,120 @@ const QuizPage = () => {
 
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
-      case 'Beginner': return 'text-green-600 bg-green-100 dark:bg-green-900 dark:text-green-300';
-      case 'Intermediate': return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'Advanced': return 'text-red-600 bg-red-100 dark:bg-red-900 dark:text-red-300';
-      default: return 'text-gray-600 bg-gray-100 dark:bg-gray-900 dark:text-gray-300';
+      case 'Beginner': return 'text-emerald-700 bg-emerald-50 border-emerald-200';
+      case 'Intermediate': return 'text-amber-700 bg-amber-50 border-amber-200';
+      case 'Advanced': return 'text-rose-700 bg-rose-50 border-rose-200';
+      default: return 'text-gray-700 bg-gray-50 border-gray-200';
     }
   };
 
   const getScoreColor = (score) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 80) return 'text-emerald-600';
+    if (score >= 60) return 'text-amber-600';
+    return 'text-rose-600';
   };
 
   if (currentQuiz && !quizCompleted) {
     const question = currentQuiz.questions[currentQuestion];
     
     return (
-      <div className="min-h-screen bg-green-50 pt-16">
-        <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="min-h-screen bg-slate-50 pt-24 pb-12 font-sans">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Quiz Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0 mb-6 sm:mb-8">
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-                {currentQuiz.title}
-              </h1>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-                Question {currentQuestion + 1} of {currentQuiz.questions.length}
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
-              <div className={`flex items-center justify-center sm:justify-start gap-2 px-3 py-2 rounded-lg text-sm ${timeLeft <= 60 ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'}`}>
-                <Clock className="w-4 h-4" />
-                {formatTime(timeLeft)}
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-blue-900/5 p-8 mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-8">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                  {currentQuiz.title}
+                </h1>
+                <p className="text-gray-500 font-medium">
+                  Question {currentQuestion + 1} of {currentQuiz.questions.length}
+                </p>
               </div>
-              <Button variant="outline" onClick={resetQuiz} size="sm" className="w-full sm:w-auto">
-                Exit Quiz
-              </Button>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                <div className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border ${timeLeft <= 60 ? 'bg-rose-50 text-rose-600 border-rose-100 animate-pulse' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
+                  <Timer className="w-4 h-4" />
+                  {formatTime(timeLeft)}
+                </div>
+                <Button variant="outline" onClick={resetQuiz} size="sm" className="rounded-xl border-gray-200 hover:bg-gray-50 text-gray-600">
+                  Exit Quiz
+                </Button>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="mb-2">
+              <div className="flex justify-between text-sm font-medium text-gray-500 mb-2">
+                <span>Progress</span>
+                <span>{Math.round(((currentQuestion + 1) / currentQuiz.questions.length) * 100)}%</span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${((currentQuestion + 1) / currentQuiz.questions.length) * 100}%` }}
+                ></div>
+              </div>
             </div>
           </div>
 
-          {/* Progress Bar */}
-          <div className="mb-8">
-            <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
-              <span>Progress</span>
-              <span>{Math.round(((currentQuestion + 1) / currentQuiz.questions.length) * 100)}%</span>
-            </div>
-            <div className="w-full bg-green-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${((currentQuestion + 1) / currentQuiz.questions.length) * 100}%` }}
-              ></div>
-            </div>
-          </div>
-
-          {/* Question */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="text-xl">
+          {/* Question Card */}
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-blue-900/5 overflow-hidden mb-8">
+            <div className="p-8 border-b border-gray-100 bg-gray-50/30">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-relaxed">
                 {question.question}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-3">
+              </h2>
+            </div>
+            <div className="p-8">
+              <div className="grid gap-4">
                 {question.options.map((option, index) => (
                   <button
                     key={index}
                     onClick={() => handleAnswerSelect(index)}
-                    className={`p-4 text-left rounded-lg border transition-all ${
+                    className={`group relative p-5 text-left rounded-2xl border-2 transition-all duration-200 ${
                       selectedAnswer === index
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800'
+                        ? 'border-blue-500 bg-blue-50/50 shadow-md shadow-blue-100'
+                        : 'border-gray-100 hover:border-blue-200 hover:bg-gray-50'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                    <div className="flex items-center gap-4">
+                      <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
                         selectedAnswer === index 
-                          ? 'border-blue-500 bg-blue-500' 
-                          : 'border-gray-300 dark:border-gray-600'
+                          ? 'border-blue-500 bg-blue-500 text-white' 
+                          : 'border-gray-300 text-gray-400 group-hover:border-blue-400 group-hover:text-blue-400'
                       }`}>
-                        {selectedAnswer === index && (
-                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        {selectedAnswer === index ? (
+                          <CheckCircle className="w-5 h-5" />
+                        ) : (
+                          <span className="text-sm font-bold">{String.fromCharCode(65 + index)}</span>
                         )}
                       </div>
-                      <span className="font-medium">
-                        {String.fromCharCode(65 + index)}. {option}
+                      <span className={`font-medium text-lg ${selectedAnswer === index ? 'text-blue-900' : 'text-gray-700'}`}>
+                        {option}
                       </span>
                     </div>
                   </button>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Navigation */}
-          <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
+          <div className="flex flex-col sm:flex-row justify-between gap-4">
             <Button 
-              variant="outline" 
+              variant="ghost" 
               disabled={currentQuestion === 0}
               onClick={() => setCurrentQuestion(currentQuestion - 1)}
-              className="w-full sm:w-auto order-2 sm:order-1"
+              className="rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-100"
             >
-              Previous
+              Previous Question
             </Button>
             <Button 
               onClick={handleNextQuestion} 
               disabled={selectedAnswer === null}
-              className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto order-1 sm:order-2"
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-8 py-6 text-lg font-medium shadow-lg shadow-blue-600/20 transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0"
             >
               {currentQuestion === currentQuiz.questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+              <ChevronRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
         </div>
@@ -309,236 +318,251 @@ const QuizPage = () => {
 
   if (quizCompleted) {
     return (
-      <div className="min-h-screen bg-emerald-50 pt-16">
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="text-center mb-8">
-            <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-              <Trophy className="w-12 h-12 text-white" />
+      <div className="min-h-screen bg-slate-50 pt-24 pb-12 font-sans">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-blue-900/5 overflow-hidden">
+            <div className="bg-gradient-to-b from-blue-50 to-white p-12 text-center border-b border-gray-100">
+              <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-3xl flex items-center justify-center shadow-lg shadow-orange-500/20 rotate-3">
+                <Trophy className="w-12 h-12 text-white" />
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Quiz Completed!
+              </h1>
+              <p className="text-gray-500 text-lg">
+                {currentQuiz.title}
+              </p>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Quiz Completed!
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              {currentQuiz.title}
-            </p>
-          </div>
 
-          <Card className="mb-8">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <div className={`text-6xl font-bold mb-4 ${getScoreColor(score)}`}>
+            <div className="p-8 sm:p-12">
+              <div className="text-center mb-12">
+                <div className={`text-7xl font-extrabold mb-4 tracking-tight ${getScoreColor(score)}`}>
                   {score}%
                 </div>
-                <p className="text-xl text-gray-700 dark:text-gray-300 mb-6">
-                  You scored {answers.filter((answer, index) => answer === currentQuiz.questions[index].correct).length} out of {currentQuiz.questions.length} questions correctly
+                <p className="text-xl text-gray-600">
+                  You scored <strong className="text-gray-900">{answers.filter((answer, index) => answer === currentQuiz.questions[index].correct).length}</strong> out of <strong className="text-gray-900">{currentQuiz.questions.length}</strong> questions correctly
                 </p>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-                  <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{currentQuiz.questions.length}</div>
-                    <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total Questions</div>
-                  </div>
-                  <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                    <div className="text-xl sm:text-2xl font-bold text-green-600">
-                      {answers.filter((answer, index) => answer === currentQuiz.questions[index].correct).length}
-                    </div>
-                    <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Correct Answers</div>
-                  </div>
-                  <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-                      {formatTime(currentQuiz.timeLimit - timeLeft)}
-                    </div>
-                    <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Time Taken</div>
-                  </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+                <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 text-center">
+                  <div className="text-3xl font-bold text-gray-900 mb-1">{currentQuiz.questions.length}</div>
+                  <div className="text-sm font-medium text-gray-500 uppercase tracking-wide">Total Questions</div>
                 </div>
-
-                <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-                  <Button onClick={resetQuiz} className="w-full sm:w-auto">
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    Take Another Quiz
-                  </Button>
-                  <Button variant="outline" onClick={() => {/* TODO: Implement review answers */}} className="w-full sm:w-auto">
-                    Review Answers
-                  </Button>
+                <div className="p-6 bg-emerald-50 rounded-2xl border border-emerald-100 text-center">
+                  <div className="text-3xl font-bold text-emerald-600 mb-1">
+                    {answers.filter((answer, index) => answer === currentQuiz.questions[index].correct).length}
+                  </div>
+                  <div className="text-sm font-medium text-emerald-600/70 uppercase tracking-wide">Correct</div>
+                </div>
+                <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100 text-center">
+                  <div className="text-3xl font-bold text-blue-600 mb-1">
+                    {formatTime(currentQuiz.timeLimit - timeLeft)}
+                  </div>
+                  <div className="text-sm font-medium text-blue-600/70 uppercase tracking-wide">Time Taken</div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <Button onClick={resetQuiz} className="bg-gray-900 text-white hover:bg-gray-800 rounded-xl px-8 py-6 text-base font-medium shadow-lg shadow-gray-900/20">
+                  <RotateCcw className="w-5 h-5 mr-2" />
+                  Take Another Quiz
+                </Button>
+                <Button variant="outline" className="rounded-xl border-gray-200 hover:bg-gray-50 text-gray-700 px-8 py-6 text-base font-medium">
+                  Review Answers
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-teal-50 pt-16">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-slate-50 pt-24 pb-12 font-sans">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Coding Quizzes
+        <div className="text-center mb-16 relative">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[200px] bg-blue-100/50 blur-[100px] rounded-full pointer-events-none"></div>
+          <h1 className="relative text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">
+            Coding <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">Quizzes</span>
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+          <p className="relative text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Test your knowledge and compete with the community. 
             Take quizzes on various programming topics and track your progress.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
           {/* Quiz Selection */}
-          <div className="xl:col-span-2">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0 mb-6">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+          <div className="xl:col-span-2 space-y-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <Target className="w-6 h-6 text-blue-600" />
                 Available Quizzes
               </h2>
               <div className="flex flex-wrap gap-2">
-                <Button variant="outline" size="sm" className="text-xs">All</Button>
-                <Button variant="outline" size="sm" className="text-xs">Frontend</Button>
-                <Button variant="outline" size="sm">Backend</Button>
-                <Button variant="outline" size="sm">AI/ML</Button>
+                <Button variant="secondary" size="sm" className="rounded-lg bg-gray-900 text-white hover:bg-gray-800">All</Button>
+                <Button variant="ghost" size="sm" className="rounded-lg text-gray-600 hover:bg-gray-100">Frontend</Button>
+                <Button variant="ghost" size="sm" className="rounded-lg text-gray-600 hover:bg-gray-100">Backend</Button>
+                <Button variant="ghost" size="sm" className="rounded-lg text-gray-600 hover:bg-gray-100">AI/ML</Button>
               </div>
             </div>
 
-            <div className="space-y-6">
+            <div className="grid gap-6">
               {quizzes.map((quiz) => (
-                <Card key={quiz.id} className="hover:shadow-lg transition-shadow duration-300">
-                  <CardHeader>
-                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                <div key={quiz.id} className="group bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 overflow-hidden">
+                  <div className="p-8">
+                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
                       <div className="flex-1">
-                        <CardTitle className="text-lg sm:text-xl mb-2">{quiz.title}</CardTitle>
-                        <CardDescription className="text-sm sm:text-base mb-3">
-                          {quiz.description}
-                        </CardDescription>
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(quiz.difficulty)}`}>
+                        <div className="flex items-center gap-3 mb-3">
+                          <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                            {quiz.title}
+                          </h3>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${getDifficultyColor(quiz.difficulty)}`}>
                             {quiz.difficulty}
                           </span>
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
+                        </div>
+                        <p className="text-gray-600 mb-6 leading-relaxed">
+                          {quiz.description}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 font-medium">
+                          <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+                            <Clock className="w-4 h-4 text-gray-400" />
                             {Math.floor(quiz.timeLimit / 60)} min
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Target className="w-3 h-3" />
+                          <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+                            <Target className="w-4 h-4 text-gray-400" />
                             {quiz.totalQuestions} questions
                           </div>
-                          <span className="px-2 py-1 bg-teal-100 text-teal-700 rounded text-xs">
+                          <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold border border-blue-100 uppercase tracking-wide">
                             {quiz.category}
                           </span>
                         </div>
                       </div>
-                      <Button onClick={() => startQuiz(quiz)} className="w-full lg:w-auto lg:ml-4" size="sm">
-                        <Play className="w-4 h-4 mr-2" />
+                      <Button 
+                        onClick={() => startQuiz(quiz)} 
+                        className="w-full lg:w-auto bg-gray-900 text-white hover:bg-blue-600 rounded-xl px-6 py-6 shadow-lg shadow-gray-900/10 transition-all duration-300 group-hover:scale-105"
+                      >
+                        <Play className="w-5 h-5 mr-2" />
                         Start Quiz
                       </Button>
                     </div>
-                  </CardHeader>
-                </Card>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Leaderboard */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Trophy className="w-5 h-5 text-yellow-500" />
-                  Leaderboard
-                </CardTitle>
-                <CardDescription>
-                  Top performers this month
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {leaderboard.map((user, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                        index === 0 ? 'bg-yellow-100 text-yellow-700' :
-                        index === 1 ? 'bg-gray-100 text-gray-700' :
-                        index === 2 ? 'bg-orange-100 text-orange-700' :
-                        'bg-gray-50 text-gray-600'
-                      }`}>
-                        {index + 1}
-                      </div>
-                      <img
-                        src={user.avatar}
-                        alt={user.name}
-                        className="w-8 h-8 rounded-full"
-                      />
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900 dark:text-white text-sm">
-                          {user.name}
-                        </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {user.score} points
-                        </p>
-                      </div>
-                      {index < 3 && (
-                        <Star className={`w-4 h-4 ${
-                          index === 0 ? 'text-yellow-500' :
-                          index === 1 ? 'text-gray-400' :
-                          'text-orange-400'
-                        }`} />
-                      )}
-                    </div>
-                  ))}
+            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
+                  <Trophy className="w-5 h-5 text-yellow-600" />
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <h3 className="font-bold text-gray-900">Leaderboard</h3>
+                  <p className="text-sm text-gray-500">Top performers this month</p>
+                </div>
+              </div>
+              <div className="space-y-4">
+                {leaderboard.map((user, index) => (
+                  <div key={index} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                      index === 0 ? 'bg-yellow-100 text-yellow-700' :
+                      index === 1 ? 'bg-gray-100 text-gray-700' :
+                      index === 2 ? 'bg-orange-100 text-orange-700' :
+                      'bg-gray-50 text-gray-600'
+                    }`}>
+                      {index + 1}
+                    </div>
+                    <img
+                      src={user.avatar}
+                      alt={user.name}
+                      className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-gray-900 truncate">
+                        {user.name}
+                      </p>
+                      <p className="text-xs font-medium text-gray-500">
+                        {user.score} points
+                      </p>
+                    </div>
+                    {index < 3 && (
+                      <Star className={`w-5 h-5 ${
+                        index === 0 ? 'text-yellow-400 fill-yellow-400' :
+                        index === 1 ? 'text-gray-300 fill-gray-300' :
+                        'text-orange-300 fill-orange-300'
+                      }`} />
+                    )}
+                  </div>
+                ))}
+              </div>
+              <Button variant="ghost" className="w-full mt-4 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-xl">
+                View Full Leaderboard
+              </Button>
+            </div>
 
             {/* Your Stats */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Stats</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Quizzes Taken</span>
-                    <span className="font-medium">23</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Average Score</span>
-                    <span className="font-medium text-green-600">78%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Rank</span>
-                    <span className="font-medium">#147</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Streak</span>
-                    <span className="font-medium text-orange-600">5 days</span>
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl shadow-xl shadow-slate-900/20 p-6 text-white">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                  <BarChart2 className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-white">Your Stats</h3>
+                  <p className="text-sm text-slate-400">Keep up the good work!</p>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/10">
+                  <span className="text-slate-300 text-sm">Quizzes Taken</span>
+                  <span className="font-bold text-white">23</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/10">
+                  <span className="text-slate-300 text-sm">Average Score</span>
+                  <span className="font-bold text-emerald-400">78%</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/10">
+                  <span className="text-slate-300 text-sm">Global Rank</span>
+                  <span className="font-bold text-white">#147</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/10">
+                  <span className="text-slate-300 text-sm">Current Streak</span>
+                  <div className="flex items-center gap-1.5 text-orange-400 font-bold">
+                    <Flame className="w-4 h-4 fill-orange-400" />
+                    5 days
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Quick Tips */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-blue-500" />
-                  Quick Tips
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-start gap-2">
-                    <span className="text-blue-500">💡</span>
-                    <span>Read questions carefully before selecting answers</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-green-500">⏰</span>
-                    <span>Manage your time wisely during timed quizzes</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-purple-500">🎯</span>
-                    <span>Review incorrect answers to learn from mistakes</span>
-                  </div>
+            <div className="bg-blue-50 rounded-3xl border border-blue-100 p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <Zap className="w-5 h-5 text-blue-600" />
                 </div>
-              </CardContent>
-            </Card>
+                <h3 className="font-bold text-blue-900">Quick Tips</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 bg-white rounded-xl border border-blue-100 shadow-sm">
+                  <span className="text-lg">💡</span>
+                  <span className="text-sm text-blue-800 font-medium">Read questions carefully before selecting answers</span>
+                </div>
+                <div className="flex items-start gap-3 p-3 bg-white rounded-xl border border-blue-100 shadow-sm">
+                  <span className="text-lg">⏰</span>
+                  <span className="text-sm text-blue-800 font-medium">Manage your time wisely during timed quizzes</span>
+                </div>
+                <div className="flex items-start gap-3 p-3 bg-white rounded-xl border border-blue-100 shadow-sm">
+                  <span className="text-lg">🎯</span>
+                  <span className="text-sm text-blue-800 font-medium">Review incorrect answers to learn from mistakes</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
