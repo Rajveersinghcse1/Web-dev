@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Coaching Voice Agent - Diagrams</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .instructions {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .diagram-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .diagram-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .diagram-header h2 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .save-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .save-btn:hover {
+            transform: scale(1.05);
+        }
+        .diagram-content {
+            padding: 30px;
+            overflow-x: auto;
+            min-height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .mermaid {
+            width: 100%;
+        }
+        .mermaid svg {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 AI Coaching Voice Agent - Project Diagrams</h1>
+    
+    <div class="instructions">
+        <strong>📥 To save as PNG:</strong> Click the "Save as PNG" button for each diagram.<br>
+        The image will be downloaded automatically.<br><br>
+        <button class="save-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 24px; font-size: 16px;" onclick="downloadAllDiagrams()">
+            📦 Download ALL Diagrams as PNG
+        </button>
+    </div>
+
+    <!-- 1. Use Case Diagram -->
+    <div class="diagram-container">
+        <div class="diagram-header">
+            <h2>1. Use Case Diagram</h2>
+            <button class="save-btn" onclick="saveDiagram('diagram1', '1-use-case-diagram.png')">💾 Save as PNG</button>
+        </div>
+        <div class="diagram-content">
+            <pre class="mermaid" id="diagram1">
+flowchart TB
+    subgraph User_Actions ["👤 User Actions"]
+        direction TB
+        U((User))
+    end
+
+    subgraph System ["AI Coaching Voice Agent"]
+        UC1[🔐 Login / Sign Up]
+        UC2[📊 View Dashboard]
+        UC3[🎯 Select Coaching Option]
+        UC4[🎙️ Start Coaching Session]
+        UC5[📜 View History]
+        UC6[💬 View Feedback]
+        UC7[👤 Manage Profile]
+    end
+
+    subgraph Options ["Coaching Options"]
+        O1[📚 Lecture on Topic]
+        O2[💼 Mock Interview]
+        O3[❓ Ques Ans Prep]
+        O4[🗣️ Languages Skill]
+        O5[🧘 Meditation]
+    end
+
+    U --> UC1
+    U --> UC2
+    U --> UC3
+    U --> UC4
+    U --> UC5
+    U --> UC6
+    U --> UC7
+
+    UC3 --> O1
+    UC3 --> O2
+    UC3 --> O3
+    UC3 --> O4
+    UC3 --> O5
+            </pre>
+        </div>
+    </div>
+
+    <!-- 2. System Architecture Diagram -->
+    <div class="diagram-container">
+        <div class="diagram-header">
+            <h2>2. System Architecture Diagram</h2>
+            <button class="save-btn" onclick="saveDiagram('diagram2', '2-system-architecture-diagram.png')">💾 Save as PNG</button>
+        </div>
+        <div class="diagram-content">
+            <pre class="mermaid" id="diagram2">
+graph TB
+    subgraph Client ["🖥️ Client Side - Next.js"]
+        UI["⚛️ React Components<br/>(UI Layer)"]
+        AuthClient["🔐 Stack Auth Client"]
+        ConvexClient["📡 Convex React Client"]
+    end
+
+    subgraph Backend ["☁️ Backend Services"]
+        Convex["🗄️ Convex<br/>(Database & Edge Functions)"]
+        StackAuth["🔑 Stack Auth<br/>(Authentication)"]
+    end
+
+    subgraph External ["🤖 External AI Services"]
+        OpenAI["🧠 OpenAI API<br/>(Chat/Completion)"]
+        AssemblyAI["🎤 AssemblyAI<br/>(Speech-to-Text)"]
+        Polly["🔊 AWS Polly<br/>(Text-to-Speech)"]
+    end
+
+    UI --> AuthClient
+    UI --> ConvexClient
+    AuthClient <--> StackAuth
+    ConvexClient <--> Convex
+    Convex --> OpenAI
+    Convex --> AssemblyAI
+    Convex --> Polly
+
+    style UI fill:#61dafb
+    style AuthClient fill:#f97316
+    style ConvexClient fill:#ea580c
+    style Convex fill:#f59e0b
+    style StackAuth fill:#6366f1
+    style OpenAI fill:#10b981
+    style AssemblyAI fill:#8b5cf6
+    style Polly fill:#ec4899
+            </pre>
+        </div>
+    </div>
+
+    <!-- 3. Class Diagram -->
+    <div class="diagram-container">
+        <div class="diagram-header">
+            <h2>3. Class Diagram</h2>
+            <button class="save-btn" onclick="saveDiagram('diagram3', '3-class-diagram.png')">💾 Save as PNG</button>
+        </div>
+        <div class="diagram-content">
+            <pre class="mermaid" id="diagram3">
+classDiagram
+    class StackClientApp {
+        +tokenStore: string
+        +publishableClientKey: string
+        +projectId: string
+        +baseUrl: string
+    }
+
+    class AuthProvider {
+        +UserContext: Context
+        +userData: object
+        +CreateNewUser(): Promise
+    }
+
+    class Provider {
+        +convex: ConvexReactClient
+        +render(): JSX
+    }
+
+    class Dashboard {
+        +render(): JSX
+    }
+
+    class FeatureAssistants {
+        +user: StackUser
+        +render(): JSX
+    }
+
+    class UserInputDialog {
+        -selectedExpert: string
+        -topic: string
+        -loading: boolean
+        -openDialog: boolean
+        +OnClickNext(): Promise
+    }
+
+    class CoachingOption {
+        +name: string
+        +icon: string
+        +prompt: string
+    }
+
+    class CoachingExpert {
+        +name: string
+        +avatar: string
+    }
+
+    class User {
+        +name: string
+        +email: string
+        +credits: number
+        +subscriptionId: string
+    }
+
+    class DiscussionRoom {
+        +coachingOption: string
+        +topic: string
+        +expertName: string
+        +conversation: array
+    }
+
+    Provider --> AuthProvider : wraps
+    AuthProvider --> StackClientApp : uses
+    Dashboard --> FeatureAssistants : contains
+    FeatureAssistants --> UserInputDialog : opens
+    FeatureAssistants --> CoachingOption : displays
+    UserInputDialog --> CoachingExpert : displays
+    UserInputDialog --> DiscussionRoom : creates
+    AuthProvider --> User : manages
+            </pre>
+        </div>
+    </div>
+
+    <!-- 4. ER Diagram -->
+    <div class="diagram-container">
+        <div class="diagram-header">
+            <h2>4. ER Diagram (Entity Relationship)</h2>
+            <button class="save-btn" onclick="saveDiagram('diagram4', '4-er-diagram.png')">💾 Save as PNG</button>
+        </div>
+        <div class="diagram-content">
+            <pre class="mermaid" id="diagram4">
+erDiagram
+    USERS {
+        string _id PK
+        string name
+        string email
+        number credits
+        string subscriptionId
+    }
+
+    DISCUSSION_ROOM {
+        string _id PK
+        string coachingOption
+        string topic
+        string expertName
+        json conversation
+        string userId FK
+    }
+
+    COACHING_OPTIONS {
+        string name PK
+        string icon
+        string prompt
+    }
+
+    COACHING_EXPERTS {
+        string name PK
+        string avatar
+    }
+
+    USERS ||--o{ DISCUSSION_ROOM : "creates"
+    DISCUSSION_ROOM }o--|| COACHING_OPTIONS : "uses"
+    DISCUSSION_ROOM }o--|| COACHING_EXPERTS : "assigned to"
+            </pre>
+        </div>
+    </div>
+
+    <!-- 5. Data Flow Diagram -->
+    <div class="diagram-container">
+        <div class="diagram-header">
+            <h2>5. Data Flow Diagram (DFD)</h2>
+            <button class="save-btn" onclick="saveDiagram('diagram5', '5-data-flow-diagram.png')">💾 Save as PNG</button>
+        </div>
+        <div class="diagram-content">
+            <pre class="mermaid" id="diagram5">
+flowchart LR
+    subgraph External ["External Entities"]
+        User((👤 User))
+    end
+
+    subgraph Process ["Processes"]
+        P1[1.0<br/>Authentication]
+        P2[2.0<br/>Dashboard<br/>Display]
+        P3[3.0<br/>Session<br/>Management]
+        P4[4.0<br/>AI Processing]
+        P5[5.0<br/>Speech<br/>Processing]
+    end
+
+    subgraph DataStore ["Data Stores"]
+        D1[(D1: Users)]
+        D2[(D2: Discussion<br/>Rooms)]
+    end
+
+    subgraph ExternalServices ["External Services"]
+        E1[OpenAI]
+        E2[AssemblyAI]
+        E3[AWS Polly]
+    end
+
+    User -->|Login Request| P1
+    P1 -->|User Data| D1
+    D1 -->|Auth Status| P1
+    P1 -->|Session Token| User
+
+    User -->|View Dashboard| P2
+    D1 -->|User Info| P2
+    D2 -->|History| P2
+    P2 -->|Dashboard View| User
+
+    User -->|Start Session| P3
+    P3 -->|Create Room| D2
+    D2 -->|Room ID| P3
+    P3 -->|Session Ready| User
+
+    User -->|Voice Input| P5
+    P5 -->|Audio| E2
+    E2 -->|Text| P5
+    P5 -->|User Message| P4
+
+    P4 -->|Prompt| E1
+    E1 -->|Response| P4
+    P4 -->|AI Text| P5
+    P5 -->|Text| E3
+    E3 -->|Audio| P5
+    P5 -->|Voice Output| User
+
+    P4 -->|Save Conversation| D2
+            </pre>
+        </div>
+    </div>
+
+    <!-- 6. Sequence Diagram -->
+    <div class="diagram-container">
+        <div class="diagram-header">
+            <h2>6. Sequence Diagram</h2>
+            <button class="save-btn" onclick="saveDiagram('diagram6', '6-sequence-diagram.png')">💾 Save as PNG</button>
+        </div>
+        <div class="diagram-content">
+            <pre class="mermaid" id="diagram6">
+sequenceDiagram
+    autonumber
+    actor User
+    participant Browser as 🌐 Browser
+    participant NextJS as ⚛️ Next.js App
+    participant Stack as 🔐 Stack Auth
+    participant Convex as 🗄️ Convex
+    participant OpenAI as 🧠 OpenAI
+    participant AssemblyAI as 🎤 AssemblyAI
+    participant Polly as 🔊 AWS Polly
+
+    User->>Browser: Open Application
+    Browser->>NextJS: Load Page
+    NextJS->>Stack: Check Auth Status
+    Stack-->>NextJS: User Token/Null
+
+    alt Not Authenticated
+        NextJS-->>Browser: Redirect to Login
+        User->>Browser: Enter Credentials
+        Browser->>Stack: Authenticate
+        Stack-->>Browser: JWT Token
+    end
+
+    NextJS-->>Browser: Render Dashboard
+    Browser->>Convex: Get User Data
+    Convex-->>Browser: User Info + History
+
+    User->>Browser: Select Coaching Option
+    User->>Browser: Enter Topic & Expert
+    User->>Browser: Click Start Session
+    Browser->>Convex: CreateNewRoom()
+    Convex-->>Browser: Room ID
+    Browser->>NextJS: Navigate to /discussion-room/id
+
+    loop Coaching Session
+        User->>Browser: Speak Voice Input
+        Browser->>AssemblyAI: Send Audio Stream
+        AssemblyAI-->>Browser: Transcribed Text
+        Browser->>Convex: Send Message
+        Convex->>OpenAI: Generate Response
+        OpenAI-->>Convex: AI Response Text
+        Convex-->>Browser: Update Conversation
+        Browser->>Polly: Convert to Speech
+        Polly-->>Browser: Audio Stream
+        Browser->>User: Play Audio Response
+    end
+
+    User->>Browser: End Session
+    Browser->>Convex: Save Final Conversation
+    Convex-->>Browser: Confirmation
+    Browser-->>User: Show Feedback Summary
+            </pre>
+        </div>
+    </div>
+
+    <!-- 7. Flow Chart -->
+    <div class="diagram-container">
+        <div class="diagram-header">
+            <h2>7. Flow Chart</h2>
+            <button class="save-btn" onclick="saveDiagram('diagram7', '7-flowchart.png')">💾 Save as PNG</button>
+        </div>
+        <div class="diagram-content">
+            <pre class="mermaid" id="diagram7">
+flowchart TD
+    Start([🚀 Start]) --> CheckAuth{🔐 User Authenticated?}
+    
+    CheckAuth -->|No| LoginPage[📝 Show Login Page]
+    LoginPage --> EnterCreds[Enter Credentials]
+    EnterCreds --> Authenticate[🔄 Authenticate with Stack]
+    Authenticate --> AuthSuccess{✅ Success?}
+    AuthSuccess -->|No| LoginError[❌ Show Error]
+    LoginError --> LoginPage
+    AuthSuccess -->|Yes| CheckAuth
+    
+    CheckAuth -->|Yes| Dashboard[📊 Load Dashboard]
+    Dashboard --> CheckUser{👤 User Exists in DB?}
+    CheckUser -->|No| CreateUser[➕ Create User Record]
+    CreateUser --> LoadData
+    CheckUser -->|Yes| LoadData[📥 Load User Data]
+    
+    LoadData --> DisplayDashboard[🖥️ Display Dashboard]
+    DisplayDashboard --> UserChoice{🎯 User Action?}
+    
+    UserChoice -->|Select Coaching| SelectOption[🎓 Choose Coaching Option]
+    SelectOption --> OpenDialog[📋 Open Input Dialog]
+    OpenDialog --> EnterTopic[✏️ Enter Topic]
+    EnterTopic --> SelectExpert[👨‍🏫 Select Expert]
+    SelectExpert --> ValidInput{✅ Valid Input?}
+    ValidInput -->|No| EnterTopic
+    ValidInput -->|Yes| CreateRoom[🏠 Create Discussion Room]
+    CreateRoom --> NavigateRoom[🚪 Navigate to Room]
+    NavigateRoom --> StartSession[🎙️ Start Voice Session]
+    
+    StartSession --> SessionLoop{🔄 Session Active?}
+    SessionLoop -->|Yes| VoiceInput[🎤 Capture Voice]
+    VoiceInput --> Transcribe[📝 Transcribe Speech]
+    Transcribe --> SendToAI[🤖 Send to OpenAI]
+    SendToAI --> GetResponse[💬 Get AI Response]
+    GetResponse --> TextToSpeech[🔊 Convert to Speech]
+    TextToSpeech --> PlayAudio[🔈 Play Audio]
+    PlayAudio --> SaveConvo[💾 Save Conversation]
+    SaveConvo --> SessionLoop
+    
+    SessionLoop -->|No| EndSession[🏁 End Session]
+    EndSession --> ShowFeedback[📊 Show Feedback]
+    ShowFeedback --> UserChoice
+    
+    UserChoice -->|View History| ShowHistory[📜 Display History]
+    ShowHistory --> UserChoice
+    
+    UserChoice -->|Logout| Logout[🚪 Logout]
+    Logout --> End([🔚 End])
+            </pre>
+        </div>
+    </div>
+
+    <!-- 8. Deployment Diagram -->
+    <div class="diagram-container">
+        <div class="diagram-header">
+            <h2>8. Deployment Diagram</h2>
+            <button class="save-btn" onclick="saveDiagram('diagram8', '8-deployment-diagram.png')">💾 Save as PNG</button>
+        </div>
+        <div class="diagram-content">
+            <pre class="mermaid" id="diagram8">
+graph TB
+    subgraph ClientDevices ["📱 Client Devices"]
+        Desktop["🖥️ Desktop Browser"]
+        Mobile["📱 Mobile Browser"]
+        Tablet["📲 Tablet Browser"]
+    end
+
+    subgraph CDN ["🌐 CDN / Edge Network"]
+        Vercel["☁️ Vercel Edge Network"]
+    end
+
+    subgraph VercelCloud ["🔷 Vercel Cloud Platform"]
+        NextApp["⚛️ Next.js Application"]
+        ServerlessFunc["⚡ Serverless Functions"]
+    end
+
+    subgraph ConvexCloud ["🟠 Convex Cloud"]
+        ConvexDB["🗄️ Convex Database"]
+        ConvexFunctions["⚙️ Edge Functions"]
+    end
+
+    subgraph StackAuthCloud ["🔐 Stack Auth Cloud"]
+        AuthServer["🔑 Authentication Server"]
+        UserMgmt["👥 User Management"]
+    end
+
+    subgraph AWSCloud ["☁️ AWS"]
+        Polly["🔊 Amazon Polly"]
+    end
+
+    subgraph ExternalAPIs ["🌍 External APIs"]
+        OpenAI["🧠 OpenAI API"]
+        AssemblyAI["🎤 AssemblyAI"]
+    end
+
+    Desktop --> Vercel
+    Mobile --> Vercel
+    Tablet --> Vercel
+
+    Vercel --> NextApp
+    NextApp --> ServerlessFunc
+    NextApp <--> ConvexDB
+    ServerlessFunc --> ConvexFunctions
+
+    NextApp <--> AuthServer
+    AuthServer <--> UserMgmt
+
+    ConvexFunctions --> OpenAI
+    ConvexFunctions --> AssemblyAI
+    ConvexFunctions --> Polly
+
+    style Desktop fill:#3b82f6
+    style Mobile fill:#3b82f6
+    style Tablet fill:#3b82f6
+    style Vercel fill:#000000,color:#ffffff
+    style NextApp fill:#000000,color:#ffffff
+    style ConvexDB fill:#f97316
+    style ConvexFunctions fill:#f97316
+    style AuthServer fill:#6366f1
+    style OpenAI fill:#10b981
+    style AssemblyAI fill:#8b5cf6
+    style Polly fill:#ec4899
+            </pre>
+        </div>
+    </div>
+
+    <!-- 9. Sample UI Diagram -->
+    <div class="diagram-container">
+        <div class="diagram-header">
+            <h2>9. Sample UI Wireframe Diagram</h2>
+            <button class="save-btn" onclick="saveDiagram('diagram9', '9-sample-ui-diagram.png')">💾 Save as PNG</button>
+        </div>
+        <div class="diagram-content">
+            <pre class="mermaid" id="diagram9">
+graph TB
+    subgraph UI ["🖥️ Sample UI Wireframe"]
+        subgraph Header ["Header"]
+            Logo["🎯 Logo"]
+            UserBtn["👤 User Button"]
+        end
+
+        subgraph MainContent ["Main Content Area"]
+            Welcome["Welcome Back, User!"]
+            
+            subgraph CoachingGrid ["Coaching Options Grid"]
+                Card1["📚<br/>Lecture on Topic"]
+                Card2["💼<br/>Mock Interview"]
+                Card3["❓<br/>Ques Ans Prep"]
+                Card4["🗣️<br/>Languages Skill"]
+                Card5["🧘<br/>Meditation"]
+            end
+
+            subgraph BottomSection ["Bottom Section"]
+                HistoryPanel["📜 Your Previous Lectures"]
+                FeedbackPanel["💬 Feedback"]
+            end
+        end
+    end
+
+    subgraph Dialog ["📋 User Input Dialog"]
+        DialogTitle["Mock Interview"]
+        TopicInput["📝 Enter Topic Here..."]
+        ExpertGrid["Select Expert:<br/>👨 Joanna - 👩 Sallie - 👨 Matthew"]
+        Buttons["Cancel - Next"]
+    end
+
+    Card2 -.->|Click| Dialog
+
+    style Logo fill:#3b82f6
+    style UserBtn fill:#6366f1
+    style Card1 fill:#f3f4f6
+    style Card2 fill:#f3f4f6
+    style Card3 fill:#f3f4f6
+    style Card4 fill:#f3f4f6
+    style Card5 fill:#f3f4f6
+    style Dialog fill:#ffffff,stroke:#3b82f6,stroke-width:2px
+            </pre>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: { 
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        async function saveDiagram(elementId, filename) {
+            const element = document.getElementById(elementId);
+            const svg = element.querySelector('svg');
+            
+            if (!svg) {
+                alert('Diagram not rendered yet. Please wait and try again.');
+                return;
+            }
+
+            try {
+                // Clone SVG
+                const svgClone = svg.cloneNode(true);
+                
+                // Remove any foreignObject elements that cause issues
+                const foreignObjects = svgClone.querySelectorAll('foreignObject');
+                foreignObjects.forEach(fo => {
+                    const text = fo.textContent || '';
+                    const textNode = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    textNode.textContent = text;
+                    fo.parentNode.replaceChild(textNode, fo);
+                });
+
+                // Get dimensions
+                const svgRect = svg.getBoundingClientRect();
+                const width = Math.max(svgRect.width, 800);
+                const height = Math.max(svgRect.height, 400);
+
+                // Set explicit dimensions
+                svgClone.setAttribute('width', width);
+                svgClone.setAttribute('height', height);
+                svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+                svgClone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+
+                // Add white background rect
+                const bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                bgRect.setAttribute('width', '100%');
+                bgRect.setAttribute('height', '100%');
+                bgRect.setAttribute('fill', 'white');
+                svgClone.insertBefore(bgRect, svgClone.firstChild);
+
+                // Inline all styles
+                const styleSheets = document.styleSheets;
+                let cssText = '';
+                for (let sheet of styleSheets) {
+                    try {
+                        for (let rule of sheet.cssRules) {
+                            cssText += rule.cssText + '\n';
+                        }
+                    } catch (e) {}
+                }
+                
+                // Add embedded styles
+                const styleElement = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+                styleElement.textContent = cssText;
+                svgClone.insertBefore(styleElement, svgClone.firstChild);
+
+                // Serialize SVG
+                const serializer = new XMLSerializer();
+                let svgString = serializer.serializeToString(svgClone);
+                
+                // Fix potential issues with special characters
+                svgString = svgString.replace(/&nbsp;/g, ' ');
+                
+                // Create blob and URL
+                const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+                const url = URL.createObjectURL(svgBlob);
+
+                // Create image and canvas
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    img.src = url;
+                });
+
+                const canvas = document.createElement('canvas');
+                const scale = 2; // Higher quality
+                canvas.width = width * scale;
+                canvas.height = height * scale;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.scale(scale, scale);
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, width, height);
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Convert to PNG and download
+                canvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = filename;
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    setTimeout(() => {
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(link.href);
+                    }, 100);
+                }, 'image/png', 1.0);
+
+                URL.revokeObjectURL(url);
+                
+            } catch (error) {
+                console.error('Error saving diagram:', error);
+                // Fallback: try direct SVG download
+                try {
+                    const svgData = new XMLSerializer().serializeToString(svg);
+                    const blob = new Blob([svgData], { type: 'image/svg+xml' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = filename.replace('.png', '.svg');
+                    link.click();
+                    alert('PNG export failed. Downloaded as SVG instead. You can convert it to PNG using an online tool.');
+                } catch (e) {
+                    alert('Failed to save diagram. Please try taking a screenshot instead.');
+                }
+            }
+        }
+
+        // Download all diagrams
+        async function downloadAllDiagrams() {
+            const diagrams = [
+                ['diagram1', '1-use-case-diagram.png'],
+                ['diagram2', '2-system-architecture-diagram.png'],
+                ['diagram3', '3-class-diagram.png'],
+                ['diagram4', '4-er-diagram.png'],
+                ['diagram5', '5-data-flow-diagram.png'],
+                ['diagram6', '6-sequence-diagram.png'],
+                ['diagram7', '7-flowchart.png'],
+                ['diagram8', '8-deployment-diagram.png'],
+                ['diagram9', '9-sample-ui-diagram.png']
+            ];
+
+            for (let i = 0; i < diagrams.length; i++) {
+                const [id, filename] = diagrams[i];
+                console.log(`Downloading ${filename}...`);
+                await saveDiagram(id, filename);
+                await new Promise(r => setTimeout(r, 1000)); // Wait between downloads
+            }
+            alert('All diagrams downloaded!');
+        }
+    </script>
+</body>
+</html>

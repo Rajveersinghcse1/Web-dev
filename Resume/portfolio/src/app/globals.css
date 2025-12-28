@@ -1,0 +1,235 @@
+:root {
+  /* Halloween Color Palette - White Base with Spooky Accents */
+  --bg-primary: #ffffff;
+  --bg-secondary: #fafafa;
+  --bg-haunted: #1a1a2e;
+  --bg-card: rgba(26, 26, 46, 0.03);
+  --bg-mist: rgba(74, 0, 128, 0.02);
+
+  /* Text Colors - DARK for visibility */
+  --text-primary: #1a1a2e;
+  --text-secondary: #333333;
+  --text-muted: #555555;
+  --text-light: #ffffff;
+
+  /* Halloween Accent Colors */
+  --accent-purple: #6a0dad;
+  --accent-purple-light: #7c3aed;
+  --accent-orange: #ff4500;
+  --accent-orange-light: #ff6a33;
+  --accent-mystery: #6B21A8;
+  --accent-blood: #dc2626;
+  --accent-glow: rgba(106, 13, 173, 0.4);
+  --accent-glow-orange: rgba(255, 69, 0, 0.3);
+
+  /* Spacing System */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 2rem;
+  --space-lg: 4rem;
+  --space-xl: 8rem;
+
+  /* Layout */
+  --max-width: 1400px;
+  --nav-height: 80px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 24px;
+
+  /* Fonts */
+  --font-sans: var(--font-geist-sans), -apple-system, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+
+  /* Shadows - Spooky depths */
+  --shadow-mystery: 0 4px 30px rgba(106, 13, 173, 0.1);
+  --shadow-float: 0 20px 60px rgba(26, 26, 46, 0.15);
+  --shadow-haunted: 0 0 40px rgba(106, 13, 173, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--nav-height);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.7;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ============================================
+   GLOBAL TEXT VISIBILITY OVERRIDES
+   Force dark colors on all text elements
+   ============================================ */
+
+/* ALL headings should be dark */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #1a1a2e !important;
+}
+
+/* ALL paragraphs should be readable */
+p {
+  color: #333333 !important;
+}
+
+/* Links should be purple */
+a {
+  color: #6a0dad;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #ff6a00;
+}
+
+/* Lists should be dark */
+ul,
+ol,
+li {
+  color: #333333;
+}
+
+/* Spans inherit properly */
+span {
+  color: inherit;
+}
+
+/* ============================================
+   GRADIENT TEXT (only for special elements)
+   ============================================ */
+.text-gradient {
+  background: linear-gradient(135deg, #1a1a2e 0%, #6a0dad 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-accent-gradient {
+  background: linear-gradient(135deg, #6a0dad 0%, #ff6a00 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ============================================
+   CARDS - White background, visible text
+   ============================================ */
+section {
+  background-color: transparent;
+}
+
+/* Force card visibility */
+[class*="Card"],
+[class*="card"] {
+  background: #ffffff !important;
+  border: 2px solid rgba(106, 13, 173, 0.15) !important;
+}
+
+[class*="Card"] h3,
+[class*="Card"] h4,
+[class*="card"] h3,
+[class*="card"] h4 {
+  color: #1a1a2e !important;
+}
+
+[class*="Card"] p,
+[class*="card"] p {
+  color: #333333 !important;
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+.section {
+  padding: var(--space-xl) 0;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  50% {
+    box-shadow: 0 0 40px var(--accent-glow), 0 0 60px var(--accent-glow-orange);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #6a0dad 0%, #ff6a00 100%);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #4a0080 0%, #cc3700 100%);
+}
+
+/* ============================================
+   SELECTION
+   ============================================ */
+::selection {
+  background: rgba(106, 13, 173, 0.2);
+  color: #1a1a2e;
+}

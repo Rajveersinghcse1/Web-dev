@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Pit Mine 3D Viewer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h2>Loading Open Pit Mine Data</h2>
+            <p>Processing LAS file...</p>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="header-content">
+            <h1>Open Pit Mine 3D Viewer</h1>
+            <div class="header-controls">
+                <button id="loadFileBtn" class="btn btn-primary">Load LAS File</button>
+                <input type="file" id="fileInput" accept=".las" style="display: none;">
+                <div class="quick-load-buttons" style="margin-left: 15px;">
+                    <button id="loadJietCampus" class="btn btn-secondary" style="margin-right: 5px;">JIET Campus</button>
+                    <button id="loadRealMine" class="btn btn-secondary" style="margin-right: 5px;">Real Mine</button>
+                    <button id="loadSyntheticMine" class="btn btn-secondary" style="margin-right: 5px;">Synthetic Mine</button>
+                    <button id="loadWellLog" class="btn btn-secondary">Well Log</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div id="viewer-container" class="viewer-container">
+            <canvas id="three-canvas"></canvas>
+            
+            <!-- Info Panel -->
+            <div id="info-panel" class="info-panel">
+                <div class="panel-header">
+                    <h3>Mine Information</h3>
+                    <button id="toggle-info" class="toggle-btn">−</button>
+                </div>
+                <div class="panel-content">
+                    <div class="info-item">
+                        <label>Points:</label>
+                        <span id="point-count">0</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Bounds X:</label>
+                        <span id="bounds-x">0 - 0</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Bounds Y:</label>
+                        <span id="bounds-y">0 - 0</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Bounds Z:</label>
+                        <span id="bounds-z">0 - 0</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Elevation Range:</label>
+                        <span id="elevation-range">0m</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls Panel -->
+            <div id="controls-panel" class="controls-panel">
+                <div class="panel-header">
+                    <h3>Visualization Controls</h3>
+                    <button id="toggle-controls" class="toggle-btn">−</button>
+                </div>
+                <div class="panel-content">
+                    <div class="control-group">
+                        <label for="point-size">Point Size:</label>
+                        <input type="range" id="point-size" min="0.1" max="5.0" step="0.1" value="1.0">
+                        <span id="point-size-value">1.0</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="color-mode">Color Mode:</label>
+                        <select id="color-mode">
+                            <option value="elevation">Elevation</option>
+                            <option value="intensity">Intensity</option>
+                            <option value="classification">Classification</option>
+                            <option value="welllog">Well Log Curves</option>
+                            <option value="uniform">Uniform</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="opacity">Opacity:</label>
+                        <input type="range" id="opacity" min="0.1" max="1.0" step="0.1" value="1.0">
+                        <span id="opacity-value">1.0</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <button id="reset-view" class="btn btn-secondary">Reset View</button>
+                        <button id="center-view" class="btn btn-secondary">Center View</button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <button id="wireframe-toggle" class="btn btn-secondary">Toggle Wireframe</button>
+                        <button id="background-toggle" class="btn btn-secondary">Toggle Background</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Panel -->
+            <div id="stats-panel" class="stats-panel">
+                <div class="panel-header">
+                    <h3>Performance</h3>
+                    <button id="toggle-stats" class="toggle-btn">−</button>
+                </div>
+                <div class="panel-content">
+                    <div class="stat-item">
+                        <label>FPS:</label>
+                        <span id="fps">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Rendered Points:</label>
+                        <span id="rendered-points">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Memory Usage:</label>
+                        <span id="memory-usage">0 MB</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Keyboard Shortcuts Help -->
+    <div id="help-overlay" class="help-overlay" style="display: none;">
+        <div class="help-content">
+            <h3>Keyboard Shortcuts</h3>
+            <div class="shortcut-grid">
+                <div class="shortcut-item">
+                    <kbd>Mouse Drag</kbd>
+                    <span>Rotate view</span>
+                </div>
+                <div class="shortcut-item">
+                    <kbd>Mouse Wheel</kbd>
+                    <span>Zoom in/out</span>
+                </div>
+                <div class="shortcut-item">
+                    <kbd>Right Click + Drag</kbd>
+                    <span>Pan view</span>
+                </div>
+                <div class="shortcut-item">
+                    <kbd>R</kbd>
+                    <span>Reset view</span>
+                </div>
+                <div class="shortcut-item">
+                    <kbd>C</kbd>
+                    <span>Center view</span>
+                </div>
+                <div class="shortcut-item">
+                    <kbd>H</kbd>
+                    <span>Toggle help</span>
+                </div>
+                <div class="shortcut-item">
+                    <kbd>F</kbd>
+                    <span>Toggle fullscreen</span>
+                </div>
+            </div>
+            <button id="close-help" class="btn btn-primary">Close</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 Open Pit Mine Viewer - Press 'H' for keyboard shortcuts</p>
+            <button id="help-btn" class="btn btn-link">Help</button>
+        </div>
+    </footer>
+
+    <script src="lasParser.js"></script>
+    <script src="ultraMaxLASParser.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

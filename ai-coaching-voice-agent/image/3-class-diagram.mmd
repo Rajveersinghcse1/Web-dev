@@ -1,0 +1,83 @@
+classDiagram
+    class StackClientApp {
+        +tokenStore: string
+        +publishableClientKey: string
+        +projectId: string
+        +baseUrl: string
+    }
+
+    class AuthProvider {
+        +UserContext: Context
+        +userData: object
+        +CreateNewUser(): Promise
+    }
+
+    class Provider {
+        +convex: ConvexReactClient
+        +render(): JSX
+    }
+
+    class Dashboard {
+        +render(): JSX
+    }
+
+    class FeatureAssistants {
+        +user: StackUser
+        +render(): JSX
+    }
+
+    class UserInputDialog {
+        -selectedExpert: string
+        -topic: string
+        -loading: boolean
+        -openDialog: boolean
+        +OnClickNext(): Promise
+    }
+
+    class AppHeader {
+        +render(): JSX
+    }
+
+    class History {
+        +render(): JSX
+    }
+
+    class Feedback {
+        +render(): JSX
+    }
+
+    class CoachingOption {
+        +name: string
+        +icon: string
+        +prompt: string
+    }
+
+    class CoachingExpert {
+        +name: string
+        +avatar: string
+    }
+
+    class User {
+        +name: string
+        +email: string
+        +credits: number
+        +subscriptionId: string
+    }
+
+    class DiscussionRoom {
+        +coachingOption: string
+        +topic: string
+        +expertName: string
+        +conversation: array
+    }
+
+    Provider --> AuthProvider : wraps
+    AuthProvider --> StackClientApp : uses
+    Dashboard --> FeatureAssistants : contains
+    Dashboard --> History : contains
+    Dashboard --> Feedback : contains
+    FeatureAssistants --> UserInputDialog : opens
+    FeatureAssistants --> CoachingOption : displays
+    UserInputDialog --> CoachingExpert : displays
+    UserInputDialog --> DiscussionRoom : creates
+    AuthProvider --> User : manages

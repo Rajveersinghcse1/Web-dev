@@ -1,0 +1,119 @@
+{
+  "upbeat_electronic": {
+    "id": "upbeat_electronic",
+    "name": "Upbeat Electronic",
+    "description": "Energetic electronic music with strong beats",
+    "category": "music",
+    "parameters": {
+      "duration": 30.0,
+      "model_size": "medium",
+      "temperature": 0.9,
+      "top_k": 200,
+      "cfg_coef": 4.0,
+      "prompt_template": "upbeat electronic dance music with {genre} influences, {tempo} bpm, {mood}"
+    },
+    "created_at": "2025-09-17T22:15:15.168299",
+    "updated_at": "2025-09-17T22:15:15.168299",
+    "created_by": null,
+    "tags": [
+      "electronic",
+      "dance",
+      "upbeat",
+      "energetic"
+    ],
+    "is_public": true
+  },
+  "ambient_chill": {
+    "id": "ambient_chill",
+    "name": "Ambient Chill",
+    "description": "Relaxing ambient soundscapes",
+    "category": "music",
+    "parameters": {
+      "duration": 60.0,
+      "model_size": "small",
+      "temperature": 1.2,
+      "top_k": 300,
+      "cfg_coef": 2.5,
+      "prompt_template": "ambient chill music, {atmosphere}, peaceful and relaxing, {instruments}"
+    },
+    "created_at": "2025-09-17T22:15:15.168299",
+    "updated_at": "2025-09-17T22:15:15.168299",
+    "created_by": null,
+    "tags": [
+      "ambient",
+      "chill",
+      "relaxing",
+      "peaceful"
+    ],
+    "is_public": true
+  },
+  "cinematic_orchestral": {
+    "id": "cinematic_orchestral",
+    "name": "Cinematic Orchestral",
+    "description": "Epic orchestral music for films and games",
+    "category": "music",
+    "parameters": {
+      "duration": 45.0,
+      "model_size": "large",
+      "temperature": 0.8,
+      "top_k": 250,
+      "cfg_coef": 5.0,
+      "prompt_template": "cinematic orchestral music, {mood}, epic and dramatic, full orchestra with {emphasis}"
+    },
+    "created_at": "2025-09-17T22:15:15.168299",
+    "updated_at": "2025-09-17T22:15:15.168299",
+    "created_by": null,
+    "tags": [
+      "orchestral",
+      "cinematic",
+      "epic",
+      "dramatic"
+    ],
+    "is_public": true
+  },
+  "nature_sounds": {
+    "id": "nature_sounds",
+    "name": "Nature Sounds",
+    "description": "Natural environmental sounds and effects",
+    "category": "audio_effect",
+    "parameters": {
+      "duration": 20.0,
+      "temperature": 1.0,
+      "prompt_template": "{environment} sounds, natural {weather} ambience, {details}"
+    },
+    "created_at": "2025-09-17T22:15:15.168299",
+    "updated_at": "2025-09-17T22:15:15.168299",
+    "created_by": null,
+    "tags": [
+      "nature",
+      "ambient",
+      "environment",
+      "sounds"
+    ],
+    "is_public": true
+  },
+  "vocal_harmony": {
+    "id": "vocal_harmony",
+    "name": "Vocal Harmony",
+    "description": "Multi-layer vocal harmonies and arrangements",
+    "category": "music",
+    "parameters": {
+      "duration": 25.0,
+      "model_size": "melody",
+      "temperature": 0.7,
+      "top_k": 180,
+      "cfg_coef": 3.5,
+      "prompt_template": "vocal harmony, {style} singing, {number} voices, {language} lyrics"
+    },
+    "created_at": "2025-09-17T22:15:15.168299",
+    "updated_at": "2025-09-17T22:15:15.168299",
+    "created_by": null,
+    "tags": [
+      "vocal",
+      "harmony",
+      "singing",
+      "voices"
+    ],
+    "is_public": true
+  }
+}

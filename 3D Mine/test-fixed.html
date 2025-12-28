@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fixed Well Log Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .log { background: #f0f0f0; padding: 10px; margin: 5px 0; border-radius: 5px; font-family: monospace; }
+        .success { background: #e8f5e8; border-left: 4px solid #4caf50; }
+        .error { background: #ffeaea; border-left: 4px solid #f44336; }
+        .info { background: #e3f2fd; border-left: 4px solid #2196f3; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Fixed Well Log Parser Test</h1>
+    <button onclick="testFixedParser()" style="padding: 10px 20px; font-size: 16px;">🚀 Test Fixed Parser</button>
+    <div id="result"></div>
+    
+    <script src="ultraAdvancedLASParser.js"></script>
+    <script>
+        async function testFixedParser() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="info log">🔄 Testing fixed parser...</div>';
+            
+            try {
+                // Load the well log file
+                const response = await fetch('Las Dataset/49-005-30258.las');
+                const arrayBuffer = await response.arrayBuffer();
+                
+                // Create parser
+                const parser = new UltraAdvancedLASParser();
+                
+                // Parse the file
+                const result = await parser.parseLAS(arrayBuffer);
+                
+                // Show results
+                resultDiv.innerHTML = `
+                    <div class="success log">✅ Parse Successful!</div>
+                    <div class="info log">📊 File Type: ${result.fileType}</div>
+                    <div class="info log">📊 Point Count: ${result.pointCount}</div>
+                    <div class="info log">📊 Points Array Length: ${result.points ? result.points.length : 'N/A'}</div>
+                    <div class="info log">🏭 Well Name: ${result.header?.wellName || 'Unknown'}</div>
+                    <div class="info log">📈 Curves: ${result.header?.curves?.join(', ') || 'None'}</div>
+                    <div class="info log">📋 Data Points in Header: ${result.header?.dataPoints || 'N/A'}</div>
+                `;
+                
+                if (result.points && result.points.length > 0) {
+                    resultDiv.innerHTML += `
+                        <div class="success log">🎯 Sample 3D Points Generated:</div>
+                        <div class="info log" style="max-height: 200px; overflow-y: auto;">
+                            <pre>${JSON.stringify(result.points.slice(0, 3), null, 2)}</pre>
+                        </div>
+                    `;
+                    
+                    // Test if main viewer would accept this
+                    if (result.points.length > 0 && result.bounds) {
+                        resultDiv.innerHTML += '<div class="success log">🎉 This data should work in the main viewer!</div>';
+                    }
+                } else {
+                    resultDiv.innerHTML += '<div class="error log">❌ No 3D points generated - still an issue!</div>';
+                }
+                
+                resultDiv.innerHTML += '<div class="info log">📋 Check browser console (F12) for detailed logs</div>';
+                
+            } catch (error) {
+                console.error('Test failed:', error);
+                resultDiv.innerHTML += `<div class="error log">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Auto-open console hint
+        console.log('🔧 Fixed parser test page loaded - detailed logs will appear here');
+    </script>
+</body>
+</html>

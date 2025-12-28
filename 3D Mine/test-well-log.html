@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Well Log Parser Test</title>
+</head>
+<body>
+    <h1>Well Log Parser Test</h1>
+    <button onclick="testParser()">Test Parse Las Dataset File</button>
+    <div id="output"></div>
+    
+    <script src="ultraAdvancedLASParser.js"></script>
+    <script>
+        async function testParser() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p>Loading and testing parser...</p>';
+            
+            try {
+                console.log('🧪 Starting test...');
+                
+                // Load the Las Dataset file
+                const response = await fetch('Las Dataset/49-005-30258.las');
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch file: ${response.status}`);
+                }
+                
+                const arrayBuffer = await response.arrayBuffer();
+                console.log(`📂 Loaded file: ${arrayBuffer.byteLength} bytes`);
+                
+                // Create parser and test
+                const parser = new UltraAdvancedLASParser();
+                const result = await parser.parseLAS(arrayBuffer);
+                
+                console.log('✅ Parse result:', result);
+                
+                output.innerHTML = `
+                    <h2>✅ Parse Successful!</h2>
+                    <p><strong>File Type:</strong> ${result.fileType}</p>
+                    <p><strong>Point Count:</strong> ${result.pointCount}</p>
+                    <p><strong>Well Name:</strong> ${result.header?.wellName || 'Unknown'}</p>
+                    <p><strong>Depth Range:</strong> ${result.header?.startDepth} - ${result.header?.stopDepth} ft</p>
+                    <p><strong>Curves:</strong> ${result.header?.curves?.join(', ') || 'None'}</p>
+                    <p><strong>Bounds:</strong> X(${result.bounds.minX.toFixed(2)} to ${result.bounds.maxX.toFixed(2)}), Y(${result.bounds.minY.toFixed(2)} to ${result.bounds.maxY.toFixed(2)}), Z(${result.bounds.minZ.toFixed(2)} to ${result.bounds.maxZ.toFixed(2)})</p>
+                    <p>Check console for detailed logs!</p>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Test failed:', error);
+                output.innerHTML = `
+                    <h2>❌ Parse Failed</h2>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p>Check console for details!</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

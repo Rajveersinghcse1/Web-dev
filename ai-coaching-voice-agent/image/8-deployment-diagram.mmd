@@ -1,0 +1,62 @@
+graph TB
+    subgraph ClientDevices ["📱 Client Devices"]
+        Desktop["🖥️ Desktop Browser"]
+        Mobile["📱 Mobile Browser"]
+        Tablet["📲 Tablet Browser"]
+    end
+
+    subgraph CDN ["🌐 CDN / Edge Network"]
+        Vercel["☁️ Vercel Edge Network<br/>(Global CDN)"]
+    end
+
+    subgraph VercelCloud ["🔷 Vercel Cloud Platform"]
+        NextApp["⚛️ Next.js Application<br/>(SSR + Static)"]
+        ServerlessFunc["⚡ Serverless Functions<br/>(API Routes)"]
+    end
+
+    subgraph ConvexCloud ["🟠 Convex Cloud"]
+        ConvexDB["🗄️ Convex Database<br/>(Real-time Sync)"]
+        ConvexFunctions["⚙️ Edge Functions<br/>(Backend Logic)"]
+    end
+
+    subgraph StackAuthCloud ["🔐 Stack Auth Cloud"]
+        AuthServer["🔑 Authentication Server"]
+        UserMgmt["👥 User Management"]
+    end
+
+    subgraph AWSCloud ["☁️ AWS"]
+        Polly["🔊 Amazon Polly<br/>(Text-to-Speech)"]
+    end
+
+    subgraph ExternalAPIs ["🌍 External APIs"]
+        OpenAI["🧠 OpenAI API<br/>(GPT Models)"]
+        AssemblyAI["🎤 AssemblyAI<br/>(Speech-to-Text)"]
+    end
+
+    Desktop --> Vercel
+    Mobile --> Vercel
+    Tablet --> Vercel
+
+    Vercel --> NextApp
+    NextApp --> ServerlessFunc
+    NextApp <--> ConvexDB
+    ServerlessFunc --> ConvexFunctions
+
+    NextApp <--> AuthServer
+    AuthServer <--> UserMgmt
+
+    ConvexFunctions --> OpenAI
+    ConvexFunctions --> AssemblyAI
+    ConvexFunctions --> Polly
+
+    style Desktop fill:#3b82f6
+    style Mobile fill:#3b82f6
+    style Tablet fill:#3b82f6
+    style Vercel fill:#000000,color:#ffffff
+    style NextApp fill:#000000,color:#ffffff
+    style ConvexDB fill:#f97316
+    style ConvexFunctions fill:#f97316
+    style AuthServer fill:#6366f1
+    style OpenAI fill:#10b981
+    style AssemblyAI fill:#8b5cf6
+    style Polly fill:#ec4899

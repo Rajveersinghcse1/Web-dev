@@ -1,0 +1,100 @@
+/* Base card styling for all sections */
+.spotlightCard {
+    position: relative;
+    background: linear-gradient(135deg, #ffffff 0%, #faf8ff 100%);
+    border: 2px solid rgba(106, 13, 173, 0.15);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow:
+        0 8px 32px rgba(26, 26, 46, 0.08),
+        0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+}
+
+.spotlightCard:hover {
+    border-color: rgba(106, 13, 173, 0.3);
+    box-shadow:
+        0 25px 80px rgba(106, 13, 173, 0.15),
+        0 0 60px rgba(106, 13, 173, 0.08),
+        0 0 0 1px rgba(255, 255, 255, 0.95) inset;
+}
+
+/* Dark variant */
+.dark {
+    background: linear-gradient(135deg, #1a1a2e 0%, #2d1f4e 100%);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark:hover {
+    border-color: rgba(106, 13, 173, 0.5);
+    box-shadow:
+        0 25px 80px rgba(106, 13, 173, 0.3),
+        0 0 80px rgba(106, 13, 173, 0.15);
+}
+
+/* Glow variant */
+.glow {
+    background: linear-gradient(135deg, #ffffff 0%, #fff8f5 100%);
+    border-color: rgba(255, 106, 0, 0.2);
+}
+
+.glow:hover {
+    border-color: rgba(255, 106, 0, 0.4);
+    box-shadow:
+        0 25px 80px rgba(255, 106, 0, 0.15),
+        0 0 80px rgba(255, 106, 0, 0.1);
+}
+
+/* Visible colored spotlights */
+.spotlight1,
+.spotlight2 {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    z-index: 0;
+}
+
+/* Corner accent */
+.cornerAccent {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, transparent 50%, rgba(106, 13, 173, 0.08) 50%);
+    transition: all 0.4s ease;
+    pointer-events: none;
+}
+
+.spotlightCard:hover .cornerAccent {
+    background: linear-gradient(135deg, transparent 50%, rgba(255, 106, 0, 0.12) 50%);
+}
+
+/* Card content container */
+.cardContent {
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure text is always visible and readable */
+.cardContent h3,
+.cardContent h4 {
+    color: #1a1a2e !important;
+}
+
+.cardContent p {
+    color: #444 !important;
+}
+
+.dark .cardContent h3,
+.dark .cardContent h4 {
+    color: #ffffff !important;
+}
+
+.dark .cardContent p {
+    color: #ccc !important;
+}

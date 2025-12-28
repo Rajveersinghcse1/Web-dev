@@ -1,0 +1,1 @@
+c3VzaGls, https://bimsanalysisapi.mineexcellence.com/Service.asmx/getMine

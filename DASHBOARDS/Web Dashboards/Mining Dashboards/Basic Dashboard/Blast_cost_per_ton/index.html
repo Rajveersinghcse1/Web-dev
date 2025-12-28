@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Blast Cost Analysis Tool</title>
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🧨 Blast Cost Analysis Tool</h1>
+            <p>Upload your blast cost data and get comprehensive analysis with error handling</p>
+        </header>
+
+        <!-- Alert Container -->
+        <div id="alertContainer" class="alert-container"></div>
+
+        <!-- File Upload Section -->
+        <section class="upload-section">
+            <div class="upload-card">
+                <h2>📁 Upload Data File</h2>
+                <div class="file-input-wrapper">
+                    <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" class="file-input">
+                    <label for="fileInput" class="file-label">
+                        <span class="upload-icon">📤</span>
+                        Choose CSV or Excel File
+                    </label>
+                </div>
+                <div id="fileName" class="file-name"></div>
+                <div class="supported-formats">
+                    <small>Supported formats: CSV, XLSX, XLS</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Column Mapping Section -->
+        <section id="columnMappingSection" class="section hidden">
+            <div class="card">
+                <h2>🔗 Detected Column Mapping</h2>
+                <div id="columnMappingContent" class="column-mapping"></div>
+            </div>
+        </section>
+
+        <!-- Error Records Section -->
+        <div class="error-controls">
+            <button id="errorButton" class="error-btn" style="display: none;">
+                View Error Records (0)
+            </button>
+            <button id="exportErrorButton" class="export-error-btn" style="display: none;">
+                📥 Export Error Records
+            </button>
+        </div>
+
+        <section id="errorRecordsSection" class="section hidden">
+            <div class="card error-card">
+                <h2>⚠️ Error Records</h2>
+                <div id="errorRecordsContainer"></div>
+            </div>
+        </section>
+
+        <!-- Controls Section -->
+        <section id="controlsSection" class="section hidden">
+            <div class="card">
+                <h2>⚙️ Analysis Controls</h2>
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="chartType">Chart Type:</label>
+                        <select id="chartType" onchange="updateVisualization()">
+                            <option value="costPerTon">Cost Per Ton Analysis</option>
+                            
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="dataType">Data Type Filter:</label>
+                        <select id="dataType" onchange="updateVisualization()">
+                            <option value="all">All Data</option>
+                            <option value="actual">Actual Only</option>
+                            <option value="theoretical">Theoretical Only</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="filterType">Additional Filters:</label>
+                        <select id="filterType">
+                            <option value="none">No Filter</option>
+                            <option value="year">Year Range</option>
+                            <option value="date">Date Range</option>
+                            <option value="cost">Cost Range</option>
+                            <option value="tonnage">Tonnage Range</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Dynamic Filter Controls -->
+                <div class="filter-controls">
+                    <div id="yearStartGroup" class="filter-group" style="display: none;">
+                        <label for="yearStart">Start Year:</label>
+                        <input type="number" id="yearStart" min="2000" max="2030" onchange="updateVisualization()">
+                    </div>
+
+                    <div id="yearEndGroup" class="filter-group" style="display: none;">
+                        <label for="yearEnd">End Year:</label>
+                        <input type="number" id="yearEnd" min="2000" max="2030" onchange="updateVisualization()">
+                    </div>
+
+                    <div id="dateStartGroup" class="filter-group" style="display: none;">
+                        <label for="dateStart">Start Date:</label>
+                        <input type="date" id="dateStart" onchange="updateVisualization()">
+                    </div>
+
+                    <div id="dateEndGroup" class="filter-group" style="display: none;">
+                        <label for="dateEnd">End Date:</label>
+                        <input type="date" id="dateEnd" onchange="updateVisualization()">
+                    </div>
+
+                    <div id="costMinGroup" class="filter-group" style="display: none;">
+                        <label for="costMin">Min Cost (₹):</label>
+                        <input type="number" id="costMin" min="0" step="0.01" onchange="updateVisualization()">
+                    </div>
+
+                    <div id="costMaxGroup" class="filter-group" style="display: none;">
+                        <label for="costMax">Max Cost (₹):</label>
+                        <input type="number" id="costMax" min="0" step="0.01" onchange="updateVisualization()">
+                    </div>
+
+                    <div id="tonnageMinGroup" class="filter-group" style="display: none;">
+                        <label for="tonnageMin">Min Tonnage:</label>
+                        <input type="number" id="tonnageMin" min="0" step="0.01" onchange="updateVisualization()">
+                    </div>
+
+                    <div id="tonnageMaxGroup" class="filter-group" style="display: none;">
+                        <label for="tonnageMax">Max Tonnage:</label>
+                        <input type="number" id="tonnageMax" min="0" step="0.01" onchange="updateVisualization()">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics Section -->
+        <section id="statsSection" class="section hidden">
+            <div class="card">
+                <h2>📊 Analysis Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Total Valid Records</div>
+                        <div id="totalRecords" class="stat-value">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Average Blasting Cost</div>
+                        <div id="avgBlastingCost" class="stat-value">₹0.00</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Total Explosive Used</div>
+                        <div id="totalExplosive" class="stat-value">0 kg</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Total Tonnage</div>
+                        <div id="totalTonnage" class="stat-value">0 tons</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Average Cost Per Ton</div>
+                        <div id="avgCostPerTon" class="stat-value">₹0.00</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Total Drilling Cost</div>
+                        <div id="totalDrillingCost" class="stat-value">₹0.00</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Total Manpower Cost</div>
+                        <div id="totalManpowerCost" class="stat-value">₹0.00</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Actual/Theoretical Records</div>
+                        <div id="actualVsTheoretical" class="stat-value">0/0</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chart Section -->
+        <section id="chartSection" class="section hidden">
+            <div class="card">
+                <h2>📈 Data Visualization</h2>
+                <div class="chart-container">
+                    <canvas id="dataChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Table Section -->
+        <section id="tableSection" class="section hidden">
+            <div class="card">
+                <h2>📋 Valid Data Records</h2>
+                <div id="tableContainer" class="table-container"></div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Enhanced Blast Cost Analysis Tool - Advanced Mining Analytics</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

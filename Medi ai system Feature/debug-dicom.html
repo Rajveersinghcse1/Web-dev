@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DICOM Debug Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background: #e8f5e8; border-color: #4caf50; }
+        .error { background: #ffe8e8; border-color: #f44336; }
+        .info { background: #e8f0ff; border-color: #2196f3; }
+        pre { white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>DICOM Debug Test</h1>
+    <button onclick="testDICOMParsing()">Test DICOM Parsing</button>
+    <div id="results"></div>
+
+    <script src="utils/dicom-parser.js"></script>
+    <script>
+        async function testDICOMParsing() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div class="info">Testing DICOM parsing...</div>';
+
+            try {
+                // Test with the first DICOM file
+                const response = await fetch('./DATA/ID_0000_AGE_0060_CONTRAST_1_CT.dcm');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const arrayBuffer = await response.arrayBuffer();
+                results.innerHTML += '<div class="info">File loaded, size: ' + arrayBuffer.byteLength + ' bytes</div>';
+
+                // Create parser and test
+                const parser = new DICOMParser();
+                const dataSet = await parser.parseDICOM(arrayBuffer);
+
+                if (!dataSet) {
+                    throw new Error('parseDICOM returned null');
+                }
+
+                results.innerHTML += '<div class="success">DICOM parsed successfully</div>';
+
+                // Extract metadata
+                const metadata = parser.extractMetadata(dataSet);
+                results.innerHTML += '<div class="info">Metadata extracted:<br><pre>' +
+                    JSON.stringify({
+                        rows: metadata.rows,
+                        columns: metadata.columns,
+                        bitsAllocated: metadata.bitsAllocated,
+                        bitsStored: metadata.bitsStored,
+                        pixelRepresentation: metadata.pixelRepresentation,
+                        modality: metadata.modality,
+                        patientName: metadata.patientName
+                    }, null, 2) + '</pre></div>';
+
+                // Check if dimensions are valid
+                if (!metadata.rows || !metadata.columns) {
+                    results.innerHTML += '<div class="error">ERROR: Rows or Columns is null/undefined!</div>';
+                } else {
+                    results.innerHTML += '<div class="success">Dimensions valid: ' + metadata.columns + 'x' + metadata.rows + '</div>';
+                }
+
+                // Try to extract pixel data
+                try {
+                    const pixelData = parser.extractPixelData(dataSet, metadata);
+                    results.innerHTML += '<div class="success">Pixel data extracted, length: ' + pixelData.length + '</div>';
+                } catch (pixelError) {
+                    results.innerHTML += '<div class="error">Pixel data extraction failed: ' + pixelError.message + '</div>';
+                }
+
+            } catch (error) {
+                results.innerHTML += '<div class="error">Test failed: ' + error.message + '<br><pre>' + error.stack + '</pre></div>';
+            }
+        }
+
+        // Auto-run test
+        window.addEventListener('load', () => {
+            setTimeout(testDICOMParsing, 1000);
+        });
+    </script>
+</body>
+</html>

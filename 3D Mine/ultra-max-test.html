@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra-Max LAS Parser Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        #results {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .success { color: #4ecdc4; }
+        .error { color: #ff6b6b; }
+        .info { color: #feca57; }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Ultra-Max LAS Parser Test</h1>
+        
+        <div class="test-section">
+            <h2>🎯 Las Dataset File Tests</h2>
+            <button onclick="testLasDatasetFile('Las Dataset/49-005-30258.las')">Test Las Dataset File #1</button>
+            <button onclick="testLasDatasetFile('Las Dataset/49-005-30999.las')">Test Las Dataset File #2</button>
+            <button onclick="testLasDatasetFile('Las Dataset/49-005-31631.las')">Test Las Dataset File #3</button>
+            <button onclick="testLasDatasetFile('Las Dataset/49-005-37851.las')">Test Las Dataset File #4</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 Other LAS Files</h2>
+            <button onclick="testLasDatasetFile('JIET_OpenPit_Mine.las')">Test JIET Mine</button>
+            <button onclick="testLasDatasetFile('RealWorld_OpenPit_Mine.las')">Test Real Mine</button>
+            <button onclick="testLasDatasetFile('JIET_University_Campus.las')">Test Campus</button>
+        </div>
+        
+        <div id="stats" class="stats" style="display: none;">
+            <div class="stat-card">
+                <div class="stat-number" id="pointCount">0</div>
+                <div class="stat-label">3D Points Generated</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="curveCount">0</div>
+                <div class="stat-label">Curves Found</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="dataPoints">0</div>
+                <div class="stat-label">Data Entries</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="fileType">-</div>
+                <div class="stat-label">File Type</div>
+            </div>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script src="ultraMaxLASParser.js"></script>
+    <script>
+        let parser = new UltraMaxLASParser();
+        
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+            results.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            results.scrollTop = results.scrollHeight;
+            console.log(message);
+        }
+        
+        function updateStats(data) {
+            document.getElementById('stats').style.display = 'grid';
+            document.getElementById('pointCount').textContent = data.pointCount || 0;
+            document.getElementById('curveCount').textContent = data.wellLogData ? Object.keys(data.wellLogData.curves).length : 0;
+            document.getElementById('dataPoints').textContent = data.wellLogData ? data.wellLogData.data.length : 0;
+            document.getElementById('fileType').textContent = data.fileType || 'Unknown';
+        }
+        
+        async function testLasDatasetFile(filename) {
+            log(`🚀 Starting Ultra-Max test for: ${filename}`, 'info');
+            
+            try {
+                // Clear previous results
+                document.getElementById('results').innerHTML = '';
+                parser = new UltraMaxLASParser(); // Fresh parser instance
+                
+                log(`📡 Fetching file: ${filename}...`);
+                const response = await fetch(filename);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const arrayBuffer = await response.arrayBuffer();
+                log(`📊 File loaded: ${arrayBuffer.byteLength} bytes`);
+                
+                log(`🔍 Starting Ultra-Max parsing...`);
+                const startTime = performance.now();
+                
+                const result = await parser.parseLAS(arrayBuffer);
+                
+                const endTime = performance.now();
+                const duration = (endTime - startTime).toFixed(2);
+                
+                log(`✅ PARSING SUCCESSFUL! (${duration}ms)`, 'success');
+                log(`📊 Results Summary:`, 'success');
+                log(`   • File Type: ${result.fileType}`, 'success');
+                log(`   • Points Generated: ${result.pointCount}`, 'success');
+                log(`   • Bounds: X(${result.bounds.minX.toFixed(1)} to ${result.bounds.maxX.toFixed(1)})`, 'success');
+                log(`   • Bounds: Y(${result.bounds.minY.toFixed(1)} to ${result.bounds.maxY.toFixed(1)})`, 'success');
+                log(`   • Bounds: Z(${result.bounds.minZ.toFixed(1)} to ${result.bounds.maxZ.toFixed(1)})`, 'success');
+                
+                if (result.wellLogData) {
+                    log(`   • Well: ${result.wellLogData.header.wellName}`, 'success');
+                    log(`   • Location: ${result.wellLogData.header.location}`, 'success');
+                    log(`   • Depth Range: ${result.wellLogData.header.startDepth} - ${result.wellLogData.header.stopDepth} ft`, 'success');
+                    log(`   • Curves: ${result.wellLogData.header.curves.join(', ')}`, 'success');
+                    log(`   • Data Points: ${result.wellLogData.header.dataPoints}`, 'success');
+                }
+                
+                updateStats(result);
+                
+                if (result.pointCount === 0) {
+                    log(`⚠️ WARNING: No 3D points generated!`, 'error');
+                } else {
+                    log(`🎉 SUCCESS: Ready for 3D visualization!`, 'success');
+                }
+                
+            } catch (error) {
+                log(`❌ ERROR: ${error.message}`, 'error');
+                console.error('Full error:', error);
+            }
+        }
+        
+        // Auto-test the main problematic file on page load
+        window.addEventListener('load', () => {
+            log('🔥 Ultra-Max LAS Parser Test Suite Loaded', 'success');
+            log('Click any button to test LAS file parsing...', 'info');
+        });
+    </script>
+</body>
+</html>

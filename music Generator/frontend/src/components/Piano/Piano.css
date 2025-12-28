@@ -1,0 +1,531 @@
+.piano-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+.piano-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.piano-header h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.piano-controls {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.control-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.control-btn.recording {
+  background: linear-gradient(45deg, #ff416c 0%, #ff4b2b 100%);
+  animation: pulse 1.5s infinite;
+}
+
+.control-btn.active {
+  background: linear-gradient(45deg, #11998e 0%, #38ef7d 100%);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.control-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #e0e0e0;
+}
+
+.control-group select,
+.control-group input[type="range"] {
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 14px;
+}
+
+.control-group select option {
+  background: #1a1a2e;
+  color: white;
+}
+
+.recording-info {
+  text-align: center;
+  margin: 20px 0;
+  padding: 15px;
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 10px;
+}
+
+.playback-progress {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #4caf50;
+}
+
+/* Beat Sequencer */
+.beat-sequencer {
+  margin: 30px 0;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.sequencer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sequencer-header h3 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: #ff6b6b;
+}
+
+.sequencer-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.sequencer-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.pattern-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.pattern-label {
+  min-width: 80px;
+  font-weight: 600;
+  color: #4ecdc4;
+}
+
+.pattern-steps {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+}
+
+.step-btn {
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.step-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.step-btn.active {
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+  border-color: #ff6b6b;
+  box-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
+}
+
+.step-btn.playing {
+  background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+  border-color: #00d2ff;
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.8);
+  animation: playing-step 0.5s ease-in-out;
+}
+
+@keyframes playing-step {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.play-pattern-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.play-pattern-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+}
+
+/* Piano Keyboard */
+.piano-keyboard {
+  margin-top: 30px;
+}
+
+.keyboard-info {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  font-size: 14px;
+  color: #e0e0e0;
+}
+
+.keys-container {
+  position: relative;
+  height: 200px;
+  margin: 0 auto;
+  max-width: 800px;
+  background: linear-gradient(to bottom, #2c3e50, #34495e);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.white-keys {
+  display: flex;
+  height: 160px;
+  gap: 2px;
+}
+
+.white-key {
+  flex: 1;
+  background: linear-gradient(to bottom, #ffffff, #f8f9fa, #e9ecef);
+  border: 1px solid #dee2e6;
+  border-radius: 0 0 8px 8px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.1s ease;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.white-key:hover {
+  background: linear-gradient(to bottom, #f8f9fa, #e9ecef, #dee2e6);
+  transform: translateY(2px);
+}
+
+.white-key.active {
+  background: linear-gradient(to bottom, #007bff, #0056b3);
+  color: white;
+  transform: translateY(4px);
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.black-keys {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  height: 100px;
+}
+
+.black-key {
+  position: absolute;
+  width: 12%;
+  height: 100px;
+  background: linear-gradient(to bottom, #343a40, #212529);
+  border: 1px solid #000;
+  border-radius: 0 0 5px 5px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 15px;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.black-key:hover {
+  background: linear-gradient(to bottom, #495057, #343a40);
+  transform: translateY(2px);
+}
+
+.black-key.active {
+  background: linear-gradient(to bottom, #dc3545, #bd2130);
+  transform: translateY(4px);
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.key-label {
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.white-key .key-label {
+  color: #495057;
+}
+
+.white-key.active .key-label {
+  color: white;
+}
+
+.black-key .key-label {
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .piano-container {
+    padding: 15px;
+    margin: 10px;
+  }
+  
+  .piano-header h2 {
+    font-size: 2rem;
+  }
+  
+  .piano-controls {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .control-group {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .keys-container {
+    max-width: 100%;
+    padding: 15px;
+  }
+  
+  .white-key .key-label,
+  .black-key .key-label {
+    font-size: 10px;
+  }
+  
+  .pattern-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .pattern-steps {
+    flex-wrap: wrap;
+  }
+  
+  .step-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .piano-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .control-btn {
+    padding: 10px 15px;
+    font-size: 12px;
+  }
+  
+  .keys-container {
+    height: 150px;
+    padding: 10px;
+  }
+  
+  .white-key {
+    height: 120px;
+  }
+  
+  .black-key {
+    height: 80px;
+  }
+  
+  .pattern-label {
+    min-width: 60px;
+    font-size: 12px;
+  }
+  
+  .step-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 10px;
+  }
+}
+
+/* Animation for recording indicator */
+@keyframes recording-glow {
+  0% { box-shadow: 0 0 5px rgba(255, 65, 108, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(255, 65, 108, 0.8); }
+  100% { box-shadow: 0 0 5px rgba(255, 65, 108, 0.5); }
+}
+
+.recording {
+  animation: recording-glow 1s infinite;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition: all 0.2s ease;
+}
+
+/* Audio Recorder */
+.audio-recorder {
+  margin: 20px 0;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.recorder-header h3 {
+  font-size: 1.5rem;
+  margin: 0 0 20px 0;
+  color: #ff6b6b;
+  text-align: center;
+}
+
+.recorder-controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.recorder-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.recorder-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.recorder-btn.recording {
+  background: linear-gradient(45deg, #ff416c 0%, #ff4b2b 100%);
+  animation: pulse 1.5s infinite;
+}
+
+.recording-info {
+  text-align: center;
+}
+
+.time-display {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #4ecdc4;
+  margin-bottom: 15px;
+  font-family: 'Courier New', monospace;
+}
+
+.audio-visualizer {
+  border-radius: 10px;
+  background: linear-gradient(45deg, #1a1a2e, #16213e);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 0 auto;
+  display: block;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #764ba2, #667eea);
+}

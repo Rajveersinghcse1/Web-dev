@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Storage App</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>File Storage App</h1>
+            <p>Upload and retrieve files using MinIO and MongoDB</p>
+        </header>
+
+        <main>
+            <section class="upload-section">
+                <h2>Upload Files</h2>
+                <form id="upload-form">
+                    <div class="form-group">
+                        <label for="file">Select a file:</label>
+                        <input type="file" id="file" name="file" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Title:</label>
+                        <input type="text" id="title" name="title" placeholder="Enter a title for your file" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <textarea id="description" name="description" placeholder="Enter a description for your file" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn-primary">Upload</button>
+                    </div>
+                </form>
+                <div id="upload-status" class="status"></div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="upload-progress"></div>
+                </div>
+            </section>
+
+            <section class="files-section">
+                <h2>Your Files</h2>
+                <div class="search-container">
+                    <input type="text" id="search" placeholder="Search files...">
+                    <button id="search-btn" class="btn-secondary">Search</button>
+                    <button id="refresh-btn" class="btn-secondary">Refresh</button>
+                </div>
+                <div class="files-container" id="files-container">
+                    <!-- Files will be loaded here dynamically -->
+                    <div class="loading">Loading files...</div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 File Storage App</p>
+        </footer>
+    </div>
+
+    <!-- File preview modal -->
+    <div id="file-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title"></h2>
+            <p id="modal-description"></p>
+            <div id="modal-content">
+                <!-- File preview will be loaded here -->
+            </div>
+            <div class="modal-actions">
+                <button id="download-btn" class="btn-primary">Download</button>
+                <button id="delete-btn" class="btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

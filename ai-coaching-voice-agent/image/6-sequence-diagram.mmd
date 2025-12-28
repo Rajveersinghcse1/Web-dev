@@ -1,0 +1,51 @@
+sequenceDiagram
+    autonumber
+    actor User
+    participant Browser as 🌐 Browser
+    participant NextJS as ⚛️ Next.js App
+    participant Stack as 🔐 Stack Auth
+    participant Convex as 🗄️ Convex
+    participant OpenAI as 🧠 OpenAI
+    participant AssemblyAI as 🎤 AssemblyAI
+    participant Polly as 🔊 AWS Polly
+
+    User->>Browser: Open Application
+    Browser->>NextJS: Load Page
+    NextJS->>Stack: Check Auth Status
+    Stack-->>NextJS: User Token/Null
+
+    alt Not Authenticated
+        NextJS-->>Browser: Redirect to Login
+        User->>Browser: Enter Credentials
+        Browser->>Stack: Authenticate
+        Stack-->>Browser: JWT Token
+    end
+
+    NextJS-->>Browser: Render Dashboard
+    Browser->>Convex: Get User Data
+    Convex-->>Browser: User Info + History
+
+    User->>Browser: Select Coaching Option
+    User->>Browser: Enter Topic & Expert
+    User->>Browser: Click Start Session
+    Browser->>Convex: CreateNewRoom()
+    Convex-->>Browser: Room ID
+    Browser->>NextJS: Navigate to /discussion-room/{id}
+
+    loop Coaching Session
+        User->>Browser: Speak (Voice Input)
+        Browser->>AssemblyAI: Send Audio Stream
+        AssemblyAI-->>Browser: Transcribed Text
+        Browser->>Convex: Send Message
+        Convex->>OpenAI: Generate Response
+        OpenAI-->>Convex: AI Response Text
+        Convex-->>Browser: Update Conversation
+        Browser->>Polly: Convert to Speech
+        Polly-->>Browser: Audio Stream
+        Browser->>User: Play Audio Response
+    end
+
+    User->>Browser: End Session
+    Browser->>Convex: Save Final Conversation
+    Convex-->>Browser: Confirmation
+    Browser-->>User: Show Feedback Summary

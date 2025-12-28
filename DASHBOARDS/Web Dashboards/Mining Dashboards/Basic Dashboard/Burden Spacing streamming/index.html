@@ -1,0 +1,1324 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blast Data Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .upload-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+            color: white;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 15px;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-button {
+            display: inline-block;
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .message-area {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .message-area .success {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .message-area .error {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .message-area .loading {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .top-filters {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            color: white;
+            display: none;
+        }
+
+        .top-filters h3 {
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .filter-group select {
+            padding: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .filter-group select option {
+            color: #333;
+            background: white;
+        }
+
+        .filter-buttons {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .filter-section {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            color: white;
+            display: none;
+        }
+
+        .filter-section h3 {
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .filter-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-controls select,
+        .filter-controls input {
+            padding: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .filter-controls input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+        }
+
+        .table-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            display: none;
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .no-data .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .hidden-filters {
+            display: none;
+        }
+
+        .clear-btn {
+            display: none;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .filter-grid,
+            .filter-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .stat-card .stat-value {
+                font-size: 1.8rem;
+            }
+
+            .data-table {
+                font-size: 0.8rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 8px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Blast Data Dashboard</h1>
+        
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <h2>📊 Upload Your Data File</h2>
+            <p>Support for Excel (.xlsx, .xls) and CSV files</p>
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls,.csv">
+                <label for="fileInput" class="file-input-button">Choose File</label>
+            </div>
+        </div>
+
+        <!-- Message Area -->
+        <div id="messageArea" class="message-area"></div>
+
+        <!-- Top Filters Section -->
+        <div id="topFilters" class="top-filters">
+            <h3>🎯 Location & Parameters Filters</h3>
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="mineSelect">Mine:</label>
+                    <select id="mineSelect">
+                        <option value="">All Mines</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="pitSelect">Pit:</label>
+                    <select id="pitSelect">
+                        <option value="">All Pits</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="zoneSelect">Zone:</label>
+                    <select id="zoneSelect">
+                        <option value="">All Zones</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="benchSelect">Bench:</label>
+                    <select id="benchSelect">
+                        <option value="">All Benches</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="rockSelect">Rock Type:</label>
+                    <select id="rockSelect">
+                        <option value="">All Rock Types</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-buttons">
+                <button id="applyTopFiltersBtn" class="btn btn-primary">Apply Filters</button>
+                <button id="resetTopFiltersBtn" class="btn btn-secondary">Reset Filters</button>
+            </div>
+        </div>
+
+        <!-- Date Filters Section -->
+        <div id="filterSection" class="filter-section">
+            <h3>📅 Date Filters</h3>
+            <div class="filter-controls">
+                <select id="filterType">
+                    <option value="all">All Data</option>
+                    <option value="date-range">Date Range</option>
+                    <option value="year">By Year</option>
+                    <option value="month">By Month</option>
+                    <option value="quarter">By Quarter</option>
+                </select>
+            </div>
+
+            <!-- Date Range Filters -->
+            <div id="dateRangeFilters" class="hidden-filters">
+                <div class="filter-controls">
+                    <input type="date" id="startDate" placeholder="Start Date">
+                    <input type="date" id="endDate" placeholder="End Date">
+                </div>
+            </div>
+
+            <!-- Year Filter -->
+            <div id="yearFilter" class="hidden-filters">
+                <div class="filter-controls">
+                    <select id="selectedYear">
+                        <option value="">All Years</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Month Filter -->
+            <div id="monthFilter" class="hidden-filters">
+                <div class="filter-controls">
+                    <select id="selectedMonth">
+                        <option value="">All Months</option>
+                        <option value="0">January</option>
+                        <option value="1">February</option>
+                        <option value="2">March</option>
+                        <option value="3">April</option>
+                        <option value="4">May</option>
+                        <option value="5">June</option>
+                        <option value="6">July</option>
+                        <option value="7">August</option>
+                        <option value="8">September</option>
+                        <option value="9">October</option>
+                        <option value="10">November</option>
+                        <option value="11">December</option>
+                    </select>
+                    <select id="monthYear">
+                        <option value="">All Years</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quarter Filter -->
+            <div id="quarterFilter" class="hidden-filters">
+                <div class="filter-controls">
+                    <select id="selectedQuarter">
+                        <option value="">All Quarters</option>
+                        <option value="Q1">Q1 (Jan-Mar)</option>
+                        <option value="Q2">Q2 (Apr-Jun)</option>
+                        <option value="Q3">Q3 (Jul-Sep)</option>
+                        <option value="Q4">Q4 (Oct-Dec)</option>
+                    </select>
+                    <select id="quarterYear">
+                        <option value="">All Years</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-buttons">
+                <button id="applyFilterBtn" class="btn btn-primary">Apply Date Filter</button>
+                <button id="resetFilterBtn" class="btn btn-secondary">Reset Date Filter</button>
+            </div>
+        </div>
+
+        <!-- Statistics Grid -->
+        <div id="statsGrid" class="stats-grid" style="display: none;">
+            <div class="stat-card">
+                <h3>Total Records</h3>
+                <div id="totalRecords" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Average Burden</h3>
+                <div id="avgBurden" class="stat-value">0</div>
+                <small>meters</small>
+            </div>
+            <div class="stat-card">
+                <h3>Average Spacing</h3>
+                <div id="avgSpacing" class="stat-value">0</div>
+                <small>meters</small>
+            </div>
+            <div class="stat-card">
+                <h3>Average Stemming</h3>
+                <div id="avgStemming" class="stat-value">0</div>
+                <small>meters</small>
+            </div>
+        </div>
+
+        <!-- Chart Container -->
+        <div id="chartContainer" class="chart-container">
+            <div class="chart-wrapper">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div id="tableContainer" class="table-container">
+            <h3 style="margin-bottom: 20px; color: #2c3e50;">📋 Data Table</h3>
+            <table id="dataTable" class="data-table">
+                <thead>
+                    <tr>
+                        <th>Row</th>
+                        <th>Date</th>
+                        <th>Mine</th>
+                        <th>Pit</th>
+                        <th>Zone</th>
+                        <th>Bench</th>
+                        <th>Rock Type</th>
+                        <th>Burden (m)</th>
+                        <th>Spacing (m)</th>
+                        <th>Stemming (m)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- No Data Message -->
+        <div id="noData" class="no-data">
+            <div class="icon">📊</div>
+            <h3>No Data Loaded</h3>
+            <p>Please upload an Excel or CSV file to get started</p>
+        </div>
+
+        <!-- Clear Data Button -->
+        <div style="text-align: center;">
+            <button id="clearBtn" class="btn btn-danger clear-btn">🗑️ Clear All Data</button>
+        </div>
+    </div>
+
+    <script>
+   class DashboardManager {
+  constructor() {
+    this.chart = null;
+    this.data = [];
+    this.filteredData = [];
+    this.columnMap = {};
+    this.availableYears = [];
+    this.availableOptions = {
+      mines: [],
+      pits: [],
+      zones: [],
+      benches: [],
+      rocks: []
+    };
+    
+    this.COLUMN_ALIASES = {
+      date: ['blast date', 'blastdate', 'date', 'blast_date', 'blast-date'],
+      burden: ['burden', 'burden(m)', 'burden (m)', 'burden_m'],
+      spacing: ['spacing', 'spacing(m)', 'spacing (m)', 'spacing_m'],
+      stemming: ['stemming', 'stemming(m)', 'stemming (m)', 'stemming length', 'stemming_m', 'stemming_length', 'sremming length'],
+      mineName: ['minename', 'mine name', 'mine_name', 'mine-name'],
+      pitName: ['pitname', 'pit name', 'pit_name', 'pit-name'],
+      zoneName: ['zonename', 'zone name', 'zone_name', 'zone-name'],
+      benchName: ['benchname', 'bench name', 'bench_name', 'bench-name'],
+      rockType: ['Rock Name','rock_name','rock','name','Rock','Name','rock name']
+    };
+    
+    this.init();
+  }
+  
+  init() {
+    const fileInput = document.getElementById('fileInput');
+    const clearBtn = document.getElementById('clearBtn');
+    const filterType = document.getElementById('filterType');
+    const applyFilterBtn = document.getElementById('applyFilterBtn');
+    const resetFilterBtn = document.getElementById('resetFilterBtn');
+    const applyTopFiltersBtn = document.getElementById('applyTopFiltersBtn');
+    const resetTopFiltersBtn = document.getElementById('resetTopFiltersBtn');
+    
+    fileInput.addEventListener('change', (e) => this.handleFile(e));
+    clearBtn.addEventListener('click', () => this.clearData());
+    filterType.addEventListener('change', () => this.toggleFilterOptions());
+    applyFilterBtn.addEventListener('click', () => this.applyFilters());
+    resetFilterBtn.addEventListener('click', () => this.resetFilters());
+    applyTopFiltersBtn.addEventListener('click', () => this.applyTopFilters());
+    resetTopFiltersBtn.addEventListener('click', () => this.resetTopFilters());
+  }
+  
+  showMessage(message, type = 'info') {
+    const messageArea = document.getElementById('messageArea');
+    const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+    messageArea.innerHTML = `<div class="${className}">${message}</div>`;
+    
+    if (type === 'success') {
+      setTimeout(() => messageArea.innerHTML = '', 3000);
+    }
+  }
+  
+  showLoading(show) {
+    const messageArea = document.getElementById('messageArea');
+    if (show) {
+      messageArea.innerHTML = '<div class="loading">📊 Processing file...</div>';
+    } else {
+      messageArea.innerHTML = '';
+    }
+  }
+  
+  async handleFile(evt) {
+    const file = evt.target.files[0];
+    if (!file) return;
+    
+    this.showLoading(true);
+    
+    try {
+      const data = await this.readFile(file);
+      const processedData = this.processData(data);
+      
+      if (processedData.length === 0) {
+        throw new Error('No valid data rows found in the file');
+      }
+      
+      this.data = processedData;
+      this.filteredData = [...processedData];
+      this.setupFilters();
+      this.setupTopFilters();
+      this.renderDashboard();
+      this.showMessage(`Successfully loaded ${processedData.length} records`, 'success');
+      
+    } catch (error) {
+      this.showMessage(`Error: ${error.message}`, 'error');
+      console.error('File processing error:', error);
+    } finally {
+      this.showLoading(false);
+    }
+  }
+  
+  readFile(file) {
+    return new Promise((resolve, reject) => {
+      if (typeof XLSX === 'undefined') {
+        reject(new Error('XLSX library not loaded. Please refresh the page.'));
+        return;
+      }
+      
+      const reader = new FileReader();
+      const ext = file.name.split('.').pop().toLowerCase();
+      
+      reader.onload = (e) => {
+        try {
+          let workbook;
+          
+          if (ext === 'csv') {
+            workbook = XLSX.read(e.target.result, { type: 'string' });
+          } else if (['xlsx', 'xls'].includes(ext)) {
+            workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+          } else {
+            throw new Error('Unsupported file format. Please use CSV, XLSX, or XLS files.');
+          }
+          
+          const sheetName = workbook.SheetNames[0];
+          if (!sheetName) {
+            throw new Error('No sheets found in the file');
+          }
+          
+          const worksheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: null });
+          
+          resolve(jsonData);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      
+      if (ext === 'csv') {
+        reader.readAsText(file);
+      } else {
+        reader.readAsArrayBuffer(file);
+      }
+    });
+  }
+  
+  processData(rawData) {
+    if (!rawData || rawData.length === 0) {
+      throw new Error('File contains no data');
+    }
+    
+    const headers = Object.keys(rawData[0]).map(h => h.toString().trim());
+    
+    this.columnMap = this.mapColumns(headers);
+    
+    // Check for required columns (date, burden, spacing, stemming)
+    const requiredColumns = ['date', 'burden', 'spacing', 'stemming'];
+    const missingColumns = requiredColumns.filter(col => !this.columnMap[col]);
+      
+    if (missingColumns.length > 0) {
+      throw new Error(`Missing required columns: ${missingColumns.join(', ')}`);
+    }
+    
+    const processedData = [];
+    
+    rawData.forEach((row, index) => {
+      try {
+        const processedRow = this.processRow(row, index + 1);
+        if (processedRow) {
+          processedData.push(processedRow);
+        }
+      } catch (error) {
+        console.warn(`Skipping row ${index + 1}: ${error.message}`);
+      }
+    });
+    
+    return processedData;
+  }
+  
+  mapColumns(headers) {
+    const map = {};
+    
+    for (const [canonical, aliases] of Object.entries(this.COLUMN_ALIASES)) {
+      const found = headers.find(header => {
+        const normalizedHeader = header.toLowerCase().trim();
+        return aliases.some(alias => alias === normalizedHeader);
+      });
+      map[canonical] = found || null;
+    }
+    
+    return map;
+  }
+  
+  processRow(row, rowNumber) {
+    const dateValue = row[this.columnMap.date];
+    const burdenValue = row[this.columnMap.burden];
+    const spacingValue = row[this.columnMap.spacing];
+    const stemmingValue = row[this.columnMap.stemming];
+    
+    // Optional columns
+    const mineNameValue = this.columnMap.mineName ? row[this.columnMap.mineName] : null;
+    const pitNameValue = this.columnMap.pitName ? row[this.columnMap.pitName] : null;
+    const zoneNameValue = this.columnMap.zoneName ? row[this.columnMap.zoneName] : null;
+    const benchNameValue = this.columnMap.benchName ? row[this.columnMap.benchName] : null;
+    const rockTypeValue = this.columnMap.rockType ? row[this.columnMap.rockType] : null;
+    
+    let date = 'N/A';
+    if (dateValue !== null && dateValue !== undefined && dateValue !== '') {
+      date = this.parseDate(dateValue);
+    }
+    
+    const burden = this.parseNumber(burdenValue, 'Burden');
+    const spacing = this.parseNumber(spacingValue, 'Spacing');
+    const stemming = this.parseNumber(stemmingValue, 'Stemming');
+    
+    return {
+      rowNumber,
+      date,
+      burden,
+      spacing,
+      stemming,
+      mineName: this.parseText(mineNameValue),
+      pitName: this.parseText(pitNameValue),
+      zoneName: this.parseText(zoneNameValue),
+      benchName: this.parseText(benchNameValue),
+      rockType: this.parseText(rockTypeValue)
+    };
+  }
+  
+  parseText(value) {
+    if (value === null || value === undefined || value === '') {
+      return 'N/A';
+    }
+    return value.toString().trim() || 'N/A';
+  }
+  
+  parseDate(value) {
+    if (typeof value === 'number') {
+      try {
+        if (typeof XLSX !== 'undefined' && XLSX.SSF && XLSX.SSF.parse_date_code) {
+          const jsDate = XLSX.SSF.parse_date_code(value);
+          if (jsDate && jsDate.y && jsDate.m && jsDate.d) {
+            return new Date(jsDate.y, jsDate.m - 1, jsDate.d).toISOString().slice(0, 10);
+          }
+        } else {
+          const excelEpoch = new Date(1900, 0, 1);
+          const jsDate = new Date(excelEpoch.getTime() + (value - 1) * 24 * 60 * 60 * 1000);
+          if (!isNaN(jsDate.getTime())) {
+            return jsDate.toISOString().slice(0, 10);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to parse Excel date:', value);
+      }
+    }
+    
+    const str = value.toString().trim();
+    if (str) {
+      const parsed = new Date(str);
+      if (!isNaN(parsed.getTime())) {
+        return parsed.toISOString().slice(0, 10);
+      }
+    }
+    
+    return str || 'N/A';
+  }
+  
+  parseNumber(value, fieldName) {
+    if (value === null || value === undefined || value === '') {
+      return 0;
+    }
+    
+    const num = parseFloat(value);
+    if (isNaN(num)) {
+      return 0;
+    }
+    
+    if (num < 0) {
+      console.warn(`Negative value for ${fieldName}: ${num}, using 0`);
+      return 0;
+    }
+    
+    return Math.round(num * 100) / 100;
+  }
+  
+  setupTopFilters() {
+    // Extract unique values for each filter
+    this.availableOptions.mines = [...new Set(this.data.map(row => row.mineName).filter(val => val !== 'N/A'))].sort();
+    this.availableOptions.pits = [...new Set(this.data.map(row => row.pitName).filter(val => val !== 'N/A'))].sort();
+    this.availableOptions.zones = [...new Set(this.data.map(row => row.zoneName).filter(val => val !== 'N/A'))].sort();
+    this.availableOptions.benches = [...new Set(this.data.map(row => row.benchName).filter(val => val !== 'N/A'))].sort();
+    this.availableOptions.rocks = [...new Set(this.data.map(row => row.rockType).filter(val => val !== 'N/A'))].sort();
+    
+    // Populate dropdowns
+    this.populateDropdown('mineSelect', this.availableOptions.mines, 'All Mines');
+    this.populateDropdown('pitSelect', this.availableOptions.pits, 'All Pits');
+    this.populateDropdown('zoneSelect', this.availableOptions.zones, 'All Zones');
+    this.populateDropdown('benchSelect', this.availableOptions.benches, 'All Benches');
+    this.populateDropdown('rockSelect', this.availableOptions.rocks, 'All Rock Types');
+  }
+  
+  populateDropdown(selectId, options, defaultText) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    select.innerHTML = `<option value="">${defaultText}</option>`;
+    
+    options.forEach(option => {
+      const optionElement = document.createElement('option');
+      optionElement.value = option;
+      optionElement.textContent = option;
+      select.appendChild(optionElement);
+    });
+  }
+  
+  applyTopFilters() {
+    const mineFilter = document.getElementById('mineSelect').value;
+    const pitFilter = document.getElementById('pitSelect').value;
+    const zoneFilter = document.getElementById('zoneSelect').value;
+    const benchFilter = document.getElementById('benchSelect').value;
+    const rockFilter = document.getElementById('rockSelect').value;
+    
+    this.filteredData = this.data.filter(row => {
+      if (mineFilter && row.mineName !== mineFilter) return false;
+      if (pitFilter && row.pitName !== pitFilter) return false;
+      if (zoneFilter && row.zoneName !== zoneFilter) return false;
+      if (benchFilter && row.benchName !== benchFilter) return false;
+      if (rockFilter && row.rockType !== rockFilter) return false;
+      
+      return true;
+    });
+    
+    // Apply date filters if any are active
+    const filterType = document.getElementById('filterType').value;
+    if (filterType !== 'all') {
+      this.filteredData = this.filteredData.filter(row => this.matchesFilter(row, filterType));
+    }
+    
+    this.renderDashboard();
+    
+    if (this.filteredData.length === 0) {
+      this.showMessage('No data matches the selected filters', 'error');
+    } else {
+      this.showMessage(`Filtered to ${this.filteredData.length} records`, 'success');
+    }
+  }
+  
+  resetTopFilters() {
+    document.getElementById('mineSelect').value = '';
+    document.getElementById('pitSelect').value = '';
+    document.getElementById('zoneSelect').value = '';
+    document.getElementById('benchSelect').value = '';
+    document.getElementById('rockSelect').value = '';
+    
+    this.applyTopFilters();
+    this.showMessage('Top filters reset', 'success');
+  }
+  
+  clearData() {
+    this.data = [];
+    this.filteredData = [];
+    this.columnMap = {};
+    this.availableYears = [];
+    this.availableOptions = {
+      mines: [],
+      pits: [],
+      zones: [],
+      benches: [],
+      rocks: []
+    };
+    
+    if (this.chart) {
+      this.chart.destroy();
+      this.chart = null;
+    }
+    
+    document.getElementById('fileInput').value = '';
+    document.getElementById('messageArea').innerHTML = '';
+    
+    this.hideElements();
+  }
+  
+  hideElements() {
+    document.getElementById('topFilters').style.display = 'none';
+    document.getElementById('filterSection').style.display = 'none';
+    document.getElementById('statsGrid').style.display = 'none';
+    document.getElementById('chartContainer').style.display = 'none';
+    document.getElementById('tableContainer').style.display = 'none';
+    document.getElementById('clearBtn').style.display = 'none';
+    document.getElementById('noData').style.display = 'block';
+  }
+  
+  showElements() {
+    document.getElementById('topFilters').style.display = 'block';
+    document.getElementById('filterSection').style.display = 'block';
+    document.getElementById('statsGrid').style.display = 'grid';
+    document.getElementById('chartContainer').style.display = 'block';
+    document.getElementById('tableContainer').style.display = 'block';
+    document.getElementById('clearBtn').style.display = 'inline-block';
+    document.getElementById('noData').style.display = 'none';
+  }
+  
+  setupFilters() {
+    this.availableYears = [...new Set(this.data.map(row => {
+      if (row.date !== 'N/A') {
+        const date = new Date(row.date);
+        if (!isNaN(date.getTime())) {
+          return date.getFullYear();
+        }
+      }
+      return null;
+    }).filter(year => year !== null))].sort();
+    
+    this.populateYearDropdowns();
+    this.setDefaultDateRange();
+  }
+  
+  populateYearDropdowns() {
+    const yearSelects = ['selectedYear', 'monthYear', 'quarterYear'];
+    
+    yearSelects.forEach(selectId => {
+      const select = document.getElementById(selectId);
+      select.innerHTML = '<option value="">All Years</option>';
+      
+      this.availableYears.forEach(year => {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        select.appendChild(option);
+      });
+    });
+  }
+  
+  setDefaultDateRange() {
+    const validDates = this.data.map(row => {
+      if (row.date !== 'N/A') {
+        const date = new Date(row.date);
+        return !isNaN(date.getTime()) ? date : null;
+      }
+      return null;
+    }).filter(date => date !== null);
+    
+    if (validDates.length > 0) {
+      const minDate = new Date(Math.min(...validDates));
+      const maxDate = new Date(Math.max(...validDates));
+      
+      document.getElementById('startDate').value = minDate.toISOString().slice(0, 10);
+      document.getElementById('endDate').value = maxDate.toISOString().slice(0, 10);
+    }
+  }
+  
+  toggleFilterOptions() {
+    const filterType = document.getElementById('filterType').value;
+    
+    document.getElementById('dateRangeFilters').style.display = 'none';
+    document.getElementById('yearFilter').style.display = 'none';
+    document.getElementById('monthFilter').style.display = 'none';
+    document.getElementById('quarterFilter').style.display = 'none';
+    
+    switch (filterType) {
+      case 'date-range':
+        document.getElementById('dateRangeFilters').style.display = 'block';
+        break;
+      case 'year':
+        document.getElementById('yearFilter').style.display = 'block';
+        break;
+      case 'month':
+        document.getElementById('monthFilter').style.display = 'block';
+        break;
+      case 'quarter':
+        document.getElementById('quarterFilter').style.display = 'block';
+        break;
+    }
+  }
+  
+  applyFilters() {
+    const filterType = document.getElementById('filterType').value;
+    
+    // First apply top filters
+    const mineFilter = document.getElementById('mineSelect').value;
+    const pitFilter = document.getElementById('pitSelect').value;
+    const zoneFilter = document.getElementById('zoneSelect').value;
+    const benchFilter = document.getElementById('benchSelect').value;
+    const rockFilter = document.getElementById('rockSelect').value;
+    
+    let filtered = this.data.filter(row => {
+      if (mineFilter && row.mineName !== mineFilter) return false;
+      if (pitFilter && row.pitName !== pitFilter) return false;
+      if (zoneFilter && row.zoneName !== zoneFilter) return false;
+      if (benchFilter && row.benchName !== benchFilter) return false;
+      if (rockFilter && row.rockType !== rockFilter) return false;
+      
+      return true;
+    });
+    
+    // Then apply date filters
+    if (filterType === 'all') {
+      this.filteredData = filtered;
+    } else {
+      this.filteredData = filtered.filter(row => this.matchesFilter(row, filterType));
+    }
+    
+    this.renderDashboard();
+    
+    if (this.filteredData.length === 0) {
+      this.showMessage('No data matches the selected filters', 'error');
+    } else {
+      this.showMessage(`Filtered to ${this.filteredData.length} records`, 'success');
+    }
+  }
+  
+  resetFilters() {
+    document.getElementById('filterType').value = 'all';
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+    document.getElementById('selectedYear').value = '';
+    document.getElementById('selectedMonth').value = '';
+    document.getElementById('monthYear').value = '';
+    document.getElementById('selectedQuarter').value = '';
+    document.getElementById('quarterYear').value = '';
+    
+    this.toggleFilterOptions();
+    this.setDefaultDateRange();
+    
+    // Apply top filters if any are active
+    this.applyTopFilters();
+    this.showMessage('Date filters reset', 'success');
+  }
+  
+  matchesFilter(row, filterType) {
+    if (row.date === 'N/A') return false;
+    
+    const rowDate = new Date(row.date);
+    if (isNaN(rowDate.getTime())) return false;
+    
+    switch (filterType) {
+      case 'date-range':
+        return this.matchesDateRange(rowDate);
+      case 'year':
+        return this.matchesYear(rowDate);
+      case 'month':
+        return this.matchesMonth(rowDate);
+      case 'quarter':
+        return this.matchesQuarter(rowDate);
+      default:
+        return true;
+    }
+  }
+  
+  matchesDateRange(date) {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    
+    if (!startDate && !endDate) return true;
+    
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+    
+    if (start && date < start) return false;
+    if (end && date > end) return false;
+    
+    return true;
+  }
+  
+  matchesYear(date) {
+    const selectedYear = document.getElementById('selectedYear').value;
+    if (!selectedYear) return true;
+    
+    return date.getFullYear() === parseInt(selectedYear);
+  }
+  
+  matchesMonth(date) {
+    const selectedMonth = document.getElementById('selectedMonth').value;
+    const selectedYear = document.getElementById('monthYear').value;
+    
+    if (selectedYear && date.getFullYear() !== parseInt(selectedYear)) return false;
+    if (selectedMonth !== '' && date.getMonth() !== parseInt(selectedMonth)) return false;
+    
+    return true;
+  }
+  
+  matchesQuarter(date) {
+    const selectedQuarter = document.getElementById('selectedQuarter').value;
+    const selectedYear = document.getElementById('quarterYear').value;
+    
+    if (selectedYear && date.getFullYear() !== parseInt(selectedYear)) return false;
+    
+    if (selectedQuarter) {
+      const month = date.getMonth();
+      const quarter = Math.floor(month / 3) + 1;
+      const expectedQuarter = parseInt(selectedQuarter.charAt(1));
+      
+      return quarter === expectedQuarter;
+    }
+    
+    return true;
+  }
+  
+  renderDashboard() {
+    this.showElements();
+    this.renderStats();
+    this.renderChart();
+    this.renderTable();
+  }
+  
+  renderStats() {
+    const data = this.filteredData;
+    
+    if (data.length === 0) {
+      document.getElementById('totalRecords').textContent = '0';
+      document.getElementById('avgBurden').textContent = '0';
+      document.getElementById('avgSpacing').textContent = '0';
+      document.getElementById('avgStemming').textContent = '0';
+      return;
+    }
+    
+    const totalRecords = data.length;
+    const avgBurden = data.reduce((sum, row) => sum + row.burden, 0) / totalRecords;
+    const avgSpacing = data.reduce((sum, row) => sum + row.spacing, 0) / totalRecords;
+    const avgStemming = data.reduce((sum, row) => sum + row.stemming, 0) / totalRecords;
+    
+    document.getElementById('totalRecords').textContent = totalRecords.toLocaleString();
+    document.getElementById('avgBurden').textContent = avgBurden.toFixed(2);
+    document.getElementById('avgSpacing').textContent = avgSpacing.toFixed(2);
+    document.getElementById('avgStemming').textContent = avgStemming.toFixed(2);
+  }
+  
+  renderChart() {
+    const ctx = document.getElementById('barChart').getContext('2d');
+    
+    if (this.chart) {
+      this.chart.destroy();
+    }
+    
+    const data = this.filteredData;
+    
+    if (data.length === 0) {
+      return;
+    }
+    
+    // Get last 20 records for chart (or all if less than 20)
+    const chartData = data.slice(-20);
+    const labels = chartData.map((row, index) => {
+      if (row.date !== 'N/A') {
+        return new Date(row.date).toLocaleDateString();
+      }
+      return `Record ${row.rowNumber}`;
+    });
+    
+    this.chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Burden (m)',
+            data: chartData.map(row => row.burden),
+            backgroundColor: 'rgba(79, 172, 254, 0.8)',
+            borderColor: 'rgba(79, 172, 254, 1)',
+            borderWidth: 1
+          },
+          {
+            label: 'Spacing (m)',
+            data: chartData.map(row => row.spacing),
+            backgroundColor: 'rgba(0, 242, 254, 0.8)',
+            borderColor: 'rgba(0, 242, 254, 1)',
+            borderWidth: 1
+          },
+          {
+            label: 'Stemming (m)',
+            data: chartData.map(row => row.stemming),
+            backgroundColor: 'rgba(118, 75, 162, 0.8)',
+            borderColor: 'rgba(118, 75, 162, 1)',
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          title: {
+            display: true,
+            text: `Blast Parameters (Last ${chartData.length} Records)`,
+            font: {
+              size: 16,
+              weight: 'bold'
+            }
+          },
+          legend: {
+            display: true,
+            position: 'top'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Meters (m)'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Blast Records'
+            }
+          }
+        }
+      }
+    });
+  }
+  
+  renderTable() {
+    const tbody = document.querySelector('#dataTable tbody');
+    tbody.innerHTML = '';
+    
+    const data = this.filteredData;
+    
+    if (data.length === 0) {
+      const row = tbody.insertRow();
+      const cell = row.insertCell();
+      cell.colSpan = 10; // Updated for new columns
+      cell.textContent = 'No data to display';
+      cell.style.textAlign = 'center';
+      cell.style.fontStyle = 'italic';
+      cell.style.color = '#666';
+      return;
+    }
+    
+    data.forEach(row => {
+      const tr = tbody.insertRow();
+      
+      tr.insertCell().textContent = row.rowNumber;
+      tr.insertCell().textContent = row.date;
+      tr.insertCell().textContent = row.mineName;
+      tr.insertCell().textContent = row.pitName;
+      tr.insertCell().textContent = row.zoneName;
+      tr.insertCell().textContent = row.benchName;
+      tr.insertCell().textContent = row.rockType;
+      tr.insertCell().textContent = row.burden.toFixed(2);
+      tr.insertCell().textContent = row.spacing.toFixed(2);
+      tr.insertCell().textContent = row.stemming.toFixed(2);
+    });
+  }
+}
+
+// Initialize the dashboard when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+  new DashboardManager();
+});
+</script>
+
+</body>
+</html>

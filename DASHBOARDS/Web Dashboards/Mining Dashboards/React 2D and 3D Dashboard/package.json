@@ -1,0 +1,50 @@
+{
+  "name": "mnit-webhackthon",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
+    "@tailwindcss/vite": "^4.1.5",
+    "chart.js": "^4.4.9",
+    "chartjs-adapter-date-fns": "^3.0.0",
+    "d3": "^7.9.0",
+    "date-fns": "^4.1.0",
+    "file-saver": "^2.0.5",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.1",
+    "lucide-react": "^0.506.0",
+    "mnit-webhackthon": "file:",
+    "plotly.js": "^3.0.1",
+    "react": "^19.1.0",
+    "react-chartjs-2": "^5.3.0",
+    "react-datepicker": "^8.4.0",
+    "react-dom": "^19.1.0",
+    "react-icons": "^5.5.0",
+    "react-plotly.js": "^2.6.0",
+    "recharts": "^3.0.2",
+    "three": "^0.128.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.22.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "postcss": "^8.5.5",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.1"
+  }
+}

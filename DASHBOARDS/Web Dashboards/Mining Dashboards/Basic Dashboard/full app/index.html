@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drill & Blasting Analysis - Advanced Mining Solutions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 165, 0, 0.1);
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Header */
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 165, 0, 0.3);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b35, #ffa726);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(45deg, #ff6b35, #ffa726);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 80px;
+            padding: 4rem 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 6rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffffff, #ffa726, #ff6b35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 10px rgba(255, 167, 38, 0.3)); }
+            to { filter: drop-shadow(0 0 20px rgba(255, 167, 38, 0.6)); }
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: #cccccc;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #ff6b35, #ffa726);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.5);
+        }
+
+        /* Cards Section */
+        .cards-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 165, 0, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 165, 0, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+            animation: shimmer 1.5s ease-out;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(255, 165, 0, 0.5);
+            box-shadow: 0 20px 60px rgba(255, 165, 0, 0.2);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, #ff6b35, #ffa726);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card p {
+            color: #cccccc;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-button {
+            background: linear-gradient(45deg, #ff6b35, #ffa726);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 1px solid rgba(255, 165, 0, 0.3);
+            padding: 3rem 2rem 1rem;
+            margin-top: 6rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h4 {
+            color: #ffa726;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-section p, .footer-section a {
+            color: #cccccc;
+            line-height: 1.6;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #ffa726;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 165, 0, 0.2);
+            color: #888;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .cards-section {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f0f0f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 165, 0, 0.3);
+            border-top: 3px solid #ffa726;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader"></div>
+    </div>
+
+    <div class="bg-animation" id="bgAnimation"></div>
+
+    <header>
+        <nav>
+            <div class="logo">⚡ Drill & Blast Analytics</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#analysis">Analysis</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Advanced Drill & Blasting Analysis</h1>
+            <p>Revolutionize your mining operations with cutting-edge analysis tools. Optimize blast patterns, reduce costs, and ensure safety with our comprehensive suite of analytical solutions.</p>
+            <a href="#features" class="cta-button">Explore Solutions</a>
+        </section>
+
+        <section class="cards-section" id="features">
+            <div class="card" onclick="navigateToPage('http://127.0.0.1:5500/KPI/Air%20and%20Ground%20Vibration/index.html')">
+                <div class="card-icon">🌊</div>
+                <h3>Air & Ground Vibration Analysis</h3>
+                <p>Monitor and analyze vibration levels to ensure compliance with environmental regulations and protect nearby structures. Advanced algorithms predict and optimize blast patterns for minimal impact.</p>
+                <button class="card-button">Analyze Vibrations</button>
+            </div>
+
+            <div class="card" onclick="navigateToPage('http://127.0.0.1:5500/KPI/Average_blast_cost/new.html')">
+                <div class="card-icon">💰</div>
+                <h3>Average Blast Cost Calculator</h3>
+                <p>Calculate comprehensive blast costs including explosives, labor, equipment, and operational expenses. Optimize your budget with detailed cost breakdowns and efficiency metrics.</p>
+                <button class="card-button">Calculate Costs</button>
+            </div>
+
+            <div class="card" onclick="navigateToPage('http://127.0.0.1:5500/KPI/Burden%20Spacing%20streamming/index.html')">
+                <div class="card-icon">📐</div>
+                <h3>Burden, Spacing & Stemming</h3>
+                <p>Optimize drill patterns with precise burden and spacing calculations. Determine optimal stemming lengths for maximum fragmentation efficiency and rock breakage performance.</p>
+                <button class="card-button">Optimize Pattern</button>
+            </div>
+
+            <div class="card" onclick="navigateToPage('http://127.0.0.1:5500/KPI/Burden%20Spacing%20streamming/index.html')">
+                <div class="card-icon">🐦‍🔥</div>
+                <h3>Blast Cost Per Ton</h3>
+                <p>Blast cost per ton represents the total drilling and blasting expenditure divided by the quantity of rock broken, serving as a key indicator of blasting efficiency and cost-effectiveness.</p>
+                <button class="card-button">Optimize Pattern</button>
+            </div>
+
+            <div class="card" onclick="showComingSoon()">
+                <div class="card-icon">🎯</div>
+                <h3>Blast Design Optimizer</h3>
+                <p>AI-powered blast design optimization combining geological data, rock properties, and operational constraints to deliver maximum efficiency with minimal environmental impact.</p>
+                <button class="card-button">Coming Soon</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About BlastPro</h4>
+                <p>Leading the industry in drill and blasting analysis with innovative solutions that enhance safety, efficiency, and environmental compliance in mining operations worldwide.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <p><a href="#features">Analysis Tools</a></p>
+                <p><a href="#contact">Support</a></p>
+                <p><a href="#docs">Documentation</a></p>
+                <p><a href="#api">API Access</a></p>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>Email: support@Mineexcellenece.com</p>
+                <p>Phone: +19 992------</p>
+                <p>Address: Mining Tech Center, Suite 100</p>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <p><a href="#">LinkedIn</a></p>
+                <p><a href="#">Twitter</a></p>
+                <p><a href="#">YouTube</a></p>
+                <p><a href="#">ResearchGate</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Drill & Blast Analytics. All rights reserved. | Advanced Mining Solutions</p>
+        </div>
+    </footer>
+
+    <script>
+        // Loading animation
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+
+        // Animated background particles
+        function createParticles() {
+            const bgAnimation = document.getElementById('bgAnimation');
+            const particleCount = 15;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                
+                bgAnimation.appendChild(particle);
+            }
+        }
+
+        // Navigation functions
+        function navigateToPage(url) {
+            // Add a subtle loading effect
+            document.body.style.opacity = '0.8';
+            setTimeout(() => {
+                window.location.href = url;
+            }, 200);
+        }
+
+        function showComingSoon() {
+            alert('🚀 Coming Soon!\n\nThis advanced feature is currently under development. Stay tuned for updates!');
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(0, 0, 0, 0.95)';
+            } else {
+                header.style.background = 'rgba(0, 0, 0, 0.8)';
+            }
+        });
+
+        // Initialize particles
+        createParticles();
+
+        // Card hover sound effect (visual feedback)
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Dynamic title animation
+        let titleIndex = 0;
+        const titles = [
+            'Advanced Drill & Blasting Analysis',
+            'Precision Mining Solutions',
+            'Smart Blast Optimization',
+            'Next-Gen Mining Analytics'
+        ];
+
+        function animateTitle() {
+            const titleElement = document.querySelector('.hero h1');
+            titleElement.style.opacity = '0';
+            
+            setTimeout(() => {
+                titleElement.textContent = titles[titleIndex];
+                titleElement.style.opacity = '1';
+                titleIndex = (titleIndex + 1) % titles.length;
+            }, 500);
+        }
+
+        // Change title every 4 seconds
+        setInterval(animateTitle, 4000);
+    </script>
+</body>
+</html>

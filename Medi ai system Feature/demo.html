@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo DICOM Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .demo-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-section">
+        <h1>🏥 Medical Imaging Viewer - Demo</h1>
+        
+        <div class="info">
+            <strong>⚠️ Note:</strong> This application loads DICOM and TIFF medical images locally in your browser.
+            <br><br>
+            <strong>To test the viewer:</strong>
+            <ol>
+                <li>Open <code>index.html</code> in your browser</li>
+                <li>Upload DICOM (.dcm) or TIFF (.tif) files</li>
+                <li>Use the controls to navigate and adjust images</li>
+            </ol>
+        </div>
+
+        <h2>Generate Test Images</h2>
+        <p>Click below to generate synthetic test images for development:</p>
+        
+        <button class="btn" onclick="generateTestDICOM()">Generate Test DICOM Series</button>
+        <button class="btn" onclick="generateTestTIFF()">Generate Test TIFF</button>
+        
+        <div id="output" style="margin-top: 20px;"></div>
+
+        <h2>Keyboard Shortcuts</h2>
+        <pre>
+↑/W       - Previous slice
+↓/S       - Next slice
++/=       - Zoom in
+-/_       - Zoom out
+R         - Reset view
+I         - Invert colors
+Ctrl+Wheel - Zoom
+Wheel     - Navigate slices
+Right-drag - Window level/width
+        </pre>
+
+        <h2>Features Included</h2>
+        <ul>
+            <li>✅ Drag-and-drop file upload</li>
+            <li>✅ DICOM metadata extraction</li>
+            <li>✅ Multi-slice navigation</li>
+            <li>✅ Window level/width adjustment</li>
+            <li>✅ Zoom & pan</li>
+            <li>✅ 16-bit grayscale support</li>
+            <li>✅ Auto-series detection</li>
+            <li>✅ Thumbnail film strip</li>
+            <li>✅ Heatmap overlay support</li>
+            <li>✅ 3D volume rendering (WebGL)</li>
+            <li>✅ PHI privacy protection</li>
+        </ul>
+
+        <h2>Browser Requirements</h2>
+        <ul>
+            <li>Chrome/Edge 90+</li>
+            <li>Firefox 88+</li>
+            <li>Safari 14+</li>
+            <li>WebGL support (for 3D features)</li>
+        </ul>
+    </div>
+
+    <script>
+        function generateTestDICOM() {
+            const output = document.getElementById('output');
+            output.innerHTML = `
+                <div class="info">
+                    <strong>📦 Generating Test DICOM...</strong><br><br>
+                    
+                    Test DICOM series generation creates synthetic medical images.
+                    Due to browser security, you'll need actual DICOM files to test.<br><br>
+                    
+                    <strong>Sample DICOM sources:</strong>
+                    <ul>
+                        <li><a href="https://www.dicomlibrary.com" target="_blank">DICOM Library</a> - Free test images</li>
+                        <li><a href="https://www.cancerimagingarchive.net" target="_blank">Cancer Imaging Archive</a></li>
+                        <li><a href="https://nbia.cancerimagingarchive.net" target="_blank">NBIA</a></li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        function generateTestTIFF() {
+            // Generate a simple test TIFF (grayscale)
+            const output = document.getElementById('output');
+            
+            // Create canvas with test pattern
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            
+            // Draw gradient test pattern
+            const gradient = ctx.createLinearGradient(0, 0, 512, 512);
+            gradient.addColorStop(0, '#000');
+            gradient.addColorStop(1, '#fff');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 512, 512);
+            
+            // Add circles
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            for (let i = 1; i <= 5; i++) {
+                ctx.beginPath();
+                ctx.arc(256, 256, i * 50, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // Convert to blob and download
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'test-image.png';
+                a.click();
+                
+                output.innerHTML = `
+                    <div class="info">
+                        <strong>✅ Test image generated!</strong><br><br>
+                        A PNG test image has been downloaded. While the viewer supports TIFF,
+                        you can use this PNG to test basic functionality.<br><br>
+                        Note: Upload actual TIFF medical images for full testing.
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

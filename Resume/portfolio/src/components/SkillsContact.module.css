@@ -1,0 +1,128 @@
+.section {
+    padding: 80px 0;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #666;
+}
+
+/* Skills Grid */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    border-color: rgba(106, 13, 173, 0.3);
+    box-shadow: 0 8px 30px rgba(106, 13, 173, 0.1);
+}
+
+.categoryTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #6a0dad;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.skill {
+    padding: 6px 14px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #333;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.skill:hover {
+    background: linear-gradient(135deg, rgba(106, 13, 173, 0.1) 0%, rgba(255, 106, 0, 0.05) 100%);
+    color: #6a0dad;
+}
+
+/* Contact Section */
+.contactContent {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 48px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.contactInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.contactCard {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.contactCard h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+}
+
+.contactCard a,
+.contactCard p {
+    font-size: 0.95rem;
+    color: #6a0dad;
+    font-weight: 500;
+}
+
+.contactCard a:hover {
+    color: #ff6a00;
+}
+
+.formWrapper {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 768px) {
+    .contactContent {
+        grid-template-columns: 1fr;
+    }
+}

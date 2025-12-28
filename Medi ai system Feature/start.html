@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Here - Medical Imaging Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 800px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        .status-box {
+            background: #f7fafc;
+            border-left: 4px solid #48bb78;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .status-box.warning {
+            border-left-color: #f59e0b;
+        }
+        .status-box.error {
+            border-left-color: #ef4444;
+        }
+        .file-list {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        .file-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #4a5568;
+        }
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 10px 10px 10px 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+        .btn-secondary:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .steps {
+            margin: 30px 0;
+        }
+        .step {
+            display: flex;
+            align-items: start;
+            margin: 20px 0;
+        }
+        .step-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .step-content h3 {
+            margin-bottom: 5px;
+            color: #2d3748;
+        }
+        .step-content p {
+            color: #718096;
+            line-height: 1.6;
+        }
+        #serverStatus {
+            text-align: center;
+            padding: 20px;
+        }
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🏥</div>
+        <h1>Medical Imaging Viewer</h1>
+        <p class="subtitle">Professional DICOM, TIFF & Image Viewer</p>
+
+        <div class="status-box" id="statusBox">
+            <div id="serverStatus">
+                <div class="spinner"></div>
+                <p>Checking server status...</p>
+            </div>
+        </div>
+
+        <div class="file-list">
+            <strong>📁 Your DATA Folder Contains:</strong>
+            <div class="file-item">✅ ID_0000_AGE_0060_CONTRAST_1_CT.dcm (CT Scan)</div>
+            <div class="file-item">✅ ID_0004_AGE_0056_CONTRAST_1_CT.dcm (CT Scan)</div>
+            <div class="file-item">✅ ID_0004_AGE_0056_CONTRAST_1_CT.tif (TIFF Image)</div>
+            <div class="file-item">✅ 0171021638f9272a34a41feb84ed47a0.png (PNG Image)</div>
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Server Ready</h3>
+                    <p>Your local server is running at <code>http://localhost:8000</code></p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Open Viewer</h3>
+                    <p>Click the button below to launch the medical imaging viewer</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Load Sample Data</h3>
+                    <p>Click the green "Load Sample Data" button to automatically load all 4 files</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="index.html" class="btn" id="launchBtn">🚀 Launch Viewer</a>
+            <a href="test.html" class="btn btn-secondary">🔍 Test Files</a>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px; color: #718096; font-size: 0.9rem;">
+            <p><strong>Quick Keys:</strong> W/S (navigate) • +/- (zoom) • R (reset)</p>
+            <p><strong>Mouse:</strong> Wheel (slices) • Drag (pan) • Right-drag (brightness)</p>
+        </div>
+    </div>
+
+    <script>
+        // Check server status
+        async function checkServer() {
+            const statusBox = document.getElementById('statusBox');
+            const serverStatus = document.getElementById('serverStatus');
+            
+            try {
+                // Try to access a file
+                const response = await fetch('./DATA/ID_0000_AGE_0060_CONTRAST_1_CT.dcm', {
+                    method: 'HEAD'
+                });
+                
+                if (response.ok) {
+                    statusBox.className = 'status-box';
+                    serverStatus.innerHTML = `
+                        <h3 style="color: #48bb78; margin-bottom: 10px;">✅ Server is Running!</h3>
+                        <p style="color: #2d3748;">Your DATA folder is accessible and ready to load.</p>
+                    `;
+                    
+                    // Enable launch button
+                    document.getElementById('launchBtn').style.opacity = '1';
+                    document.getElementById('launchBtn').style.pointerEvents = 'auto';
+                } else {
+                    throw new Error('Cannot access files');
+                }
+            } catch (error) {
+                statusBox.className = 'status-box error';
+                serverStatus.innerHTML = `
+                    <h3 style="color: #ef4444; margin-bottom: 10px;">❌ Server Issue</h3>
+                    <p style="color: #2d3748;">
+                        Please make sure the server is running:<br>
+                        <code>python -m http.server 8000</code>
+                    </p>
+                `;
+            }
+        }
+
+        // Check on page load
+        window.addEventListener('load', () => {
+            setTimeout(checkServer, 500);
+        });
+
+        // Add keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+.container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    overflow: hidden;
+}
+
+.element {
+    position: absolute;
+    filter: drop-shadow(0 0 10px rgba(74, 0, 128, 0.3));
+    transition: filter 0.3s ease;
+}
+
+.element:hover {
+    filter: drop-shadow(0 0 20px rgba(255, 69, 0, 0.6));
+}
+
+/* Corner decorations */
+.cornerPumpkin1,
+.cornerPumpkin2,
+.cornerHat,
+.cornerWand,
+.cornerSpider,
+.cornerCrystal {
+    position: fixed;
+    font-size: 3rem;
+    opacity: 0.3;
+    animation: float 4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.cornerPumpkin1 {
+    top: 15%;
+    left: 3%;
+    animation-delay: 0s;
+}
+
+.cornerPumpkin2 {
+    bottom: 20%;
+    right: 4%;
+    animation-delay: 1s;
+}
+
+.cornerHat {
+    top: 25%;
+    right: 5%;
+    animation-delay: 0.5s;
+    font-size: 2.5rem;
+}
+
+.cornerWand {
+    bottom: 30%;
+    left: 4%;
+    animation-delay: 1.5s;
+    font-size: 2rem;
+}
+
+.cornerSpider {
+    top: 50%;
+    left: 2%;
+    animation-delay: 2s;
+    font-size: 2rem;
+}
+
+.cornerCrystal {
+    top: 40%;
+    right: 3%;
+    animation-delay: 2.5s;
+    font-size: 2.5rem;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-15px) rotate(5deg);
+    }
+}
+
+/* Responsive - hide some on mobile */
+@media (max-width: 768px) {
+
+    .cornerSpider,
+    .cornerCrystal {
+        display: none;
+    }
+
+    .cornerPumpkin1,
+    .cornerPumpkin2,
+    .cornerHat,
+    .cornerWand {
+        font-size: 2rem;
+        opacity: 0.2;
+    }
+}

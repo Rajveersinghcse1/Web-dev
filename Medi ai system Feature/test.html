@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Test - Medical Imaging Viewer</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0e1a;
+            color: #e4e7ec;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #3b82f6;
+        }
+        .test-section {
+            background: #151b2d;
+            border: 1px solid #2d3648;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .success {
+            color: #10b981;
+        }
+        .error {
+            color: #ef4444;
+        }
+        .warning {
+            color: #f59e0b;
+        }
+        pre {
+            background: #0a0e1a;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+        #console {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .log-line {
+            padding: 5px;
+            border-bottom: 1px solid #2d3648;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Medical Imaging Viewer - Data Test</h1>
+    
+    <div class="test-section">
+        <h2>File Access Test</h2>
+        <button class="btn" onclick="testFileAccess()">Test DATA Folder Access</button>
+        <button class="btn" onclick="testDICOMParsing()">Test DICOM Parsing</button>
+        <button class="btn" onclick="testTIFFParsing()">Test TIFF Parsing</button>
+        <button class="btn" onclick="testPNGLoading()">Test PNG Loading</button>
+        <div id="fileAccessResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Console Output</h2>
+        <button class="btn" onclick="clearConsole()">Clear Console</button>
+        <div id="console"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Quick Actions</h2>
+        <a href="index.html" class="btn">← Back to Viewer</a>
+        <button class="btn" onclick="location.reload()">Reload Page</button>
+    </div>
+
+    <script>
+        // Capture console logs
+        const consoleDiv = document.getElementById('console');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function addToConsole(message, type = 'log') {
+            const line = document.createElement('div');
+            line.className = `log-line ${type}`;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleDiv.appendChild(line);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole(args.join(' '), 'success');
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole('ERROR: ' + args.join(' '), 'error');
+        };
+
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole('WARNING: ' + args.join(' '), 'warning');
+        };
+
+        function clearConsole() {
+            consoleDiv.innerHTML = '';
+        }
+
+        async function testFileAccess() {
+            const resultDiv = document.getElementById('fileAccessResult');
+            resultDiv.innerHTML = '<p>Testing file access...</p>';
+            
+            console.log('=== File Access Test ===');
+            
+            const files = [
+                'ID_0000_AGE_0060_CONTRAST_1_CT.dcm',
+                'ID_0004_AGE_0056_CONTRAST_1_CT.dcm',
+                'ID_0004_AGE_0056_CONTRAST_1_CT.tif',
+                '0171021638f9272a34a41feb84ed47a0.png'
+            ];
+
+            let results = '<h3>Results:</h3><pre>';
+            
+            for (const file of files) {
+                try {
+                    const url = './DATA/' + file;
+                    console.log(`Testing: ${url}`);
+                    
+                    const response = await fetch(url);
+                    
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        results += `✅ ${file}: ${blob.size} bytes\n`;
+                        console.log(`✅ ${file}: ${blob.size} bytes`);
+                    } else {
+                        results += `❌ ${file}: HTTP ${response.status}\n`;
+                        console.error(`❌ ${file}: HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    results += `❌ ${file}: ${error.message}\n`;
+                    console.error(`❌ ${file}:`, error);
+                }
+            }
+            
+            results += '</pre>';
+            resultDiv.innerHTML = results;
+        }
+
+        async function testDICOMParsing() {
+            console.log('=== DICOM Parsing Test ===');
+            
+            try {
+                const response = await fetch('./DATA/ID_0000_AGE_0060_CONTRAST_1_CT.dcm');
+                const arrayBuffer = await response.arrayBuffer();
+                const view = new DataView(arrayBuffer);
+                
+                console.log('File size:', arrayBuffer.byteLength, 'bytes');
+                
+                // Check DICOM header
+                const byte128 = view.getUint8(128);
+                const byte129 = view.getUint8(129);
+                const byte130 = view.getUint8(130);
+                const byte131 = view.getUint8(131);
+                
+                const header = String.fromCharCode(byte128, byte129, byte130, byte131);
+                console.log('DICOM Header at 128:', header);
+                
+                if (header === 'DICM') {
+                    console.log('✅ Valid DICOM file detected');
+                    
+                    // Try to find key tags
+                    console.log('Attempting to find image dimensions...');
+                    
+                    // This is a simplified check
+                    console.log('File appears to be valid DICOM format');
+                } else {
+                    console.error('❌ Invalid DICOM header');
+                }
+                
+            } catch (error) {
+                console.error('DICOM test failed:', error);
+            }
+        }
+
+        async function testTIFFParsing() {
+            console.log('=== TIFF Parsing Test ===');
+            
+            try {
+                const response = await fetch('./DATA/ID_0004_AGE_0056_CONTRAST_1_CT.tif');
+                const arrayBuffer = await response.arrayBuffer();
+                const view = new DataView(arrayBuffer);
+                
+                console.log('File size:', arrayBuffer.byteLength, 'bytes');
+                
+                // Check TIFF header
+                const byteOrder = view.getUint16(0, true);
+                
+                if (byteOrder === 0x4949) {
+                    console.log('✅ TIFF file (Intel byte order)');
+                } else if (byteOrder === 0x4D4D) {
+                    console.log('✅ TIFF file (Motorola byte order)');
+                } else {
+                    console.error('❌ Invalid TIFF header');
+                }
+                
+            } catch (error) {
+                console.error('TIFF test failed:', error);
+            }
+        }
+
+        async function testPNGLoading() {
+            console.log('=== PNG Loading Test ===');
+            
+            try {
+                const response = await fetch('./DATA/0171021638f9272a34a41feb84ed47a0.png');
+                const blob = await response.blob();
+                
+                console.log('File size:', blob.size, 'bytes');
+                console.log('Type:', blob.type);
+                
+                const img = new Image();
+                const url = URL.createObjectURL(blob);
+                
+                img.onload = () => {
+                    console.log('✅ PNG loaded:', img.width, 'x', img.height);
+                    URL.revokeObjectURL(url);
+                };
+                
+                img.onerror = () => {
+                    console.error('❌ PNG failed to load');
+                    URL.revokeObjectURL(url);
+                };
+                
+                img.src = url;
+                
+            } catch (error) {
+                console.error('PNG test failed:', error);
+            }
+        }
+
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            console.log('Test page loaded');
+            console.log('Click buttons above to test DATA folder access');
+        });
+    </script>
+</body>
+</html>

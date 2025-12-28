@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Well Log Loading</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .debug { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffeeee; border: 1px solid #ff0000; }
+        .success { background: #eeffee; border: 1px solid #00ff00; }
+        .info { background: #eeeeff; border: 1px solid #0000ff; }
+    </style>
+</head>
+<body>
+    <h1>🔬 Debug Well Log Loading</h1>
+    <button onclick="debugWellLog()">🚀 Debug Load Las Dataset File</button>
+    <div id="output"></div>
+    
+    <script src="ultraAdvancedLASParser.js"></script>
+    <script>
+        async function debugWellLog() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<div class="info debug">🔄 Starting debug process...</div>';
+            
+            try {
+                // Step 1: Load file
+                output.innerHTML += '<div class="info debug">📂 Step 1: Loading file...</div>';
+                const response = await fetch('Las Dataset/49-005-30258.las');
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch: ${response.status}`);
+                }
+                const arrayBuffer = await response.arrayBuffer();
+                output.innerHTML += `<div class="success debug">✅ File loaded: ${arrayBuffer.byteLength} bytes</div>`;
+                
+                // Step 2: Create parser
+                output.innerHTML += '<div class="info debug">🔧 Step 2: Creating parser...</div>';
+                const parser = new UltraAdvancedLASParser();
+                output.innerHTML += '<div class="success debug">✅ Parser created</div>';
+                
+                // Step 3: Detect format
+                output.innerHTML += '<div class="info debug">🔍 Step 3: Detecting format...</div>';
+                const dataView = new DataView(arrayBuffer);
+                const uint8Array = new Uint8Array(arrayBuffer);
+                const format = parser.detectLASFormat(dataView, uint8Array);
+                output.innerHTML += `<div class="success debug">✅ Format detected: ${format}</div>`;
+                
+                // Step 4: Parse the file
+                output.innerHTML += '<div class="info debug">⚙️ Step 4: Parsing file...</div>';
+                const result = await parser.parseLAS(arrayBuffer);
+                output.innerHTML += `<div class="success debug">✅ File parsed successfully!</div>`;
+                
+                // Step 5: Show results
+                output.innerHTML += `
+                    <div class="success debug">
+                        <h3>📊 Parse Results:</h3>
+                        <p><strong>File Type:</strong> ${result.fileType}</p>
+                        <p><strong>Point Count:</strong> ${result.pointCount}</p>
+                        <p><strong>Points Array Length:</strong> ${result.points ? result.points.length : 'N/A'}</p>
+                        <p><strong>Well Name:</strong> ${result.header?.wellName || 'Unknown'}</p>
+                        <p><strong>Depth Range:</strong> ${result.header?.startDepth} - ${result.header?.stopDepth} ft</p>
+                        <p><strong>Curves:</strong> ${result.header?.curves?.join(', ') || 'None'}</p>
+                        <p><strong>Data Points:</strong> ${result.header?.dataPoints || 'N/A'}</p>
+                    </div>`;
+                
+                if (result.points && result.points.length > 0) {
+                    output.innerHTML += `
+                        <div class="success debug">
+                            <h3>🎯 Sample 3D Points:</h3>
+                            <pre>${JSON.stringify(result.points.slice(0, 3), null, 2)}</pre>
+                        </div>`;
+                } else {
+                    output.innerHTML += `<div class="error debug">❌ No 3D points generated!</div>`;
+                }
+                
+                // Step 6: Check bounds
+                if (result.bounds) {
+                    output.innerHTML += `
+                        <div class="success debug">
+                            <h3>📐 Bounds:</h3>
+                            <p>X: ${result.bounds.minX.toFixed(2)} to ${result.bounds.maxX.toFixed(2)}</p>
+                            <p>Y: ${result.bounds.minY.toFixed(2)} to ${result.bounds.maxY.toFixed(2)}</p>
+                            <p>Z: ${result.bounds.minZ.toFixed(2)} to ${result.bounds.maxZ.toFixed(2)}</p>
+                        </div>`;
+                }
+                
+                output.innerHTML += '<div class="success debug">🎉 Debug complete! Check console for detailed logs.</div>';
+                
+            } catch (error) {
+                console.error('❌ Debug failed:', error);
+                output.innerHTML += `
+                    <div class="error debug">
+                        <h3>❌ Debug Failed</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p><strong>Stack:</strong> <pre>${error.stack}</pre></p>
+                    </div>`;
+            }
+        }
+        
+        // Open console automatically
+        console.log('🔬 Debug page loaded - open developer tools (F12) to see detailed logs');
+    </script>
+</body>
+</html>

@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mining Vibration Dashboard - Technical Analysis Report</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        .report-container {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            min-height: 297mm;
+        }
+
+        /* Header */
+        .report-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .report-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="0,0 1000,100 1000,0"/></svg>');
+            background-size: cover;
+        }
+
+        .report-header .content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .report-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .report-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .report-meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Table of Contents */
+        .toc {
+            padding: 40px;
+            background: #f8f9fa;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .toc h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toc-list {
+            list-style: none;
+        }
+
+        .toc-item {
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px dotted #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toc-item a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toc-item .page-num {
+            color: #7f8c8d;
+            font-weight: normal;
+        }
+
+        /* Content Sections */
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-subtitle {
+            color: #34495e;
+            font-size: 1.4rem;
+            margin: 30px 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-content {
+            margin-left: 20px;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .feature-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        /* Technical Specs */
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .tech-item {
+            background: linear-gradient(135deg, #ecf0f1, #bdc3c7);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        .tech-icon {
+            width: 30px;
+            height: 30px;
+            background: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        /* Safety Thresholds */
+        .safety-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .safety-table th,
+        .safety-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .safety-table th {
+            background: #34495e;
+            color: white;
+            font-weight: 600;
+        }
+
+        .safety-table .danger {
+            background: #ffebee;
+            color: #c62828;
+            font-weight: 600;
+        }
+
+        .safety-table .warning {
+            background: #fff3e0;
+            color: #ef6c00;
+            font-weight: 600;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .code-block .comment {
+            color: #95a5a6;
+        }
+
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        .report-footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Print Styles */
+        @media print {
+            .report-container {
+                box-shadow: none;
+                max-width: none;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+            }
+            
+            .report-header {
+                page-break-after: avoid;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .report-header {
+                padding: 20px;
+            }
+            
+            .report-title {
+                font-size: 1.8rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border-left: 4px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .highlight-box h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0, #ffcc02);
+            border-left: 4px solid #f57c00;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box h4 {
+            color: #e65100;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Button */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        @media print {
+            .btn-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="btn btn-print" onclick="window.print()">
+        <i class="fas fa-print"></i>
+        Print PDF
+    </button>
+
+    <div class="report-container">
+        <!-- Header -->
+        <header class="report-header">
+            <div class="content">
+                <h1 class="report-title">
+                    <i class="fas fa-chart-line"></i>
+                    Mining Vibration Dashboard
+                </h1>
+                <p class="report-subtitle">Complete Code Analysis & Technical Architecture Report</p>
+                <div class="report-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>May 2025</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-code"></i>
+                        <span>React.js Application</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-industry"></i>
+                        <span>Mining & Blasting</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Table of Contents -->
+        <section class="toc">
+            <h2><i class="fas fa-list"></i> Table of Contents</h2>
+            <ul class="toc-list">
+                <li class="toc-item">
+                    <a href="#overview"><i class="fas fa-eye"></i> Project Overview</a>
+                    <span class="page-num">3</span>
+                </li>
+                <li class="toc-item">
+                    <a href="#architecture"><i class="fas fa-sitemap"></i> Architectural Analysis</a>
+                    <span class="page-num">4</span>
+                </li>
+                <li class="toc-item">
+                    <a href="#functionality"><i class="fas fa-cogs"></i> Core Functionality</a>
+                    <span class="page-num">5</span>
+                </li>
+                <li class="toc-item">
+                    <a href="#safety"><i class="fas fa-shield-alt"></i> Safety Monitoring</a>
+                    <span class="page-num">7</span>
+                </li>
+                <li class="toc-item">
+                    <a href="#ui-design"><i class="fas fa-desktop"></i> User Interface Design</a>
+                    <span class="page-num">8</span>
+                </li>
+                <li class="toc-item">
+                    <a href="#technical"><i class="fas fa-tools"></i> Technical Implementation</a>
+                    <span class="page-num">9</span>
+                </li>
+                <li class="toc-item">
+                    <a href="#recreation"><i class="fas fa-rocket"></i> Recreation Prompt</a>
+                    <span class="page-num">10</span>
+                </li>
+                <li class="toc-item">
+                    <a href="#improvements"><i class="fas fa-arrow-up"></i> Recommended Improvements</a>
+                    <span class="page-num">12</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Content -->
+        <main class="content">
+            <!-- Project Overview -->
+            <section id="overview" class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-eye"></i>
+                    Project Overview
+                </h2>
+                <div class="section-content">
+                    <p>This is a <strong>Mining & Blasting Vibration Monitoring System</strong> - a comprehensive web-based dashboard designed for mining operations to monitor and analyze ground vibrations and air blast effects from controlled explosions. The system processes vibration data from Excel/CSV files and provides real-time visualization, statistical analysis, and filtering capabilities for safety compliance and operational optimization.</p>
+                    
+                    <div class="highlight-box">
+                        <h4><i class="fas fa-bullseye"></i> Primary Objectives</h4>
+                        <p>Monitor ground vibrations and air blast effects, ensure safety compliance with industry standards, provide real-time data visualization, and enable operational optimization through comprehensive analytics.</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value"><i class="fas fa-file-alt"></i></div>
+                            <div class="stat-label">Multi-Format Support</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value"><i class="fas fa-chart-area"></i></div>
+                            <div class="stat-label">Real-time Analytics</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value"><i class="fas fa-shield-alt"></i></div>
+                            <div class="stat-label">Safety Compliance</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value"><i class="fas fa-filter"></i></div>
+                            <div class="stat-label">Advanced Filtering</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Architectural Analysis -->
+            <section id="architecture" class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-sitemap"></i>
+                    Architectural Analysis
+                </h2>
+                <div class="section-content">
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-layer-group"></i>
+                        Technology Stack
+                    </h3>
+                    
+                    <div class="tech-stack">
+                        <div class="tech-item">
+                            <div class="tech-icon"><i class="fab fa-react"></i></div>
+                            <span>React.js with Hooks</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon"><i class="fas fa-chart-bar"></i></div>
+                            <span>Chart.js Visualization</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon"><i class="fas fa-file-excel"></i></div>
+                            <span>XLSX.js File Processing</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon"><i class="fab fa-css3-alt"></i></div>
+                            <span>Custom CSS Styling</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon"><i class="fas fa-database"></i></div>
+                            <span>In-Memory State Management</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon"><i class="fas fa-chart-line"></i></div>
+                            <span>Recharts Library</span>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Critical Architecture Issues</h4>
+                        <p>The code shows a hybrid architecture mixing vanilla JavaScript classes with React components, creating conflicts between DOM manipulation and React's virtual DOM. This requires immediate refactoring for production readiness.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Core Functionality -->
+            <section id="functionality" class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-cogs"></i>
+                    Core Functionality Analysis
+                </h2>
+                <div class="section-content">
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-exchange-alt"></i>
+                        Data Processing Engine
+                    </h3>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-map"></i></div>
+                                <span>Column Mapping System</span>
+                            </div>
+                            <p>Intelligent column recognition with fuzzy matching, case-insensitive processing, and extensive alias support for flexible data import from various sources.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-check-circle"></i></div>
+                                <span>Data Validation</span>
+                            </div>
+                            <p>Robust type conversion, Excel date handling, error management, and data cleaning with preservation of decimal precision.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-filter"></i></div>
+                                <span>Multi-Level Filtering</span>
+                            </div>
+                            <p>Quick filters for Bench/Zone selection and comprehensive date filtering including ranges, specific years, months, and quarters.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-chart-area"></i></div>
+                                <span>Interactive Visualization</span>
+                            </div>
+                            <p>Dual-axis line charts, time-series display, interactive tooltips, and responsive design for optimal user experience.</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-code"></i>
+                        Column Mapping Implementation
+                    </h3>
+                    
+                    <div class="code-block">
+COLUMN_ALIASES = {<br>
+&nbsp;&nbsp;ppv: ['PPV (mm/s)', 'PPV', 'Peak Particle Velocity', ...],<br>
+&nbsp;&nbsp;airBlast: ['Air Blast (dB)', 'Air Blast', 'Overpressure', ...],<br>
+&nbsp;&nbsp;totalExplosive: ['Total Explosive Kg', 'Explosive Weight', ...],<br>
+&nbsp;&nbsp;<span class="comment">// ... extensive alias mapping for flexible data import</span><br>
+}
+                    </div>
+
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-flow-chart"></i>
+                        Filter Logic Flow
+                    </h3>
+                    
+                    <div style="text-align: center; margin: 20px 0; font-family: monospace; background: #ecf0f1; padding: 20px; border-radius: 8px;">
+                        Raw Data → Top Filters (Bench/Zone) → Date Filters → Filtered Dataset → Visualization
+                    </div>
+                </div>
+            </section>
+
+            <!-- Safety Monitoring -->
+            <section id="safety" class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-shield-alt"></i>
+                    Safety Monitoring Features
+                </h2>
+                <div class="section-content">
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Compliance Thresholds
+                    </h3>
+                    
+                    <table class="safety-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-clipboard-list"></i> Parameter</th>
+                                <th><i class="fas fa-exclamation"></i> Warning Level</th>
+                                <th><i class="fas fa-ban"></i> Danger Level</th>
+                                <th><i class="fas fa-info-circle"></i> Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Ground Vibration (PPV)</strong></td>
+                                <td class="warning">&gt; 15 mm/s</td>
+                                <td class="danger">&gt; 25 mm/s</td>
+                                <td>Structural damage risk</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Air Blast Pressure</strong></td>
+                                <td class="warning">&gt; 100 dB</td>
+                                <td class="danger">&gt; 120 dB</td>
+                                <td>Noise pollution & structural impact</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                                <span>Trend Analysis</span>
+                            </div>
+                            <p>Historical data visualization enabling pattern recognition and predictive insights for operational safety.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-file-alt"></i></div>
+                                <span>Compliance Reporting</span>
+                            </div>
+                            <p>Statistical summaries and structured data exports ready for regulatory reporting and audit trails.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- UI Design -->
+            <section id="ui-design" class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-desktop"></i>
+                    User Interface Design
+                </h2>
+                <div class="section-content">
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-th-large"></i>
+                        Dashboard Layout Components
+                    </h3>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-header"></i></div>
+                                <span>Header Section</span>
+                            </div>
+                            <p>Branding and system identification with professional mining industry aesthetic.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-upload"></i></div>
+                                <span>File Upload Zone</span>
+                            </div>
+                            <p>Drag-and-drop functionality with format specifications and user guidance.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-sliders-h"></i></div>
+                                <span>Filter Controls</span>
+                            </div>
+                            <p>Multi-tier filtering system with progressive disclosure and reset functionality.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
+                                <span>Statistics Grid</span>
+                            </div>
+                            <p>Six key performance indicators with real-time updates and visual emphasis.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-chart-area"></i></div>
+                                <span>Chart Visualization</span>
+                            </div>
+                            <p>Interactive dual-axis charts with hover tooltips and responsive design.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-table"></i></div>
+                                <span>Data Table</span>
+                            </div>
+                            <p>Detailed record examination with color-coded safety alerts and sorting capabilities.</p>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4><i class="fas fa-palette"></i> Design Principles</h4>
+                        <p>Professional mining industry aesthetic with construction-themed icons, responsive design for desktop and tablets, progressive disclosure of interface elements, and smooth loading states with comprehensive error handling.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Technical Implementation -->
+            <section id="technical" class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-tools"></i>
+                    Technical Implementation Details
+                </h2>
+                <div class="section-content">
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-cog"></i>
+                        File Processing Pipeline
+                    </h3>
+                    
+                    <div style="display: flex; justify-content: center; margin: 30px 0;">
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; font-family: monospace; border: 2px dashed #3498db;">
+                            File Detection → Data Parsing → Column Mapping → Data Validation → Data Transformation
+                        </div>
+                    </div>
+
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Performance Optimizations
+                    </h3>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                                <span>Chart Data Limiting</span>
+                            </div>
+                            <p>Displays only the last 50 records for smooth rendering and optimal performance.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-eye-slash"></i></div>
+                                <span>Lazy Loading</span>
+                            </div>
+                            <p>Interface elements hidden until data is available, improving perceived performance.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-memory"></i></div>
+                                <span>Memory Management</span>
+                            </div>
+                            <p>Proper cleanup of chart instances and efficient memory usage for large datasets.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                                <span>Efficient Filtering</span>
+                            </div>
+                            <p>In-memory data manipulation with optimized algorithms for rapid response times.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recreation Prompt -->
+            <section id="recreation" class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-rocket"></i>
+                    Complete Recreation Prompt
+                </h2>
+                <div class="section-content">
+                    <div class="highlight-box">
+                        <h4><i class="fas fa-bullseye"></i> Development Objective</h4>
+                        <p>Create a comprehensive Mining & Blasting Vibration Monitoring Dashboard web application with production-ready specifications for mining operations personnel.</p>
+                    </div>
+
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-cogs"></i>
+                        Core Functionality Requirements
+                    </h3>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fab fa-react"></i></div>
+                                <span>React Foundation</span>
+                            </div>
+                            <p>Build React-based web application with hooks for state management and modern component architecture.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-file-upload"></i></div>
+                                <span>File Processing</span>
+                            </div>
+                            <p>Support CSV, Excel (.xlsx, .xls) formats with intelligent column mapping and fuzzy recognition.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
+                                <span>Smart Column Mapping</span>
+                            </div>
+                            <p>Recognize PPV, Air Blast, explosive weights, dates, drilling parameters with various naming conventions.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                                <span>Data Validation</span>
+                            </div>
+                            <p>Handle Excel dates, number extraction, missing data, case-insensitive matching gracefully.</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-filter"></i>
+                        Filtering System Specifications
+                    </h3>
+                    
+                    <div class="code-block">
+<span class="comment">// Multi-tier filtering implementation</span><br>
+Quick Filters: Bench selection, Zone selection<br>
+Date Filters: All records | Date range | Specific year | Specific month | Specific quarter<br>
+<span class="comment">// Apply filters independently and in combination</span><br>
+<span class="comment">// Provide reset functionality for each filter level</span>
+                    </div>
+
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-chart-area"></i>
+                        Visualization Requirements
+                    </h3>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Key Metrics Dashboard</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Dual-Axis Chart</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">50</div>
+                            <div class="stat-label">Records Limit</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">100%</div>
+                            <div class="stat-label">Responsive Design</div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Safety Monitoring Implementation
+                    </h3>
+                    
+                    <table class="safety-table">
+                        <thead>
+                            <tr>
+                                <th>Safety Feature</th>
+                                <th>Implementation</th>
+                                <th>Visual Indicator</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Industry Thresholds</td>
+                                <td>PPV >25 mm/s, Air Blast >120 dB</td>
+                                <td class="danger">Red Alert</td>
+                            </tr>
+                            <tr>
+                                <td>Warning Levels</td>
+                                <td>PPV >15 mm/s, Air Blast >100 dB</td>
+                                <td class="warning">Orange Caution</td>
+                            </tr>
+                            <tr>
+                                <td>Compliance Reports</td>
+                                <td>Statistical summaries</td>
+                                <td>Structured data export</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-code"></i>
+                        Technical Specifications
+                    </h3>
+                    
+                    <div class="tech-stack">
+                        <div class="tech-item">
+                            <div class="tech-icon"><i class="fas fa-atom"></i></div>
+                            <span>React hooks (useState, useEffect)</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon"><i class="fas fa-chart-bar"></i></div>
+                            <span>Chart.js integration</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon"><i class="fas fa-file-excel"></i></div>
+                            <span>XLSX library processing</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon"><i class="fas fa-bug"></i></div>
+                            <span>Error boundaries & validation</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            <span>Performance optimization</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon"><i class="fas fa-broom"></i></div>
+                            <span>Memory cleanup</span>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Critical Data Structure</h4>
+                        <p>Each processed record must contain: Row number, PPV value, Air Blast value, Blast date and time, Location data (bench name, zone name), Explosive data (total, column charge, base weight), and Drilling parameters (hole depth, spacing, burden).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recommended Improvements -->
+            <section id="improvements" class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-arrow-up"></i>
+                    Recommended Improvements
+                </h2>
+                <div class="section-content">
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-wrench"></i>
+                        Architecture Fixes
+                    </h3>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fab fa-react"></i></div>
+                                <span>Pure React Conversion</span>
+                            </div>
+                            <p>Remove vanilla JavaScript class mixing and implement consistent React architecture throughout.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-database"></i></div>
+                                <span>State Management</span>
+                            </div>
+                            <p>Implement proper React hooks throughout with Context API for global state management.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-cubes"></i></div>
+                                <span>Component Separation</span>
+                            </div>
+                            <p>Break down into smaller, reusable components for better maintainability and testing.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-project-diagram"></i></div>
+                                <span>Context API Integration</span>
+                            </div>
+                            <p>Implement React Context for efficient global state management across components.</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-plus-circle"></i>
+                        Enhanced Features
+                    </h3>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-download"></i></div>
+                                <span>Data Export</span>
+                            </div>
+                            <p>CSV/Excel export functionality for processed data and analysis results.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-print"></i></div>
+                                <span>Print Reports</span>
+                            </div>
+                            <p>Formatted reporting capabilities for compliance documentation and audit trails.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-sliders-h"></i></div>
+                                <span>Configurable Thresholds</span>
+                            </div>
+                            <p>User-definable safety thresholds and validation rules for different mining conditions.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-user-cog"></i></div>
+                                <span>User Preferences</span>
+                            </div>
+                            <p>Save filter settings, dashboard layouts, and personalized configuration options.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-broadcast-tower"></i></div>
+                                <span>Real-time Updates</span>
+                            </div>
+                            <p>WebSocket integration for live monitoring and automatic data refresh capabilities.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+                                <span>Mobile Optimization</span>
+                            </div>
+                            <p>Enhanced mobile interface for field monitoring and on-site data collection.</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-subtitle">
+                        <i class="fas fa-rocket"></i>
+                        Performance Enhancements
+                    </h3>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-list"></i></div>
+                                <span>Virtual Scrolling</span>
+                            </div>
+                            <p>Handle large datasets efficiently in tables with virtualized rendering for optimal performance.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-memory"></i></div>
+                                <span>Memoization</span>
+                            </div>
+                            <p>Prevent unnecessary re-renders and optimize component performance with React.memo and useMemo.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-worker"></i></div>
+                                <span>Web Workers</span>
+                            </div>
+                            <p>Background data processing for large files without blocking the main UI thread.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-save"></i></div>
+                                <span>Browser Caching</span>
+                            </div>
+                            <p>Intelligent caching strategies for processed data and user preferences using localStorage.</p>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4><i class="fas fa-star"></i> Production Readiness Assessment</h4>
+                        <p>This comprehensive analysis reveals a sophisticated vibration monitoring system with significant potential. The current architecture requires cleanup to eliminate hybrid JavaScript/React patterns, but the core functionality and feature set are well-designed for mining industry requirements. Implementation of recommended improvements will result in a production-ready, enterprise-grade monitoring solution.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Executive Summary -->
+            <section class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-clipboard-check"></i>
+                    Executive Summary
+                </h2>
+                <div class="section-content">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-label">Feature Complete</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="stat-label">Architecture Issues</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value"><i class="fas fa-industry"></i></div>
+                            <div class="stat-label">Industry Ready</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value"><i class="fas fa-arrow-up"></i></div>
+                            <div class="stat-label">High Potential</div>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 1.1rem; line-height: 1.8; margin-top: 20px;">
+                        The Mining & Blasting Vibration Monitoring System represents a comprehensive solution for the mining industry's safety and compliance needs. While the core functionality is robust and feature-complete, addressing the identified architectural issues will transform this into a production-ready, enterprise-grade monitoring platform. The system's intelligent data processing, advanced filtering capabilities, and comprehensive safety monitoring make it an invaluable tool for mining operations worldwide.
+                    </p>
+
+                    <div style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 30px; border-radius: 12px; margin: 30px 0; text-align: center;">
+                        <h3 style="margin-bottom: 15px;"><i class="fas fa-lightbulb"></i> Key Recommendation</h3>
+                        <p style="font-size: 1.1rem; margin: 0;">
+                            Prioritize architectural refactoring to pure React implementation, then systematically implement the enhanced features and performance optimizations outlined in this report.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="report-footer">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-chart-line"></i>
+                    Mining Vibration Dashboard Analysis
+                </div>
+                <div>
+                    <i class="fas fa-calendar"></i>
+                    Generated: May 2025
+                </div>
+                <div>
+                    <i class="fas fa-file-pdf"></i>
+                    Technical Report
+                </div>
+            </div>
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); text-align: center; font-size: 0.9rem; opacity: 0.8;">
+                This report provides comprehensive analysis and recommendations for the Mining & Blasting Vibration Monitoring System development project.
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Print functionality
+        function printReport() {
+            window.print();
+        }
+
+        // Smooth scrolling for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add fade-in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections for animation
+        document.querySelectorAll('.section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+            observer.observe(section);
+        });
+
+        // Add hover effects to feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Add click effect to buttons
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>

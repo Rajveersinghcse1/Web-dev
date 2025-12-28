@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+  # MongoDB service
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+  # MinIO service
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: always
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9090:9000"  # MinIO API port
+      - "9091:9001"  # MinIO Console port
+    volumes:
+      - minio-data:/data
+    networks:
+      - app-network
+
+  # NodeJS application
+  app:
+    build: .
+    container_name: node-app
+    restart: always
+    depends_on:
+      - mongodb
+      - minio
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
+  minio-data:
+    driver: local

@@ -1,0 +1,107 @@
+# LiDAR Rockfall Prediction System Configuration
+
+# Data Processing Settings
+data:
+  resolution: 1.0  # DEM resolution in meters
+  min_resolution: 0.5
+  max_resolution: 2.0
+  
+  # Point cloud filtering
+  ground_filter: "smrf"  # or "progressive_tin"
+  outlier_removal: true
+  noise_threshold: 0.5
+  
+  # Classification settings
+  classify_points: true
+  vegetation_threshold: 2.0  # meters above ground
+
+# Feature Engineering
+features:
+  # Topographic features
+  compute_slope: true
+  compute_aspect: true
+  compute_curvature: true
+  compute_roughness: true
+  compute_tpi: true  # Topographic Position Index
+  
+  # Temporal features (requires multi-epoch data)
+  compute_dod: true  # Difference of DEMs
+  temporal_window: 30  # days
+  
+  # Neighborhood size for feature computation
+  neighborhood_radius: 5.0  # meters
+  
+  # Point cloud statistics
+  point_density_features: true
+  intensity_features: true
+
+# Machine Learning
+ml:
+  # Model selection
+  model_type: "xgboost"  # or "random_forest", "neural_network"
+  
+  # Training parameters
+  test_size: 0.2
+  cv_folds: 5
+  random_state: 42
+  
+  # Class imbalance handling
+  balance_classes: true
+  sampling_strategy: "auto"
+  
+  # XGBoost specific
+  xgb_params:
+    n_estimators: 100
+    max_depth: 6
+    learning_rate: 0.1
+    subsample: 0.8
+    colsample_bytree: 0.8
+    
+  # Random Forest specific
+  rf_params:
+    n_estimators: 100
+    max_depth: 10
+    min_samples_split: 5
+    min_samples_leaf: 2
+
+# Visualization
+visualization:
+  # Dashboard settings
+  dashboard_port: 8501
+  auto_refresh: true
+  refresh_interval: 300  # seconds
+  
+  # 3D visualization
+  point_size: 1.0
+  mesh_opacity: 0.8
+  colormap: "viridis"
+  
+  # Risk visualization
+  risk_threshold_low: 0.3
+  risk_threshold_medium: 0.6
+  risk_threshold_high: 0.8
+
+# Output Settings
+output:
+  # File formats
+  dem_format: "tiff"
+  mesh_format: "ply"
+  prediction_format: "geotiff"
+  
+  # Compression
+  compress_outputs: true
+  compression_level: 6
+
+# Monitoring and Alerts
+monitoring:
+  enable_alerts: true
+  alert_threshold: 0.8
+  alert_email: null  # Set email for alerts
+  critical_zones: []  # List of polygon coordinates for critical monitoring
+
+# Logging
+logging:
+  level: "INFO"
+  log_file: "logs/rockfall_prediction.log"
+  max_file_size: "10MB"
+  backup_count: 5
