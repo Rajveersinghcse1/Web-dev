@@ -27,7 +27,7 @@
 /* Professional Card Styling */
 .card {
     background: #ffffff;
-    border: 1px solid #e5e7eb;
+    border: none;
     border-radius: 16px;
     padding: 32px;
     margin-bottom: 24px;
@@ -36,7 +36,6 @@
 }
 
 .card:hover {
-    border-color: rgba(106, 13, 173, 0.3);
     box-shadow: 0 8px 30px rgba(106, 13, 173, 0.1);
     transform: translateY(-2px);
 }
@@ -135,7 +134,7 @@
 
 .achievementCard {
     background: #ffffff;
-    border: 1px solid #e5e7eb;
+    border: none;
     border-radius: 16px;
     padding: 24px;
     text-align: center;
@@ -143,7 +142,6 @@
 }
 
 .achievementCard:hover {
-    border-color: rgba(255, 215, 0, 0.4);
     box-shadow: 0 8px 30px rgba(255, 215, 0, 0.1);
 }
 

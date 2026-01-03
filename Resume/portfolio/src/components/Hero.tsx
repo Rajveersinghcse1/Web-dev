@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "./Hero.module.css";
 import { motion } from "framer-motion";
 import HyperText from "./HyperText";
-import BigPumpkin from "./BigPumpkin";
+import GreetingRobot from "./GreetingRobot";
 
 export default function Hero() {
     const containerVariants = {
@@ -23,7 +23,7 @@ export default function Hero() {
         visible: {
             opacity: 1,
             y: 0,
-            transition: { duration: 0.6, ease: "easeOut" }
+            transition: { duration: 0.6, ease: "easeOut" as const }
         }
     };
 
@@ -38,7 +38,7 @@ export default function Hero() {
             >
                 <motion.div variants={itemVariants} className={styles.eyebrow}>
                     <HyperText text="Rajveer Singh" duration={1200} />
-                    <span className={styles.badge}>🎃 Open to Work</span>
+                    <span className={styles.badge}>🤖 Open to Work</span>
                 </motion.div>
 
                 <motion.h1 variants={itemVariants} className={styles.name}>
@@ -61,14 +61,14 @@ export default function Hero() {
                 </motion.div>
             </motion.div>
 
-            {/* RIGHT SIDE - Pumpkin */}
+            {/* RIGHT SIDE - Robot */}
             <motion.div
                 className={styles.pumpkinSide}
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5, duration: 0.8 }}
             >
-                <BigPumpkin />
+                <GreetingRobot />
             </motion.div>
 
             <motion.div

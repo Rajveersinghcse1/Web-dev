@@ -58,18 +58,33 @@
 }
 
 .skill {
-    padding: 6px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
     background: #f5f5f5;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 0.85rem;
     color: #333;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
+}
+
+.skillIcon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
 }
 
 .skill:hover {
     background: linear-gradient(135deg, rgba(106, 13, 173, 0.1) 0%, rgba(255, 106, 0, 0.05) 100%);
     color: #6a0dad;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(106, 13, 173, 0.15);
+}
+
+.skill:hover .skillIcon {
+    transform: scale(1.15);
 }
 
 /* Contact Section */
@@ -88,29 +103,62 @@
 }
 
 .contactCard {
+    display: flex;
+    align-items: center;
+    gap: 16px;
     background: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
-.contactCard h3 {
-    font-size: 1rem;
+.contactCard:hover {
+    border-color: rgba(106, 13, 173, 0.3);
+    box-shadow: 0 8px 25px rgba(106, 13, 173, 0.12);
+}
+
+.contactIconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.contactCard:hover .contactIconWrapper {
+    transform: scale(1.1);
+}
+
+.contactIcon {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.contactCardContent h3 {
+    font-size: 0.85rem;
     font-weight: 600;
-    color: #1a1a2e;
-    margin-bottom: 8px;
+    color: #888;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
-.contactCard a,
-.contactCard p {
+.contactCardContent a,
+.contactCardContent p {
     font-size: 0.95rem;
-    color: #6a0dad;
+    color: #1a1a2e;
     font-weight: 500;
+    transition: color 0.2s ease;
 }
 
-.contactCard a:hover {
-    color: #ff6a00;
+.contactCard:hover .contactCardContent a {
+    color: #6a0dad;
 }
 
 .formWrapper {

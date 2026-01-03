@@ -2,6 +2,94 @@
 
 import styles from "./SkillsContact.module.css";
 import { motion } from "framer-motion";
+import {
+    SiPython, SiJavascript, SiTypescript, SiCplusplus,
+    SiReact, SiNextdotjs, SiHtml5, SiTailwindcss, SiFramer,
+    SiFastapi, SiNodedotjs, SiExpress,
+    SiPandas, SiNumpy, SiScikitlearn, SiTensorflow, SiLangchain,
+    SiPostgresql, SiMongodb, SiRedis,
+    SiGit, SiDocker, SiPostman, SiLinux
+} from "react-icons/si";
+import { TbApi, TbSql, TbDatabase } from "react-icons/tb";
+import { FaCss3Alt } from "react-icons/fa";
+import { VscCode } from "react-icons/vsc";
+import { IconType } from "react-icons";
+
+// Icon mapping for each skill
+const skillIcons: { [key: string]: IconType } = {
+    // Languages
+    "Python": SiPython,
+    "JavaScript": SiJavascript,
+    "TypeScript": SiTypescript,
+    "C/C++": SiCplusplus,
+    "SQL": TbSql,
+    // Frontend
+    "React": SiReact,
+    "Next.js": SiNextdotjs,
+    "HTML/CSS": SiHtml5,
+    "Tailwind CSS": SiTailwindcss,
+    "Framer Motion": SiFramer,
+    // Backend
+    "FastAPI": SiFastapi,
+    "Node.js": SiNodedotjs,
+    "Express": SiExpress,
+    "REST APIs": TbApi,
+    // Data & AI
+    "Pandas": SiPandas,
+    "NumPy": SiNumpy,
+    "Scikit-learn": SiScikitlearn,
+    "TensorFlow": SiTensorflow,
+    "LangChain": SiLangchain,
+    // Databases
+    "PostgreSQL": SiPostgresql,
+    "MongoDB": SiMongodb,
+    "Redis": SiRedis,
+    "Convex": TbDatabase,
+    // Tools
+    "Git": SiGit,
+    "Docker": SiDocker,
+    "VS Code": VscCode,
+    "Postman": SiPostman,
+    "Linux": SiLinux,
+};
+
+// Icon colors for each skill
+const skillColors: { [key: string]: string } = {
+    // Languages
+    "Python": "#3776AB",
+    "JavaScript": "#F7DF1E",
+    "TypeScript": "#3178C6",
+    "C/C++": "#00599C",
+    "SQL": "#336791",
+    // Frontend
+    "React": "#61DAFB",
+    "Next.js": "#000000",
+    "HTML/CSS": "#E34F26",
+    "Tailwind CSS": "#06B6D4",
+    "Framer Motion": "#0055FF",
+    // Backend
+    "FastAPI": "#009688",
+    "Node.js": "#339933",
+    "Express": "#000000",
+    "REST APIs": "#6a0dad",
+    // Data & AI
+    "Pandas": "#150458",
+    "NumPy": "#013243",
+    "Scikit-learn": "#F7931E",
+    "TensorFlow": "#FF6F00",
+    "LangChain": "#1C3C3C",
+    // Databases
+    "PostgreSQL": "#4169E1",
+    "MongoDB": "#47A248",
+    "Redis": "#DC382D",
+    "Convex": "#F97316",
+    // Tools
+    "Git": "#F05032",
+    "Docker": "#2496ED",
+    "VS Code": "#007ACC",
+    "Postman": "#FF6C37",
+    "Linux": "#FCC624",
+};
 
 const skillCategories = [
     {
@@ -55,9 +143,16 @@ export default function Skills() {
                     >
                         <h3 className={styles.categoryTitle}>{category.title}</h3>
                         <div className={styles.skills}>
-                            {category.skills.map((skill) => (
-                                <span key={skill} className={styles.skill}>{skill}</span>
-                            ))}
+                            {category.skills.map((skill) => {
+                                const Icon = skillIcons[skill];
+                                const color = skillColors[skill];
+                                return (
+                                    <span key={skill} className={styles.skill}>
+                                        {Icon && <Icon className={styles.skillIcon} style={{ color }} />}
+                                        {skill}
+                                    </span>
+                                );
+                            })}
                         </div>
                     </motion.div>
                 ))}

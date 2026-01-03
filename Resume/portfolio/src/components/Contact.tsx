@@ -3,6 +3,39 @@
 import styles from "./SkillsContact.module.css";
 import { motion } from "framer-motion";
 import ContactForm from "./ContactForm";
+import { HiOutlineMail, HiOutlineLocationMarker } from "react-icons/hi";
+import { FaLinkedin, FaGithub } from "react-icons/fa";
+
+const contactItems = [
+    {
+        icon: HiOutlineMail,
+        title: "Email",
+        content: "rajveer.connect@gmail.com",
+        href: "mailto:rajveer.connect@gmail.com",
+        color: "#EA4335"
+    },
+    {
+        icon: FaLinkedin,
+        title: "LinkedIn",
+        content: "linkedin.com/in/rajveersinghcse",
+        href: "https://linkedin.com/in/rajveersinghcse",
+        color: "#0A66C2"
+    },
+    {
+        icon: FaGithub,
+        title: "GitHub",
+        content: "github.com/Rajveersinghcse1",
+        href: "https://github.com/Rajveersinghcse1",
+        color: "#333"
+    },
+    {
+        icon: HiOutlineLocationMarker,
+        title: "Location",
+        content: "Jodhpur, India",
+        href: null,
+        color: "#6a0dad"
+    }
+];
 
 export default function Contact() {
     return (
@@ -24,26 +57,40 @@ export default function Contact() {
                     viewport={{ once: true }}
                     className={styles.contactInfo}
                 >
-                    <div className={styles.contactCard}>
-                        <h3>📧 Email</h3>
-                        <a href="mailto:rajveer.connect@gmail.com">rajveer.connect@gmail.com</a>
-                    </div>
-                    <div className={styles.contactCard}>
-                        <h3>💼 LinkedIn</h3>
-                        <a href="https://linkedin.com/in/rajveersinghcse" target="_blank" rel="noopener noreferrer">
-                            linkedin.com/in/rajveersinghcse
-                        </a>
-                    </div>
-                    <div className={styles.contactCard}>
-                        <h3>🐙 GitHub</h3>
-                        <a href="https://github.com/Rajveersinghcse1" target="_blank" rel="noopener noreferrer">
-                            github.com/Rajveersinghcse1
-                        </a>
-                    </div>
-                    <div className={styles.contactCard}>
-                        <h3>📍 Location</h3>
-                        <p>Jodhpur, India</p>
-                    </div>
+                    {contactItems.map((item, index) => {
+                        const Icon = item.icon;
+                        const content = item.href ? (
+                            <a
+                                href={item.href}
+                                target={item.href.startsWith("mailto") ? undefined : "_blank"}
+                                rel="noopener noreferrer"
+                            >
+                                {item.content}
+                            </a>
+                        ) : (
+                            <p>{item.content}</p>
+                        );
+
+                        return (
+                            <motion.div
+                                key={index}
+                                className={styles.contactCard}
+                                initial={{ opacity: 0, x: -20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                                whileHover={{ scale: 1.02 }}
+                            >
+                                <div className={styles.contactIconWrapper} style={{ backgroundColor: `${item.color}15` }}>
+                                    <Icon className={styles.contactIcon} style={{ color: item.color }} />
+                                </div>
+                                <div className={styles.contactCardContent}>
+                                    <h3>{item.title}</h3>
+                                    {content}
+                                </div>
+                            </motion.div>
+                        );
+                    })}
                 </motion.div>
 
                 <motion.div

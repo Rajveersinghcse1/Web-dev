@@ -9,8 +9,8 @@ export default function ContactForm() {
         email: "",
         message: ""
     });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
+    const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,16 +18,34 @@ export default function ContactForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsSubmitting(true);
+        setStatus("loading");
+        setErrorMessage("");
 
-        // Simulate submission
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+            const response = await fetch("/api/contact", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
 
-        setIsSubmitting(false);
-        setSubmitted(true);
-        setFormData({ name: "", email: "", message: "" });
+            const data = await response.json();
 
-        setTimeout(() => setSubmitted(false), 3000);
+            if (response.ok) {
+                setStatus("success");
+                setFormData({ name: "", email: "", message: "" });
+                setTimeout(() => setStatus("idle"), 5000);
+            } else {
+                setStatus("error");
+                setErrorMessage(data.message || "Something went wrong. Please try again.");
+                setTimeout(() => setStatus("idle"), 5000);
+            }
+        } catch {
+            setStatus("error");
+            setErrorMessage("Network error. Please check your connection.");
+            setTimeout(() => setStatus("idle"), 5000);
+        }
     };
 
     return (
@@ -44,6 +62,7 @@ export default function ContactForm() {
                     onChange={handleChange}
                     required
                     placeholder="Your name"
+                    disabled={status === "loading"}
                 />
             </div>
 
@@ -57,6 +76,7 @@ export default function ContactForm() {
                     onChange={handleChange}
                     required
                     placeholder="your@email.com"
+                    disabled={status === "loading"}
                 />
             </div>
 
@@ -70,11 +90,37 @@ export default function ContactForm() {
                     required
                     rows={5}
                     placeholder="Your message..."
+                    disabled={status === "loading"}
                 />
             </div>
 
-            <button type="submit" className={styles.submitBtn} disabled={isSubmitting}>
-                {isSubmitting ? "Sending..." : submitted ? "Sent! ✓" : "Send Message"}
+            {status === "error" && (
+                <div className={styles.errorMessage}>
+                    ❌ {errorMessage}
+                </div>
+            )}
+
+            {status === "success" && (
+                <div className={styles.successMessage}>
+                    ✅ Message sent successfully! I&apos;ll get back to you soon.
+                </div>
+            )}
+
+            <button
+                type="submit"
+                className={styles.submitBtn}
+                disabled={status === "loading"}
+            >
+                {status === "loading" ? (
+                    <span className={styles.loadingSpinner}>
+                        <span className={styles.spinner}></span>
+                        Sending...
+                    </span>
+                ) : status === "success" ? (
+                    "Sent! ✓"
+                ) : (
+                    "Send Message"
+                )}
             </button>
         </form>
     );
