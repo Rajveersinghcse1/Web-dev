@@ -1,0 +1,17 @@
+# Environment Variables for Railway Exam Prep Platform
+# Copy this file to .env.local and fill in your values
+
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Gemini AI Configuration (API Key provided)
+GEMINI_API_KEY=AIzaSyDKAGNJD08-C0V6Ll2_16LYEIRVjVfkmvA
+
+# App Configuration
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Instructions:
+# 1. Copy this file to .env.local in the project root
+# 2. The Gemini API key is already configured
+# 3. Add your Supabase credentials from supabase.com

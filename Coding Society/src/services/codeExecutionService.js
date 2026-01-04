@@ -68,7 +68,7 @@ class CodeExecutionService {
    */
   async getSupportedRuntimes() {
     const now = Date.now();
-    
+
     // Return cached runtimes if still valid
     if (this.supportedRuntimes && (now - this.runtimesCacheTime) < this.CACHE_DURATION) {
       return this.supportedRuntimes;
@@ -89,7 +89,7 @@ class CodeExecutionService {
 
       this.supportedRuntimes = await response.json();
       this.runtimesCacheTime = now;
-      
+
       return this.supportedRuntimes;
     } catch (error) {
       console.error('Error fetching runtimes:', error);
@@ -119,12 +119,12 @@ class CodeExecutionService {
   async enforceRateLimit() {
     const now = Date.now();
     const timeSinceLastRequest = now - this.lastRequestTime;
-    
+
     if (timeSinceLastRequest < RATE_LIMIT_DELAY) {
       const delay = RATE_LIMIT_DELAY - timeSinceLastRequest;
       await new Promise(resolve => setTimeout(resolve, delay));
     }
-    
+
     this.lastRequestTime = Date.now();
   }
 
@@ -139,7 +139,7 @@ class CodeExecutionService {
   async executeCode(language, code, input = '', executionId = null) {
     try {
       console.log(`[CodeExecutionService] Executing ${language} code, useRealAPI: ${this.useRealAPI}`);
-      
+
       // Validate language support
       if (!LANGUAGE_MAPPING[language]) {
         throw new Error(`Language '${language}' is not supported`);
@@ -161,7 +161,7 @@ class CodeExecutionService {
           // Get supported runtimes to find the best version
           const runtimes = await this.getSupportedRuntimes();
           const runtime = this.findBestRuntime(language, runtimes);
-          
+
           if (!runtime) {
             console.log(`[CodeExecutionService] No runtime found for ${language}, using simulation`);
             // Fallback to simulation if language not available
@@ -169,10 +169,10 @@ class CodeExecutionService {
           } else {
             // Prepare the request payload for Piston API
             const payload = this.preparePistonPayload(language, code, input, runtime);
-            
+
             // Make API request to Piston
             const response = await this.makePistonRequest(payload, abortController.signal);
-            
+
             // Process and return the result
             result = this.processPistonResponse(response);
           }
@@ -206,7 +206,7 @@ class CodeExecutionService {
       if (executionId) {
         this.abortControllers.delete(executionId);
       }
-      
+
       return this.handleExecutionError(error);
     }
   }
@@ -216,17 +216,17 @@ class CodeExecutionService {
    */
   findBestRuntime(language, runtimes) {
     const pistonLanguage = LANGUAGE_MAPPING[language];
-    
+
     // Find exact language match
     let runtime = runtimes.find(r => r.language === pistonLanguage);
-    
+
     // Try aliases if no exact match
     if (!runtime) {
-      runtime = runtimes.find(r => 
+      runtime = runtimes.find(r =>
         r.aliases && r.aliases.includes(pistonLanguage)
       );
     }
-    
+
     return runtime;
   }
 
@@ -236,7 +236,7 @@ class CodeExecutionService {
   preparePistonPayload(language, code, input, runtime) {
     const extension = FILE_EXTENSIONS[language] || 'txt';
     const fileName = this.getFileName(language, extension);
-    
+
     const payload = {
       language: runtime.language,
       version: runtime.version,
@@ -278,7 +278,7 @@ class CodeExecutionService {
     };
 
     const response = await fetch(`${PISTON_API_BASE}/execute`, requestOptions);
-    
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(`Piston API request failed: ${response.status} ${response.statusText} - ${errorData.message || 'Unknown error'}`);
@@ -292,7 +292,7 @@ class CodeExecutionService {
    */
   processPistonResponse(apiResponse) {
     const { run, compile } = apiResponse;
-    
+
     let stdout = '';
     let stderr = '';
     let exitCode = 0;
@@ -326,7 +326,7 @@ class CodeExecutionService {
 
     // Determine success status
     const success = exitCode === 0 && !stderr.trim();
-    
+
     return {
       success: success,
       output: stdout || 'No output',
@@ -348,7 +348,7 @@ class CodeExecutionService {
   async simulateExecution(language, code, input = '') {
     try {
       const result = await this.originalExecuteMethod(language, code, input);
-      
+
       // Add metadata to indicate this is a simulation
       return {
         ...result,
@@ -389,7 +389,7 @@ class CodeExecutionService {
       'swift': 'main.swift',
       'typescript': 'index.ts'
     };
-    
+
     return fileNames[language] || `main.${extension}`;
   }
 
@@ -398,16 +398,16 @@ class CodeExecutionService {
    */
   formatCombinedOutput(stdout, stderr, success) {
     let output = '';
-    
+
     if (stdout) {
       output += stdout;
     }
-    
+
     if (stderr && !success) {
       if (output) output += '\n\n';
       output += `Error:\n${stderr}`;
     }
-    
+
     return output || 'No output generated';
   }
 
@@ -483,7 +483,7 @@ class CodeExecutionService {
         method: 'GET',
         headers: { 'Accept': 'application/json' }
       });
-      
+
       return {
         available: response.ok,
         status: response.status,
@@ -515,7 +515,7 @@ class CodeExecutionService {
       setTimeout(() => {
         try {
           let result;
-          
+
           switch (language) {
             case 'python':
               result = this.simulatePythonExecution(code, input);
@@ -561,14 +561,14 @@ class CodeExecutionService {
                 errorType: 'UNSUPPORTED_LANGUAGE'
               };
           }
-          
+
           // Add execution metadata
           result.executionTime = (Math.random() * 0.5 + 0.1).toFixed(3);
           result.memoryUsage = Math.floor(Math.random() * 1024 + 512);
-          result.combinedOutput = result.success 
-            ? result.output 
+          result.combinedOutput = result.success
+            ? result.output
             : `Error: ${result.error}`;
-          
+
           resolve(result);
         } catch (error) {
           resolve({
@@ -592,23 +592,23 @@ class CodeExecutionService {
     let output = [];
     let inputLines = stdin.split('\n').filter(line => line.trim() !== '');
     let inputIndex = 0;
-    
+
     try {
       const variables = {};
       const lines = code.split('\n');
-      
+
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const trimmedLine = line.trim();
-        
+
         if (!trimmedLine || trimmedLine.startsWith('#')) continue;
-        
+
         // Handle variable assignments
         const simpleAssignMatch = trimmedLine.match(/^(\w+)\s*=\s*(.+)$/);
         if (simpleAssignMatch && !trimmedLine.includes('input(') && !trimmedLine.includes('print(')) {
           const varName = simpleAssignMatch[1];
           const value = simpleAssignMatch[2].trim();
-          
+
           if (!isNaN(value)) {
             variables[varName] = parseInt(value);
           } else {
@@ -624,7 +624,7 @@ class CodeExecutionService {
           }
           continue;
         }
-        
+
         // Handle input()
         if (trimmedLine.includes('input(')) {
           const inputMatch = trimmedLine.match(/(\w+)\s*=\s*.*input\(/);
@@ -635,7 +635,7 @@ class CodeExecutionService {
           }
           continue;
         }
-        
+
         // Handle print statements with enhanced pattern support
         if (trimmedLine.includes('print(')) {
           const printMatch = trimmedLine.match(/print\((.+)\)/);
@@ -646,7 +646,7 @@ class CodeExecutionService {
           }
           continue;
         }
-        
+
         // Handle for loops for pattern generation
         if (trimmedLine.startsWith('for ')) {
           const forMatch = trimmedLine.match(/for\s+(\w+)\s+in\s+range\((.+)\):/);
@@ -654,13 +654,13 @@ class CodeExecutionService {
             const varName = forMatch[1];
             const rangeExpr = forMatch[2];
             let rangeEnd;
-            
+
             if (variables[rangeExpr] !== undefined) {
               rangeEnd = variables[rangeExpr];
             } else {
               rangeEnd = parseInt(rangeExpr);
             }
-            
+
             // Process loop body
             for (let j = 0; j < rangeEnd; j++) {
               variables[varName] = j;
@@ -682,7 +682,7 @@ class CodeExecutionService {
           continue;
         }
       }
-      
+
       return {
         success: true,
         output: output.join('\n'),
@@ -707,21 +707,21 @@ class CodeExecutionService {
     if (content.includes('+') || content.includes('*')) {
       return this.evaluateComplexExpression(content, variables);
     }
-    
+
     // Handle simple variable
     if (variables[content] !== undefined) {
       return String(variables[content]);
     }
-    
+
     // Handle string literals
     if (content.startsWith('"') && content.endsWith('"')) {
       return content.slice(1, -1);
     }
-    
+
     if (content.startsWith("'") && content.endsWith("'")) {
       return content.slice(1, -1);
     }
-    
+
     return content;
   }
 
@@ -735,7 +735,7 @@ class CodeExecutionService {
       for (const [key, val] of Object.entries(variables)) {
         evalStr = evalStr.replace(new RegExp(`\\b${key}\\b`, 'g'), val);
       }
-      
+
       // Use JavaScript's eval to handle the expression
       const result = eval(evalStr);
       return String(result);
@@ -752,7 +752,7 @@ class CodeExecutionService {
       let output = [];
       let inputLines = stdin.split('\n').filter(line => line.trim() !== '');
       let inputIndex = 0;
-      
+
       // Handle console.log statements
       const consoleMatches = code.match(/console\.log\s*\(\s*([^)]+)\s*\)/g);
       if (consoleMatches) {
@@ -766,12 +766,12 @@ class CodeExecutionService {
         });
         output = outputs;
       }
-      
+
       // Handle prompt() calls by using input
       if (code.includes('prompt(') && inputLines.length > 0) {
         output.push(`Input received: ${inputLines[0]}`);
       }
-      
+
       return {
         success: true,
         output: output.length > 0 ? output.join('\n') : 'JavaScript code executed successfully',
@@ -806,7 +806,7 @@ class CodeExecutionService {
           errorType: null
         };
       }
-      
+
       return {
         success: true,
         output: 'Java code compiled and executed successfully',
@@ -846,7 +846,7 @@ class CodeExecutionService {
           errorType: null
         };
       }
-      
+
       return {
         success: true,
         output: 'C++ code compiled and executed successfully',
@@ -881,7 +881,7 @@ class CodeExecutionService {
           errorType: null
         };
       }
-      
+
       return {
         success: true,
         output: 'C code compiled and executed successfully',
@@ -916,7 +916,7 @@ class CodeExecutionService {
           errorType: null
         };
       }
-      
+
       return {
         success: true,
         output: 'Go code compiled and executed successfully',
@@ -951,7 +951,7 @@ class CodeExecutionService {
           errorType: null
         };
       }
-      
+
       return {
         success: true,
         output: 'Rust code compiled and executed successfully',
@@ -986,7 +986,7 @@ class CodeExecutionService {
           errorType: null
         };
       }
-      
+
       return {
         success: true,
         output: 'PHP code executed successfully',
@@ -1021,7 +1021,7 @@ class CodeExecutionService {
           errorType: null
         };
       }
-      
+
       return {
         success: true,
         output: 'Ruby code executed successfully',
@@ -1056,7 +1056,7 @@ class CodeExecutionService {
           errorType: null
         };
       }
-      
+
       return {
         success: true,
         output: 'Kotlin code compiled and executed successfully',
@@ -1091,7 +1091,7 @@ class CodeExecutionService {
           errorType: null
         };
       }
-      
+
       return {
         success: true,
         output: 'Swift code compiled and executed successfully',
@@ -1123,6 +1123,116 @@ class CodeExecutionService {
         errorType: 'RUNTIME_ERROR'
       };
     }
+  }
+
+  /**
+   * Normalize output for comparison
+   * Removes trailing whitespace, normalizes line endings, etc.
+   * @param {string} output - Output to normalize
+   * @returns {string} Normalized output
+   */
+  normalizeOutput(output) {
+    if (!output) return '';
+    return output
+      .toString()
+      .trim()
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n')
+      .split('\n')
+      .map(line => line.trim())
+      .join('\n')
+      .toLowerCase();
+  }
+
+  /**
+   * Run code against multiple test cases
+   * @param {string} code - The code to execute
+   * @param {string} language - Programming language
+   * @param {Array} testCases - Array of test cases with input and expectedOutput
+   * @returns {Promise<Object>} Test results
+   */
+  async runTestCases(code, language, testCases) {
+    console.log(`[CodeExecutionService] Running ${testCases.length} test cases for ${language}`);
+
+    const results = [];
+    let passedTests = 0;
+    let totalExecutionTime = 0;
+
+    for (let i = 0; i < testCases.length; i++) {
+      const testCase = testCases[i];
+      const testNumber = i + 1;
+
+      try {
+        // Parse the input - handle escaped newlines
+        const input = (testCase.input || '').replace(/\\n/g, '\n');
+
+        console.log(`[CodeExecutionService] Running test ${testNumber}/${testCases.length}`);
+
+        // Execute the code with this test case's input
+        const startTime = Date.now();
+        const executionResult = await this.executeCode(language, code, input, `test-${testNumber}`);
+        const executionTime = Date.now() - startTime;
+        totalExecutionTime += executionTime;
+
+        // Get actual output
+        const actualOutput = executionResult.output || executionResult.stdout || '';
+        const expectedOutput = testCase.expectedOutput || '';
+
+        // Normalize and compare outputs
+        const normalizedActual = this.normalizeOutput(actualOutput);
+        const normalizedExpected = this.normalizeOutput(expectedOutput);
+        const passed = normalizedActual === normalizedExpected;
+
+        if (passed) passedTests++;
+
+        results.push({
+          testNumber,
+          input: testCase.input,
+          expectedOutput: expectedOutput,
+          actualOutput: actualOutput.trim(),
+          passed,
+          hidden: !testCase.visible,
+          executionTime: executionTime,
+          memory: executionResult.memory || 0,
+          stderr: executionResult.stderr || executionResult.error || ''
+        });
+
+        console.log(`[CodeExecutionService] Test ${testNumber}: ${passed ? 'PASSED' : 'FAILED'}`);
+        console.log(`  Expected: "${normalizedExpected}"`);
+        console.log(`  Actual: "${normalizedActual}"`);
+
+        // Small delay between test cases to respect rate limits
+        if (i < testCases.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+      } catch (error) {
+        console.error(`[CodeExecutionService] Test ${testNumber} error:`, error);
+        results.push({
+          testNumber,
+          input: testCase.input,
+          expectedOutput: testCase.expectedOutput || '',
+          actualOutput: '',
+          passed: false,
+          hidden: !testCase.visible,
+          executionTime: 0,
+          memory: 0,
+          stderr: error.message
+        });
+      }
+    }
+
+    const avgExecutionTime = testCases.length > 0 ? Math.round(totalExecutionTime / testCases.length) : 0;
+
+    return {
+      success: true,
+      allPassed: passedTests === testCases.length,
+      totalTests: testCases.length,
+      passedTests,
+      failedTests: testCases.length - passedTests,
+      avgExecutionTime,
+      results
+    };
   }
 }
 

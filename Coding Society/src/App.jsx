@@ -32,6 +32,10 @@ import HackathonPage from './pages/HackathonPage';
 import HelpSupportPage from './pages/HelpSupportPage';
 import AdminRoutes from './pages/AdminRoutes';
 import AdminDashboard from './pages/AdminDashboard';
+import ChallengePage from './pages/ChallengePage';
+import ChallengesListPage from './pages/ChallengesListPage';
+
+import QuestDetailPage from './pages/QuestDetailPage';
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -217,6 +221,18 @@ function AppContent() {
               </UserProtectedRoute>
             </main>
           </div>
+        } />
+        
+        {/* Coding Challenges Routes */}
+        <Route path="/challenges" element={
+          <ErrorBoundary>
+            <ChallengesListPage />
+          </ErrorBoundary>
+        } />
+        <Route path="/challenges/:slug" element={
+          <ErrorBoundary>
+            <ChallengePage />
+          </ErrorBoundary>
         } />
         
         {/* Admin Dashboard */}

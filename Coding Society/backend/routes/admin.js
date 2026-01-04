@@ -1973,6 +1973,365 @@ router.delete('/achievements/:id',
 );
 
 // =============================================================================
+// GAME MANAGEMENT ROUTES
+// =============================================================================
+
+/**
+ * @route   GET /api/v1/admin/game/players
+ * @desc    Get all players with game stats
+ * @access  Admin
+ */
+router.get('/game/players',
+  checkContentPermission('read', 'general'),
+  auditLog('view_game_players'),
+  async (req, res) => {
+    try {
+      const { 
+        page = 1, 
+        limit = 20, 
+        minLevel,
+        maxLevel,
+        sortBy = 'gameData.level',
+        sortOrder = 'desc'
+      } = req.query;
+
+      const filter = { status: 'active' };
+      
+      if (minLevel) filter['gameData.level'] = { ...filter['gameData.level'], $gte: parseInt(minLevel) };
+      if (maxLevel) filter['gameData.level'] = { ...filter['gameData.level'], $lte: parseInt(maxLevel) };
+
+      const skip = (parseInt(page) - 1) * parseInt(limit);
+      const sort = { [sortBy]: sortOrder === 'desc' ? -1 : 1 };
+
+      const [players, total] = await Promise.all([
+        User.find(filter)
+          .select('username email profile gameData createdAt')
+          .sort(sort)
+          .skip(skip)
+          .limit(parseInt(limit)),
+        User.countDocuments(filter)
+      ]);
+
+      const totalPages = Math.ceil(total / parseInt(limit));
+
+      res.json({
+        success: true,
+        data: {
+          players: players.map(p => ({
+            id: p._id,
+            username: p.username,
+            email: p.email,
+            level: p.gameData.level,
+            xp: p.gameData.xp,
+            totalXP: p.gameData.totalXP,
+            skillPoints: p.gameData.skillPoints,
+            questsCompleted: p.gameData.quests.completed.length,
+            achievementsUnlocked: p.gameData.achievements.unlocked.length,
+            dailyStreak: p.gameData.stats.dailyStreak,
+            battleWins: p.gameData.battleStats.wins,
+            characterClass: p.gameData.characterClass,
+            memberSince: p.createdAt
+          })),
+          pagination: {
+            current: parseInt(page),
+            total: totalPages,
+            hasNext: page < totalPages,
+            hasPrev: page > 1,
+            totalItems: total
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Get game players error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch game players'
+      });
+    }
+  }
+);
+
+/**
+ * @route   POST /api/v1/admin/game/grant-xp
+ * @desc    Manually grant XP to a player
+ * @access  Admin
+ */
+router.post('/game/grant-xp',
+  checkContentPermission('update', 'general'),
+  auditLog('grant_player_xp'),
+  async (req, res) => {
+    try {
+      const { userId, amount, reason } = req.body;
+
+      if (!userId || !amount || amount <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Valid userId and positive amount required'
+        });
+      }
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      const result = user.addXP(amount);
+      await user.save();
+
+      // Log the admin action
+      await AdminAuditLog.create({
+        admin: req.user._id,
+        action: 'grant_xp',
+        targetType: 'user',
+        targetId: userId,
+        details: { amount, reason, result },
+        ipAddress: req.ip
+      });
+
+      res.json({
+        success: true,
+        message: `Granted ${amount} XP to ${user.username}`,
+        data: {
+          newXP: user.gameData.xp,
+          newLevel: user.gameData.level,
+          leveledUp: result.leveledUp
+        }
+      });
+    } catch (error) {
+      console.error('Grant XP error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to grant XP'
+      });
+    }
+  }
+);
+
+/**
+ * @route   POST /api/v1/admin/game/grant-achievement
+ * @desc    Manually grant achievement to a player
+ * @access  Admin
+ */
+router.post('/game/grant-achievement',
+  checkContentPermission('update', 'general'),
+  auditLog('grant_achievement'),
+  async (req, res) => {
+    try {
+      const { userId, achievementId } = req.body;
+
+      const [user, achievement] = await Promise.all([
+        User.findById(userId),
+        Achievement.findOne({ id: achievementId, status: 'active' })
+      ]);
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      if (!achievement) {
+        return res.status(404).json({
+          success: false,
+          message: 'Achievement not found'
+        });
+      }
+
+      // Check if already unlocked
+      if (user.gameData.achievements.unlocked.some(a => a.id === achievementId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Achievement already unlocked by this user'
+        });
+      }
+
+      user.unlockAchievement({
+        id: achievement.id,
+        name: achievement.name,
+        description: achievement.description,
+        rarity: achievement.rarity,
+        xpReward: achievement.rewards.xp
+      });
+
+      await user.save();
+
+      res.json({
+        success: true,
+        message: `Achievement "${achievement.name}" granted to ${user.username}`,
+        data: {
+          achievement: {
+            id: achievement.id,
+            name: achievement.name,
+            xpReward: achievement.rewards.xp
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Grant achievement error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to grant achievement'
+      });
+    }
+  }
+);
+
+/**
+ * @route   GET /api/v1/admin/game/analytics
+ * @desc    Get gamification analytics
+ * @access  Admin
+ */
+router.get('/game/analytics',
+  checkContentPermission('read', 'general'),
+  auditLog('view_game_analytics'),
+  async (req, res) => {
+    try {
+      // Aggregate player statistics
+      const [
+        totalPlayers,
+        avgLevel,
+        totalQuestsCompleted,
+        totalAchievementsUnlocked,
+        topPlayers,
+        questPopularity,
+        achievementStats
+      ] = await Promise.all([
+        User.countDocuments({ status: 'active' }),
+        User.aggregate([
+          { $match: { status: 'active' } },
+          { $group: { _id: null, avgLevel: { $avg: '$gameData.level' } } }
+        ]),
+        User.aggregate([
+          { $match: { status: 'active' } },
+          { $project: { questCount: { $size: '$gameData.quests.completed' } } },
+          { $group: { _id: null, total: { $sum: '$questCount' } } }
+        ]),
+        User.aggregate([
+          { $match: { status: 'active' } },
+          { $project: { achievementCount: { $size: '$gameData.achievements.unlocked' } } },
+          { $group: { _id: null, total: { $sum: '$achievementCount' } } }
+        ]),
+        User.find({ status: 'active' })
+          .select('username gameData.level gameData.totalXP')
+          .sort({ 'gameData.level': -1, 'gameData.totalXP': -1 })
+          .limit(10),
+        Quest.aggregate([
+          { $match: { status: 'published' } },
+          { $sort: { 'analytics.totalCompletions': -1 } },
+          { $limit: 10 },
+          { $project: { title: 1, category: 1, completions: '$analytics.totalCompletions' } }
+        ]),
+        Achievement.aggregate([
+          { $match: { status: 'active' } },
+          { $group: { 
+            _id: '$rarity',
+            count: { $sum: 1 },
+            totalUnlocked: { $sum: '$analytics.totalUnlocked' }
+          } }
+        ])
+      ]);
+
+      res.json({
+        success: true,
+        data: {
+          overview: {
+            totalPlayers,
+            averageLevel: avgLevel[0]?.avgLevel?.toFixed(1) || 0,
+            totalQuestsCompleted: totalQuestsCompleted[0]?.total || 0,
+            totalAchievementsUnlocked: totalAchievementsUnlocked[0]?.total || 0
+          },
+          topPlayers: topPlayers.map(p => ({
+            username: p.username,
+            level: p.gameData.level,
+            totalXP: p.gameData.totalXP
+          })),
+          popularQuests: questPopularity,
+          achievementsByRarity: achievementStats
+        }
+      });
+    } catch (error) {
+      console.error('Get game analytics error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch game analytics'
+      });
+    }
+  }
+);
+
+/**
+ * @route   PUT /api/v1/admin/game/settings
+ * @desc    Update game settings
+ * @access  Admin
+ */
+router.put('/game/settings',
+  checkContentPermission('update', 'general'),
+  auditLog('update_game_settings'),
+  async (req, res) => {
+    try {
+      const settings = await SystemSettings.findOneAndUpdate(
+        { category: 'gamification' },
+        { 
+          $set: { 
+            settings: req.body,
+            lastModified: Date.now()
+          }
+        },
+        { upsert: true, new: true }
+      );
+
+      res.json({
+        success: true,
+        message: 'Game settings updated successfully',
+        data: settings
+      });
+    } catch (error) {
+      console.error('Update game settings error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to update game settings'
+      });
+    }
+  }
+);
+
+/**
+ * @route   GET /api/v1/admin/game/settings
+ * @desc    Get game settings
+ * @access  Admin
+ */
+router.get('/game/settings',
+  checkContentPermission('read', 'general'),
+  async (req, res) => {
+    try {
+      const settings = await SystemSettings.findOne({ category: 'gamification' });
+
+      res.json({
+        success: true,
+        data: settings || {
+          baseXPPerQuest: 100,
+          levelUpMultiplier: 1.5,
+          dailyStreakBonus: 50,
+          battleWinXP: 200,
+          maxSkillPoints: 100,
+          eloStartingRating: 1200
+        }
+      });
+    } catch (error) {
+      console.error('Get game settings error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch game settings'
+      });
+    }
+  }
+);
+
+// =============================================================================
 // ANALYTICS ROUTES
 // =============================================================================
 

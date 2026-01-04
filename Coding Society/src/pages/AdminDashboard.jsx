@@ -27,7 +27,7 @@ import {
     Plus,
     Zap
 } from 'lucide-react';
-import { LibraryPage, InnovationPage, HackathonPage, UserManagement, Analytics, AdminSettings } from './admin';
+import { LibraryPage, InnovationPage, HackathonPage, UserManagement, Analytics, AdminSettings, GamificationPage } from './admin';
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -39,6 +39,7 @@ const AdminDashboard = () => {
         { id: 'library', label: 'Library Content', icon: Book },
         { id: 'innovation', label: 'Innovations', icon: Lightbulb },
         { id: 'hackathon', label: 'Hackathons', icon: Code },
+        { id: 'gamification', label: 'Gamification', icon: Trophy },
         { id: 'users', label: 'User Management', icon: Users },
         { id: 'analytics', label: 'Analytics', icon: BarChart3 },
         { id: 'settings', label: 'Settings', icon: Settings }
@@ -66,6 +67,8 @@ const AdminDashboard = () => {
                 return <InnovationPage />;
             case 'hackathon':
                 return <HackathonPage />;
+            case 'gamification':
+                return <GamificationPage />;
             case 'users':
                 return <UserManagement />;
             case 'analytics':

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Progress } from '../components/ui/progress';
@@ -6,12 +7,13 @@ import { useMode } from '../context/ModeContext';
 import { useGame } from '../context/GameContext';
 
 // Import our new gamified components
-import QuestSystem from '../components/gamified/QuestSystem';
+import QuestSystem from '../components/gamified/CodingChallengeSystem';
 import SkillTreeSystem from '../components/gamified/SkillTreeSystem';
 import AchievementSystemUI from '../components/gamified/AchievementSystemUI';
 import BattleArena from '../components/gamified/BattleArena';
 import CharacterCustomization from '../components/gamified/CharacterCustomization';
 import InteractiveTutorials from '../components/gamified/InteractiveTutorials';
+import LeaderboardSystem from '../components/gamified/LeaderboardSystem';
 
 import {
   Trophy,
@@ -48,7 +50,9 @@ import {
   Linkedin,
   FolderGit,
   Monitor,
-  Server
+  Server,
+  BarChart3,
+  Calendar
 } from 'lucide-react';
 
 /**
@@ -63,16 +67,9 @@ const GamifiedPage = () => {
   const { mode } = useMode();
   const isProfessional = mode === 'professional';
   const { gameState, showNotification } = useGame();
+  const navigate = useNavigate();
   
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [showWelcome, setShowWelcome] = useState(false);
-
-  // Check if this is a new user and show welcome (only in student mode)
-  useEffect(() => {
-    if (!gameState.hasSeenWelcome && !isProfessional) {
-      setShowWelcome(true);
-    }
-  }, [gameState.hasSeenWelcome, isProfessional]);
 
   // Reset active tab when mode changes
   useEffect(() => {
@@ -88,10 +85,10 @@ const GamifiedPage = () => {
       description: 'Your gaming overview and quick stats'
     },
     {
-      id: 'quests',
-      label: 'Quests',
-      icon: <Scroll className="w-4 h-4" />,
-      description: 'Story-driven coding challenges',
+      id: 'challenges',
+      label: 'Coding Challenges',
+      icon: <Code className="w-4 h-4" />,
+      description: 'LeetCode-style coding problems',
       component: QuestSystem
     },
     {
@@ -128,6 +125,13 @@ const GamifiedPage = () => {
       icon: <BookOpen className="w-4 h-4" />,
       description: 'Interactive step-by-step learning',
       component: InteractiveTutorials
+    },
+    {
+      id: 'leaderboard',
+      label: 'Leaderboard',
+      icon: <TrendingUp className="w-4 h-4" />,
+      description: 'Compete with top coders',
+      component: LeaderboardSystem
     }
   ];
 
@@ -199,6 +203,44 @@ const GamifiedPage = () => {
   };
 
   const classInfo = getClassInfo();
+
+  // Calculate statistics and predictions
+  const calculateProgressStats = () => {
+    const totalXP = gameState.totalXP || 0;
+    const currentLevel = playerStats.level;
+    const xpToNext = playerStats.xpToNext;
+    const currentXP = playerStats.xp;
+    
+    // Calculate XP velocity (XP per day)
+    const xpVelocity = Math.floor(totalXP / Math.max(playerStats.streak || 1, 1));
+    
+    // Predict days to next level
+    const daysToNextLevel = xpToNext > 0 && xpVelocity > 0 
+      ? Math.ceil(xpToNext / xpVelocity) 
+      : 0;
+    
+    // Calculate success probability based on recent activity
+    const questSuccessRate = playerStats.questsCompleted > 0 
+      ? ((playerStats.questsCompleted / (playerStats.questsCompleted + 5)) * 100).toFixed(1)
+      : 0;
+    
+    // Skill distribution analysis
+    const skillLevels = Object.values(gameState.skillTrees || {}).map(tree => tree.level || 0);
+    const avgSkillLevel = skillLevels.length > 0 
+      ? (skillLevels.reduce((a, b) => a + b, 0) / skillLevels.length).toFixed(1)
+      : 0;
+    
+    return {
+      xpVelocity,
+      daysToNextLevel,
+      questSuccessRate,
+      avgSkillLevel,
+      progressPercentage: ((currentXP / (currentXP + xpToNext)) * 100).toFixed(1),
+      engagement: Math.min(100, (playerStats.streak * 10 + playerStats.questsCompleted * 2)).toFixed(0)
+    };
+  };
+
+  const stats = calculateProgressStats();
 
   // Recent activity feed
   const getRecentActivity = () => {
@@ -274,11 +316,11 @@ const GamifiedPage = () => {
     }
   ] : [
     {
-      title: 'Start Quest',
-      description: 'Begin a new coding adventure',
-      icon: <Scroll className="w-6 h-6" />,
+      title: 'Solve Challenge',
+      description: 'Practice coding problems',
+      icon: <Code className="w-6 h-6" />,
       color: 'from-blue-500 to-blue-600',
-      action: () => setActiveTab('quests')
+      action: () => setActiveTab('challenges')
     },
     {
       title: 'Practice Skills',
@@ -305,26 +347,328 @@ const GamifiedPage = () => {
 
   // Render dashboard content
   const renderDashboard = () => (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      {/* Welcome Section */}
-      <div className="text-center py-8 relative">
-        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[200px] blur-[100px] rounded-full pointer-events-none ${
-          isProfessional ? 'bg-purple-900/20' : 'bg-blue-100/50'
-        }`}></div>
-        <h1 className={`relative text-4xl font-extrabold mb-3 tracking-tight ${
-          isProfessional ? 'text-white' : 'text-gray-900'
-        }`}>
-          {isProfessional ? 'Career Dashboard' : 'Welcome back,'} <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
-            isProfessional ? 'from-pink-500 to-purple-500' : 'from-blue-600 to-purple-600'
-          }`}>{gameState.player?.name || 'Coder'}</span>{isProfessional ? '' : '! 🚀'}
-        </h1>
-        <p className={`relative text-lg max-w-2xl mx-auto ${
-          isProfessional ? 'text-slate-400' : 'text-gray-600'
-        }`}>
-          {isProfessional 
-            ? 'Track your professional growth, manage projects, and prepare for your dream job.'
-            : 'Ready for your next coding adventure? Your journey to mastery continues.'}
-        </p>
+    <div className="space-y-6 animate-in fade-in duration-500">
+      {/* Modern Hero Section with Glassmorphism */}
+      <div className="relative overflow-hidden rounded-3xl">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 opacity-90"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+        </div>
+        
+        {/* Content */}
+        <div className="relative backdrop-blur-sm bg-white/10 border border-white/20 p-8 md:p-12">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+              {/* Left: Welcome Message */}
+              <div className="text-white flex-1">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md rounded-full mb-4">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-semibold">Active Session</span>
+                </div>
+                <h1 className="text-4xl md:text-5xl font-extrabold mb-3 leading-tight">
+                  Welcome back,
+                  <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-pink-200">
+                    {gameState.player?.name || 'Coder'}
+                  </span>
+                </h1>
+                <p className="text-blue-100 text-lg mb-6">
+                  Level {playerStats.level} • {playerStats.xp.toLocaleString()} XP
+                </p>
+                <div className="flex gap-3">
+                  <button className="px-6 py-3 bg-white text-blue-600 rounded-xl font-bold hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl">
+                    Continue Learning
+                  </button>
+                  <button className="px-6 py-3 bg-white/20 backdrop-blur-md text-white rounded-xl font-bold hover:bg-white/30 transition-all border border-white/30">
+                    View Progress
+                  </button>
+                </div>
+              </div>
+              
+              {/* Right: Live Stats Card */}
+              <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-6 shadow-2xl">
+                <div className="text-center mb-4">
+                  <div className="w-32 h-32 mx-auto mb-4 relative">
+                    <svg className="transform -rotate-90 w-32 h-32">
+                      <circle
+                        cx="64"
+                        cy="64"
+                        r="56"
+                        stroke="rgba(255,255,255,0.2)"
+                        strokeWidth="8"
+                        fill="none"
+                      />
+                      <circle
+                        cx="64"
+                        cy="64"
+                        r="56"
+                        stroke="url(#gradient)"
+                        strokeWidth="8"
+                        fill="none"
+                        strokeDasharray={`${2 * Math.PI * 56}`}
+                        strokeDashoffset={`${2 * Math.PI * 56 * (1 - stats.progressPercentage / 100)}`}
+                        strokeLinecap="round"
+                        className="transition-all duration-1000"
+                      />
+                      <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#fbbf24" />
+                          <stop offset="100%" stopColor="#f59e0b" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center flex-col">
+                      <span className="text-3xl font-bold text-white">{stats.progressPercentage}%</span>
+                      <span className="text-xs text-blue-200">to Level {playerStats.level + 1}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 text-center">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                    <div className="text-2xl font-bold text-white">{stats.xpVelocity}</div>
+                    <div className="text-xs text-blue-200">XP/Day</div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                    <div className="text-2xl font-bold text-white">{stats.daysToNextLevel || '?'}</div>
+                    <div className="text-xs text-blue-200">Days Left</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Advanced Analytics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Engagement Score */}
+        <div className="group relative bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                <Activity className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-semibold text-emerald-100 uppercase tracking-wider">Engagement</div>
+              </div>
+            </div>
+            <div className="text-4xl font-bold text-white mb-2">{stats.engagement}%</div>
+            <div className="flex items-center gap-2 text-emerald-100">
+              <TrendingUp className="w-4 h-4" />
+              <span className="text-sm font-medium">Above Average</span>
+            </div>
+            <div className="mt-4 h-2 bg-white/20 rounded-full overflow-hidden">
+              <div className="h-full bg-white rounded-full transition-all duration-1000" style={{ width: `${stats.engagement}%` }}></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Success Rate */}
+        <div className="group relative bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                <Target className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-semibold text-blue-100 uppercase tracking-wider">Success Rate</div>
+              </div>
+            </div>
+            <div className="text-4xl font-bold text-white mb-2">{stats.questSuccessRate}%</div>
+            <div className="flex items-center gap-2 text-blue-100">
+              <CheckCircle className="w-4 h-4" />
+              <span className="text-sm font-medium">{playerStats.questsCompleted} Completed</span>
+            </div>
+            <div className="mt-4">
+              <div className="flex justify-between text-xs text-blue-100 mb-1">
+                <span>Accuracy</span>
+                <span>{stats.questSuccessRate}%</span>
+              </div>
+              <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                <div className="h-full bg-white rounded-full" style={{ width: `${stats.questSuccessRate}%` }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Skill Mastery */}
+        <div className="group relative bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                <Brain className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-semibold text-purple-100 uppercase tracking-wider">Skill Level</div>
+              </div>
+            </div>
+            <div className="text-4xl font-bold text-white mb-2">{stats.avgSkillLevel}</div>
+            <div className="flex items-center gap-2 text-purple-100">
+              <Star className="w-4 h-4" />
+              <span className="text-sm font-medium">Average Mastery</span>
+            </div>
+            <div className="mt-4 grid grid-cols-4 gap-1">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className={`h-2 rounded-full ${
+                  i <= stats.avgSkillLevel ? 'bg-white' : 'bg-white/20'
+                } transition-all duration-500`} style={{ transitionDelay: `${i * 100}ms` }}></div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Daily Streak */}
+        <div className="group relative bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                <Flame className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-semibold text-orange-100 uppercase tracking-wider">Daily Streak</div>
+              </div>
+            </div>
+            <div className="text-4xl font-bold text-white mb-2">{playerStats.streak} 🔥</div>
+            <div className="flex items-center gap-2 text-orange-100">
+              <Calendar className="w-4 h-4" />
+              <span className="text-sm font-medium">Consecutive Days</span>
+            </div>
+            <div className="mt-4 flex gap-1">
+              {[...Array(7)].map((_, i) => (
+                <div key={i} className={`flex-1 h-2 rounded-full ${
+                  i < playerStats.streak ? 'bg-white' : 'bg-white/20'
+                } transition-all duration-300`} style={{ transitionDelay: `${i * 50}ms` }}></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Real-time Progress Analysis */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Performance Prediction */}
+        <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 border-b border-gray-100">
+            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <BarChart3 className="w-6 h-6 text-blue-600" />
+              Performance Analytics
+            </h3>
+            <p className="text-sm text-gray-600 mt-1">AI-powered insights based on your learning patterns</p>
+          </div>
+          <div className="p-6">
+            {/* XP Velocity Chart */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-semibold text-gray-700">XP Velocity Trend</span>
+                <span className="text-xs text-gray-500">Last 7 days</span>
+              </div>
+              <div className="flex items-end justify-between gap-2 h-32">
+                {[65, 78, 82, 75, 88, 92, 95].map((height, i) => (
+                  <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                    <div className="w-full bg-gradient-to-t from-blue-500 to-purple-500 rounded-t-lg hover:from-blue-600 hover:to-purple-600 transition-all cursor-pointer group relative"
+                         style={{ height: `${height}%` }}>
+                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-xs py-1 px-2 rounded">
+                        {Math.floor(height * 10)} XP
+                      </div>
+                    </div>
+                    <span className="text-xs text-gray-500">{['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i]}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Predictions */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                    <TrendingUp className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700">Next Milestone</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900 mb-1">Level {playerStats.level + 1}</div>
+                <div className="text-xs text-gray-600">Estimated: {stats.daysToNextLevel || '?'} days</div>
+                <div className="mt-3 flex items-center gap-2 text-xs text-green-600 font-medium">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span>{stats.xpVelocity} XP/day velocity</span>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                    <Trophy className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700">Achievement Probability</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900 mb-1">{Math.min(95, stats.engagement)}%</div>
+                <div className="text-xs text-gray-600">Next achievement unlock</div>
+                <div className="mt-3 h-2 bg-blue-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-1000" 
+                       style={{ width: `${Math.min(95, stats.engagement)}%` }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Skill Distribution */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 border-b border-gray-100">
+            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <Shield className="w-5 h-5 text-purple-600" />
+              Skill Distribution
+            </h3>
+          </div>
+          <div className="p-6">
+            <div className="space-y-4">
+              {[
+                { name: 'Frontend', level: gameState.skillTrees?.frontend?.level || 0, max: 10, color: 'blue' },
+                { name: 'Backend', level: gameState.skillTrees?.backend?.level || 0, max: 10, color: 'green' },
+                { name: 'Algorithms', level: gameState.skillTrees?.algorithms?.level || 0, max: 10, color: 'purple' },
+                { name: 'AI/ML', level: gameState.skillTrees?.ai?.level || 0, max: 10, color: 'pink' }
+              ].map((skill, i) => (
+                <div key={i} className="group">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-gray-700">{skill.name}</span>
+                    <span className="text-xs font-bold text-gray-900">{skill.level}/{skill.max}</span>
+                  </div>
+                  <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full transition-all duration-1000 ${
+                      skill.color === 'blue' ? 'bg-gradient-to-r from-blue-500 to-blue-600' :
+                      skill.color === 'green' ? 'bg-gradient-to-r from-green-500 to-green-600' :
+                      skill.color === 'purple' ? 'bg-gradient-to-r from-purple-500 to-purple-600' :
+                      'bg-gradient-to-r from-pink-500 to-pink-600'
+                    }`}
+                         style={{ width: `${(skill.level / skill.max) * 100}%` }}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Overall Progress */}
+            <div className="mt-6 pt-6 border-t border-gray-100">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-900 mb-1">{stats.avgSkillLevel}/10</div>
+                <div className="text-sm text-gray-600">Average Skill Level</div>
+                <div className="mt-4 flex items-center justify-center gap-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className={`w-5 h-5 ${
+                      i < Math.floor(stats.avgSkillLevel / 2) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+                    } transition-all duration-300`} style={{ transitionDelay: `${i * 100}ms` }} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Stats Overview */}
@@ -642,65 +986,6 @@ const GamifiedPage = () => {
     </div>
   );
 
-  // Welcome modal for new users
-  const renderWelcomeModal = () => (
-    showWelcome && (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
-        <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-center text-white">
-            <h2 className="text-3xl font-bold mb-2">🎉 Welcome to Coding Society!</h2>
-            <p className="text-blue-100 text-lg">
-              Your epic coding adventure begins now!
-            </p>
-          </div>
-          <div className="p-8 space-y-8">
-            <div className="text-center">
-              <div className="text-6xl mb-6 animate-bounce">🚀</div>
-              <p className="text-gray-600 text-lg leading-relaxed">
-                You've entered an ultra-advanced gamified learning platform where coding becomes an epic RPG adventure! 
-                Level up your skills, complete quests, battle other coders, and customize your character as you master programming.
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-5 bg-blue-50 rounded-2xl border border-blue-100">
-                <Scroll className="w-8 h-8 mx-auto mb-3 text-blue-600" />
-                <h3 className="font-bold text-blue-900 mb-1">Epic Quests</h3>
-                <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Story-driven</p>
-              </div>
-              <div className="text-center p-5 bg-emerald-50 rounded-2xl border border-emerald-100">
-                <Map className="w-8 h-8 mx-auto mb-3 text-emerald-600" />
-                <h3 className="font-bold text-emerald-900 mb-1">Skill Trees</h3>
-                <p className="text-xs text-emerald-600 font-medium uppercase tracking-wide">Specialized Paths</p>
-              </div>
-              <div className="text-center p-5 bg-rose-50 rounded-2xl border border-rose-100">
-                <Swords className="w-8 h-8 mx-auto mb-3 text-rose-600" />
-                <h3 className="font-bold text-rose-900 mb-1">Battle Arena</h3>
-                <p className="text-xs text-rose-600 font-medium uppercase tracking-wide">Competitive</p>
-              </div>
-              <div className="text-center p-5 bg-amber-50 rounded-2xl border border-amber-100">
-                <Trophy className="w-8 h-8 mx-auto mb-3 text-amber-600" />
-                <h3 className="font-bold text-amber-900 mb-1">Achievements</h3>
-                <p className="text-xs text-amber-600 font-medium uppercase tracking-wide">Rewards</p>
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <Button
-                onClick={() => setShowWelcome(false)}
-                className="bg-gray-900 text-white hover:bg-gray-800 px-10 py-6 text-lg rounded-xl shadow-xl shadow-gray-900/20 transition-all hover:-translate-y-1"
-              >
-                <Play className="w-5 h-5 mr-2" />
-                Start My Adventure!
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  );
-
-
   return (
     <div className={`min-h-screen transition-all duration-300 font-sans ${
       isProfessional ? 'bg-slate-900' : 'bg-slate-50'
@@ -809,9 +1094,6 @@ const GamifiedPage = () => {
           return null;
         })}
       </div>
-
-      {/* Welcome Modal */}
-      {renderWelcomeModal()}
     </div>
   );
 

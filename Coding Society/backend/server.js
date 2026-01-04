@@ -45,6 +45,8 @@ const internshipRoutes = require('./routes/internships');
 const hackathonRoutes = require('./routes/hackathons');
 const innovationRoutes = require('./routes/innovation');
 const libraryRoutes = require('./routes/library');
+const challengesRoutes = require('./routes/challenges');
+const codeExecutionRoutes = require('./routes/codeExecution');
 
 // Import MinIO configuration
 const { initializeBuckets } = require('./config/minio');
@@ -195,6 +197,8 @@ app.use(`${apiPrefix}/internships`, internshipRoutes);
 app.use(`${apiPrefix}/hackathons`, hackathonRoutes);
 app.use(`${apiPrefix}/innovation`, innovationRoutes);
 app.use(`${apiPrefix}/library`, libraryRoutes);
+app.use(`${apiPrefix}/challenges`, challengesRoutes);  // Coding challenge platform
+app.use(`${apiPrefix}/code-execution`, codeExecutionRoutes);  // Code execution API
 app.use(`${apiPrefix}/admin`, adminRoutes);
 app.use(`${apiPrefix}/admin/upload`, uploadRoutes);
 app.use(`${apiPrefix}/upload`, uploadRoutes);  // General upload endpoint

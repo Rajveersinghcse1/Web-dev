@@ -402,4 +402,178 @@ async function checkLevelAchievements(user) {
   }
 }
 
+// @desc    Get user battles history
+// @route   GET /api/v1/game/battles/history
+// @access  Private
+router.get('/battles/history', auth, asyncHandler(async (req, res) => {
+  const user = req.user;
+  const { limit = 10, page = 1 } = req.query;
+
+  // This would fetch from a Battle model (to be created)
+  // For now, return mock data structure
+  res.json({
+    success: true,
+    data: {
+      battles: [],
+      stats: user.gameData.battleStats,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: 1,
+        hasNext: false,
+        hasPrev: false
+      }
+    }
+  });
+}));
+
+// @desc    Submit battle result
+// @route   POST /api/v1/game/battles/submit
+// @access  Private
+router.post('/battles/submit', auth, [
+  body('battleId').isString().withMessage('Battle ID is required'),
+  body('won').isBoolean().withMessage('Won status must be boolean'),
+  body('score').isInt({ min: 0 }).withMessage('Score must be non-negative integer')
+], asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation failed',
+      errors: errors.array()
+    });
+  }
+
+  const { battleId, won, score } = req.body;
+  const user = req.user;
+
+  // Update battle stats
+  user.gameData.battleStats.totalBattles += 1;
+  if (won) {
+    user.gameData.battleStats.wins += 1;
+    user.gameData.battleStats.winStreak += 1;
+    if (user.gameData.battleStats.winStreak > user.gameData.battleStats.bestWinStreak) {
+      user.gameData.battleStats.bestWinStreak = user.gameData.battleStats.winStreak;
+    }
+    // Award XP for win
+    user.addXP(200);
+  } else {
+    user.gameData.battleStats.losses += 1;
+    user.gameData.battleStats.winStreak = 0;
+  }
+
+  await user.save();
+
+  res.json({
+    success: true,
+    message: won ? 'Victory! +200 XP' : 'Better luck next time!',
+    data: {
+      battleStats: user.gameData.battleStats,
+      newXP: user.gameData.xp,
+      level: user.gameData.level
+    }
+  });
+}));
+
+// @desc    Get daily challenge
+// @route   GET /api/v1/game/daily-challenge
+// @access  Private
+router.get('/daily-challenge', auth, asyncHandler(async (req, res) => {
+  const user = req.user;
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Check if user completed today's challenge
+  const completedToday = user.gameData.stats.lastChallengeDate === today;
+
+  // In production, this would fetch from a DailyChallenge model
+  res.json({
+    success: true,
+    data: {
+      challenge: {
+        id: `daily-${today}`,
+        title: "Today's Coding Challenge",
+        description: 'Complete a special daily quest for bonus rewards',
+        xpReward: 500,
+        bonusReward: user.gameData.stats.dailyStreak >= 7 ? 200 : 0
+      },
+      completed: completedToday,
+      streak: user.gameData.stats.dailyStreak
+    }
+  });
+}));
+
+// @desc    Get skill tree data
+// @route   GET /api/v1/game/skill-trees
+// @access  Private
+router.get('/skill-trees', auth, asyncHandler(async (req, res) => {
+  const user = req.user;
+
+  res.json({
+    success: true,
+    data: {
+      skillTrees: user.gameData.skillTrees,
+      availablePoints: user.gameData.skillPoints,
+      recommendations: getSkillRecommendations(user)
+    }
+  });
+}));
+
+// @desc    Reset skill tree
+// @route   POST /api/v1/game/skill-trees/reset
+// @access  Private
+router.post('/skill-trees/reset', auth, [
+  body('skillTree').isIn(['frontend', 'backend', 'ai', 'mobile', 'devops', 'security', 'algorithms', 'databases'])
+], asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation failed',
+      errors: errors.array()
+    });
+  }
+
+  const { skillTree } = req.body;
+  const user = req.user;
+
+  // Refund skill points
+  const pointsToRefund = user.gameData.skillTrees[skillTree].skillPoints;
+  user.gameData.skillPoints += pointsToRefund;
+
+  // Reset skill tree
+  user.gameData.skillTrees[skillTree] = {
+    level: 0,
+    xp: 0,
+    skillPoints: 0,
+    unlockedSkills: []
+  };
+
+  await user.save();
+
+  res.json({
+    success: true,
+    message: `${skillTree} skill tree reset. ${pointsToRefund} points refunded.`,
+    data: {
+      skillTree: user.gameData.skillTrees[skillTree],
+      availablePoints: user.gameData.skillPoints
+    }
+  });
+}));
+
+// Helper function for skill recommendations
+function getSkillRecommendations(user) {
+  const recommendations = [];
+  const characterClass = user.gameData.characterClass;
+
+  // Recommend skills based on character class
+  if (characterClass === 'frontend_wizard') {
+    recommendations.push('react_mastery', 'css_animations', 'ux_design');
+  } else if (characterClass === 'backend_knight') {
+    recommendations.push('api_design', 'database_optimization', 'microservices');
+  } else if (characterClass === 'ai_sorcerer') {
+    recommendations.push('neural_networks', 'data_preprocessing', 'model_optimization');
+  }
+
+  return recommendations;
+}
+
 module.exports = router;

@@ -154,6 +154,12 @@ function Navigation() {
       description: 'Knowledge sharing, discussions, and updates'
     },
     { 
+      name: 'Challenges', 
+      path: '/challenges', 
+      icon: Trophy, 
+      description: 'Coding challenges and problem solving'
+    },
+    { 
       name: 'Internships', 
       path: '/internships', 
       icon: Building, 
