@@ -71,18 +71,6 @@ export function Result() {
         ? result.questionAnalysis
         : result.questionAnalysis.filter(q => q.question.includes(`[Set ${filterSet}`));
 
-    // Get question type from testSets
-    const getQuestionType = (analysisQuestion: string): 'mcq' | 'fill' => {
-        for (const set of testSets) {
-            for (const q of set.questions) {
-                if (analysisQuestion.includes(q.question)) {
-                    return q.type;
-                }
-            }
-        }
-        return 'mcq';
-    };
-
     // Donut Chart
     const DonutChart = ({ correct, incorrect, unanswered }: { correct: number, incorrect: number, unanswered: number }) => {
         const total = correct + incorrect + unanswered;
@@ -179,8 +167,8 @@ export function Result() {
                         ].map((tab) => (
                             <button key={tab.id} onClick={() => setActiveTab(tab.id as TabType)}
                                 className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${activeTab === tab.id
-                                        ? 'text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50/50'
-                                        : 'text-gray-500 hover:text-gray-700'
+                                    ? 'text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50/50'
+                                    : 'text-gray-500 hover:text-gray-700'
                                     }`}>
                                 {tab.label}
                             </button>
