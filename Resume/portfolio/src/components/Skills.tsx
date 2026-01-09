@@ -1,19 +1,22 @@
 "use client";
 
 import styles from "./SkillsContact.module.css";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { IconType } from "react-icons";
 import {
     SiPython, SiJavascript, SiTypescript, SiCplusplus,
-    SiReact, SiNextdotjs, SiHtml5, SiTailwindcss, SiFramer,
+    SiReact, SiNextdotjs, SiHtml5, SiTailwindcss,
     SiFastapi, SiNodedotjs, SiExpress,
-    SiPandas, SiNumpy, SiScikitlearn, SiTensorflow, SiLangchain,
+    SiPandas, SiNumpy, SiScikitlearn, SiTensorflow,
     SiPostgresql, SiMongodb, SiRedis,
-    SiGit, SiDocker, SiPostman, SiLinux
+    SiGit, SiDocker, SiPostman, SiLinux,
+    SiFramer, SiLangchain
 } from "react-icons/si";
-import { TbApi, TbSql, TbDatabase } from "react-icons/tb";
-import { FaCss3Alt } from "react-icons/fa";
+import { TbSql, TbDatabase, TbBrandFramerMotion, TbBrandPython } from "react-icons/tb";
 import { VscCode } from "react-icons/vsc";
-import { IconType } from "react-icons";
+import { MdApi } from "react-icons/md";
+import { IoClose } from "react-icons/io5";
 
 // Icon mapping for each skill
 const skillIcons: { [key: string]: IconType } = {
@@ -33,7 +36,7 @@ const skillIcons: { [key: string]: IconType } = {
     "FastAPI": SiFastapi,
     "Node.js": SiNodedotjs,
     "Express": SiExpress,
-    "REST APIs": TbApi,
+    "REST APIs": MdApi,
     // Data & AI
     "Pandas": SiPandas,
     "NumPy": SiNumpy,
@@ -91,34 +94,194 @@ const skillColors: { [key: string]: string } = {
     "Linux": "#FCC624",
 };
 
+// Skill experience/practice information
+const skillExperience: { [key: string]: { description: string; projects: string[] } } = {
+    "Python": {
+        description: "Primary language for AI/ML, data analysis, and backend development. Proficient in writing clean, efficient code.",
+        projects: ["AI Chatbots", "Data Analysis Tools", "FastAPI Backend Services", "Machine Learning Models"]
+    },
+    "JavaScript": {
+        description: "Core language for web development, used extensively in frontend and backend projects.",
+        projects: ["Interactive Web Apps", "React Components", "Node.js APIs", "Full-Stack Applications"]
+    },
+    "TypeScript": {
+        description: "Type-safe development for large-scale applications. Used in Next.js and React projects.",
+        projects: ["Enterprise Web Apps", "Type-Safe APIs", "React/Next.js Projects", "Component Libraries"]
+    },
+    "C/C++": {
+        description: "Strong foundation in data structures, algorithms, and competitive programming.",
+        projects: ["DSA Problem Solving", "Performance-Critical Code", "System Programming"]
+    },
+    "SQL": {
+        description: "Database querying and optimization for relational databases.",
+        projects: ["Complex Queries", "Database Design", "Data Analysis", "Performance Optimization"]
+    },
+    "React": {
+        description: "Building modern, interactive user interfaces with hooks and state management.",
+        projects: ["Portfolio Websites", "E-commerce Platforms", "Dashboard Applications", "SPA Development"]
+    },
+    "Next.js": {
+        description: "Full-stack React framework with SSR, SSG, and API routes for production apps.",
+        projects: ["Portfolio Sites", "SEO-Optimized Websites", "Full-Stack Applications", "Static Sites"]
+    },
+    "HTML/CSS": {
+        description: "Semantic HTML and modern CSS including Flexbox, Grid, and responsive design.",
+        projects: ["Responsive Layouts", "UI Components", "Landing Pages", "Web Animations"]
+    },
+    "Tailwind CSS": {
+        description: "Utility-first CSS framework for rapid UI development.",
+        projects: ["Modern UIs", "Responsive Designs", "Component Styling", "Design Systems"]
+    },
+    "Framer Motion": {
+        description: "Production-ready animations for React applications.",
+        projects: ["Page Transitions", "Interactive Animations", "Micro-interactions", "Gesture Animations"]
+    },
+    "FastAPI": {
+        description: "Modern Python framework for building high-performance APIs.",
+        projects: ["REST APIs", "AI Service Backends", "Data Processing APIs", "Real-time Services"]
+    },
+    "Node.js": {
+        description: "Server-side JavaScript runtime for scalable backend services.",
+        projects: ["REST APIs", "Real-time Services", "Microservices", "Backend Systems"]
+    },
+    "Express": {
+        description: "Minimal Node.js framework for web applications and APIs.",
+        projects: ["Web Servers", "API Development", "Middleware Systems", "Backend Services"]
+    },
+    "REST APIs": {
+        description: "Designing and implementing RESTful APIs following best practices.",
+        projects: ["CRUD APIs", "Authentication Systems", "Data Services", "Third-party Integrations"]
+    },
+    "Pandas": {
+        description: "Data manipulation and analysis library for Python.",
+        projects: ["Data Cleaning", "Statistical Analysis", "CSV Processing", "Data Transformation"]
+    },
+    "NumPy": {
+        description: "Numerical computing with Python for array operations.",
+        projects: ["Mathematical Operations", "Array Processing", "Scientific Computing", "Data Analysis"]
+    },
+    "Scikit-learn": {
+        description: "Machine learning algorithms and model building.",
+        projects: ["Classification Models", "Regression Analysis", "Model Training", "Data Preprocessing"]
+    },
+    "TensorFlow": {
+        description: "Deep learning framework for neural networks and AI models.",
+        projects: ["Neural Networks", "Image Processing", "Deep Learning Models", "AI Applications"]
+    },
+    "LangChain": {
+        description: "Building LLM-powered applications with chains and agents.",
+        projects: ["AI Chatbots", "RAG Systems", "Document Processing", "LLM Applications"]
+    },
+    "PostgreSQL": {
+        description: "Advanced relational database with complex queries and optimization.",
+        projects: ["Database Design", "Complex Queries", "Data Modeling", "Backend Integration"]
+    },
+    "MongoDB": {
+        description: "NoSQL database for flexible, scalable data storage.",
+        projects: ["Document Storage", "Real-time Apps", "API Backends", "Data Aggregation"]
+    },
+    "Redis": {
+        description: "In-memory data store for caching and real-time applications.",
+        projects: ["Caching Systems", "Session Management", "Real-time Features", "Performance Optimization"]
+    },
+    "Convex": {
+        description: "Real-time backend platform for modern applications.",
+        projects: ["Real-time Apps", "Backend Services", "Database Management", "API Development"]
+    },
+    "Git": {
+        description: "Version control for collaborative development and code management.",
+        projects: ["Code Versioning", "Team Collaboration", "Branch Management", "CI/CD Workflows"]
+    },
+    "Docker": {
+        description: "Containerization for consistent development and deployment.",
+        projects: ["Container Deployment", "Development Environments", "Microservices", "DevOps"]
+    },
+    "VS Code": {
+        description: "Primary IDE with extensions for efficient development workflow.",
+        projects: ["Code Development", "Debugging", "Git Integration", "Extension Usage"]
+    },
+    "Postman": {
+        description: "API testing and development tool for backend services.",
+        projects: ["API Testing", "Request Collections", "Automated Testing", "API Documentation"]
+    },
+    "Linux": {
+        description: "Unix-based system administration and command-line proficiency.",
+        projects: ["Server Management", "Shell Scripting", "System Configuration", "DevOps Tasks"]
+    }
+};
+
 const skillCategories = [
     {
-        title: "Languages",
-        skills: ["Python", "JavaScript", "TypeScript", "C/C++", "SQL"]
+        category: "Languages",
+        skills: [
+            { name: "Python", icon: <SiPython /> },
+            { name: "JavaScript", icon: <SiJavascript /> },
+            { name: "TypeScript", icon: <SiTypescript /> },
+            { name: "C/C++", icon: <SiCplusplus /> },
+            { name: "SQL", icon: <TbSql /> }
+        ]
     },
     {
-        title: "Frontend",
-        skills: ["React", "Next.js", "HTML/CSS", "Tailwind CSS", "Framer Motion"]
+        category: "Frontend",
+        skills: [
+            { name: "React", icon: <SiReact /> },
+            { name: "Next.js", icon: <SiNextdotjs /> },
+            { name: "HTML/CSS", icon: <SiHtml5 /> },
+            { name: "Tailwind CSS", icon: <SiTailwindcss /> },
+            { name: "Framer Motion", icon: <TbBrandFramerMotion /> }
+        ]
     },
     {
-        title: "Backend",
-        skills: ["FastAPI", "Node.js", "Express", "REST APIs"]
+        category: "Backend",
+        skills: [
+            { name: "FastAPI", icon: <SiFastapi /> },
+            { name: "Node.js", icon: <SiNodedotjs /> },
+            { name: "Express", icon: <SiExpress /> },
+            { name: "REST APIs", icon: <MdApi /> }
+        ]
     },
     {
-        title: "Data & AI",
-        skills: ["Pandas", "NumPy", "Scikit-learn", "TensorFlow", "LangChain"]
+        category: "Data & AI",
+        skills: [
+            { name: "Pandas", icon: <SiPandas /> },
+            { name: "NumPy", icon: <SiNumpy /> },
+            { name: "Scikit-learn", icon: <SiScikitlearn /> },
+            { name: "TensorFlow", icon: <SiTensorflow /> },
+            { name: "LangChain", icon: <TbBrandPython /> }
+        ]
     },
     {
-        title: "Databases",
-        skills: ["PostgreSQL", "MongoDB", "Redis", "Convex"]
+        category: "Databases",
+        skills: [
+            { name: "PostgreSQL", icon: <SiPostgresql /> },
+            { name: "MongoDB", icon: <SiMongodb /> },
+            { name: "Redis", icon: <SiRedis /> },
+            { name: "Convex", icon: <TbDatabase /> }
+        ]
     },
     {
-        title: "Tools",
-        skills: ["Git", "Docker", "VS Code", "Postman", "Linux"]
+        category: "Tools",
+        skills: [
+            { name: "Git", icon: <SiGit /> },
+            { name: "Docker", icon: <SiDocker /> },
+            { name: "VS Code", icon: <VscCode /> },
+            { name: "Postman", icon: <SiPostman /> },
+            { name: "Linux", icon: <SiLinux /> }
+        ]
     }
 ];
 
 export default function Skills() {
+    const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
+
+    const handleSkillClick = (skill: string) => {
+        setSelectedSkill(skill);
+    };
+
+    const closeModal = () => {
+        setSelectedSkill(null);
+    };
+
     return (
         <section id="skills" className={`container section ${styles.section}`}>
             <motion.div
@@ -128,35 +291,114 @@ export default function Skills() {
                 className={styles.header}
             >
                 <h2 className={styles.title}>Skills</h2>
-                <p className={styles.subtitle}>Technologies and tools I work with</p>
+                <p className={styles.subtitle}>Technologies and tools I work with (Click to learn more)</p>
             </motion.div>
 
-            <div className={styles.grid}>
-                {skillCategories.map((category, index) => (
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className={styles.grid}
+            >
+                {skillCategories.map((category, categoryIndex) => (
                     <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 20 }}
+                        key={category.category}
+                        className={styles.card}
+                        initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ delay: index * 0.05 }}
-                        className={styles.card}
+                        transition={{ delay: categoryIndex * 0.1 }}
                     >
-                        <h3 className={styles.categoryTitle}>{category.title}</h3>
+                        <h3 className={styles.categoryTitle}>{category.category}</h3>
                         <div className={styles.skills}>
-                            {category.skills.map((skill) => {
-                                const Icon = skillIcons[skill];
-                                const color = skillColors[skill];
-                                return (
-                                    <span key={skill} className={styles.skill}>
-                                        {Icon && <Icon className={styles.skillIcon} style={{ color }} />}
-                                        {skill}
-                                    </span>
-                                );
-                            })}
+                            {category.skills.map((skill, skillIndex) => (
+                                <motion.div
+                                    key={skill.name}
+                                    className={styles.skill}
+                                    onClick={() => handleSkillClick(skill.name)}
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: skillIndex * 0.05 }}
+                                    whileHover={{ scale: 1.05 }}
+                                >
+                                    <span className={styles.skillIcon}>{skill.icon}</span>
+                                    <span className={styles.skillName}>{skill.name}</span>
+                                </motion.div>
+                            ))}
                         </div>
                     </motion.div>
                 ))}
-            </div>
+            </motion.div>
+
+            {/* Modal */}
+            <AnimatePresence>
+                {selectedSkill && skillExperience[selectedSkill] && (
+                    <>
+                        <motion.div
+                            className={styles.modalOverlay}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={closeModal}
+                        />
+                        <motion.div
+                            className={styles.modal}
+                            initial={{ opacity: 0, scale: 0.8, y: 50 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.8, y: 50 }}
+                            transition={{ type: "spring", damping: 25 }}
+                        >
+                            <button className={styles.closeButton} onClick={closeModal}>
+                                <IoClose />
+                            </button>
+
+                            <div className={styles.modalHeader}>
+                                {skillIcons[selectedSkill] && (
+                                    <motion.div
+                                        className={styles.modalIcon}
+                                        animate={{
+                                            rotate: [0, 360],
+                                            scale: [1, 1.2, 1]
+                                        }}
+                                        transition={{
+                                            duration: 0.6
+                                        }}
+                                    >
+                                        {(() => {
+                                            const Icon = skillIcons[selectedSkill];
+                                            return <Icon style={{ color: skillColors[selectedSkill] }} />;
+                                        })()}
+                                    </motion.div>
+                                )}
+                                <h3>{selectedSkill}</h3>
+                            </div>
+
+                            <div className={styles.modalContent}>
+                                <p className={styles.modalDescription}>
+                                    {skillExperience[selectedSkill].description}
+                                </p>
+
+                                <div className={styles.modalProjects}>
+                                    <h4>Practice & Experience:</h4>
+                                    <ul>
+                                        {skillExperience[selectedSkill].projects.map((project, idx) => (
+                                            <motion.li
+                                                key={idx}
+                                                initial={{ opacity: 0, x: -20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: idx * 0.1 }}
+                                            >
+                                                {project}
+                                            </motion.li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </section>
     );
 }

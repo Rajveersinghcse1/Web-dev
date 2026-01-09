@@ -45,6 +45,18 @@
     transform: translateY(-4px);
 }
 
+.projectIcon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    background: linear-gradient(135deg, rgba(106, 13, 173, 0.1) 0%, rgba(255, 106, 0, 0.05) 100%);
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
 .projectTitle {
     font-size: 1.25rem;
     font-weight: 700;
@@ -82,6 +94,9 @@
 }
 
 .link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 10px 20px;
     background: transparent;
     color: #6a0dad;
@@ -98,6 +113,9 @@
 }
 
 .linkPrimary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 10px 20px;
     background: linear-gradient(135deg, #6a0dad 0%, #4a0080 100%);
     color: white;

@@ -140,7 +140,6 @@ section {
 [class*="Card"],
 [class*="card"] {
   background: #ffffff !important;
-  border: 2px solid rgba(106, 13, 173, 0.15) !important;
 }
 
 [class*="Card"] h3,

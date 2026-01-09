@@ -77,7 +77,7 @@ export default function Hero() {
                 transition={{ delay: 1.5 }}
                 className={styles.scrollIndicator}
             >
-                <span>↓ Scroll</span>
+                <span>↓</span>
             </motion.div>
         </section>
     );

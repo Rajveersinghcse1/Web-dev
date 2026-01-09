@@ -2,9 +2,11 @@
 
 import styles from "./Experience.module.css";
 import { motion } from "framer-motion";
+import { FaBriefcase, FaTrophy, FaExternalLinkAlt, FaAward, FaCertificate } from "react-icons/fa";
 
 const experienceData = [
     {
+        icon: FaBriefcase,
         title: "Data Analysis Intern",
         company: "Continuous Excellence Pvt. Ltd.",
         date: "May 2025 – July 2025",
@@ -20,16 +22,20 @@ const experienceData = [
 
 const achievementsData = [
     {
+        icon: FaTrophy,
         title: "CyberAI Hackathon 2025",
         organization: "University of Derby (UK) & American Society of Engineers (USA)",
         date: "November 2025",
-        description: "Technical Partner for international hackathon event."
+        description: "Technical Partner for international hackathon event.",
+        link: "https://www.linkedin.com/posts/rajveer-singh-cse_cyberaihack2025-cybersecurity-ai-activity-7399953052214022144-NP33?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEawe0MBkwo7wjeURquG4s1Oo6hjoxjLbfU"
     },
     {
+        icon: FaCertificate,
         title: "Professional Certification",
         organization: "Ulster University (UK) & American Society of Engineers (USA)",
         date: "October 2025",
-        description: "Professional certification in engineering practices."
+        description: "Professional certification in engineering practices.",
+        link: "https://www.linkedin.com/posts/rajveer-singh-cse_certificate-activity-7384527132602900480-tn1J?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEawe0MBkwo7wjeURquG4s1Oo6hjoxjLbfU"
     }
 ];
 
@@ -57,9 +63,25 @@ export default function Experience() {
                         className={styles.card}
                     >
                         <div className={styles.cardHeader}>
-                            <div>
-                                <h3 className={styles.role}>{item.title}</h3>
-                                <p className={styles.company}>{item.company}</p>
+                            <div className={styles.headerLeft}>
+                                <motion.div 
+                                    className={styles.experienceIcon}
+                                    animate={{
+                                        rotate: [0, 5, -5, 0],
+                                        scale: [1, 1.1, 1.1, 1]
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        repeatDelay: 3
+                                    }}
+                                >
+                                    <item.icon style={{ color: "#6a0dad" }} />
+                                </motion.div>
+                                <div>
+                                    <h3 className={styles.role}>{item.title}</h3>
+                                    <p className={styles.company}>{item.company}</p>
+                                </div>
                             </div>
                             <span className={styles.date}>{item.date}</span>
                         </div>
@@ -101,10 +123,36 @@ export default function Experience() {
                         transition={{ delay: 0.1 + index * 0.1 }}
                         className={styles.achievementCard}
                     >
+                        <motion.div 
+                            className={styles.achievementIcon}
+                            animate={{
+                                rotate: [0, 360],
+                                scale: [1, 1.2, 1]
+                            }}
+                            transition={{
+                                duration: 3,
+                                repeat: Infinity,
+                                repeatDelay: 4
+                            }}
+                        >
+                            <item.icon style={{ color: "#ffd700" }} />
+                        </motion.div>
                         <h4 className={styles.achievementTitle}>{item.title}</h4>
                         <p className={styles.achievementOrg}>{item.organization}</p>
                         <span className={styles.achievementDate}>{item.date}</span>
                         <p className={styles.achievementDesc}>{item.description}</p>
+                        {item.link && (
+                            <motion.a 
+                                href={item.link} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className={styles.achievementLink}
+                                whileHover={{ scale: 1.05, x: 5 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <FaExternalLinkAlt /> View Certificate
+                            </motion.a>
+                        )}
                     </motion.div>
                 ))}
             </div>

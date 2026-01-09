@@ -79,11 +79,23 @@ export default function Contact() {
                                 whileInView={{ opacity: 1, x: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
-                                whileHover={{ scale: 1.02 }}
+                                whileHover={{ scale: 1.05, x: 5 }}
                             >
-                                <div className={styles.contactIconWrapper} style={{ backgroundColor: `${item.color}15` }}>
+                                <motion.div 
+                                    className={styles.contactIconWrapper} 
+                                    style={{ backgroundColor: `${item.color}15` }}
+                                    animate={{
+                                        rotate: [0, 5, -5, 0],
+                                        scale: [1, 1.1, 1.1, 1]
+                                    }}
+                                    transition={{
+                                        duration: 3,
+                                        repeat: Infinity,
+                                        repeatDelay: 2 + index
+                                    }}
+                                >
                                     <Icon className={styles.contactIcon} style={{ color: item.color }} />
-                                </div>
+                                </motion.div>
                                 <div className={styles.contactCardContent}>
                                     <h3>{item.title}</h3>
                                     {content}

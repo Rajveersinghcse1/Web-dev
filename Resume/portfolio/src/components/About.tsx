@@ -3,6 +3,7 @@
 import styles from "./About.module.css";
 import { motion } from "framer-motion";
 import AnimatedCounter from "./AnimatedCounter";
+import { FaBrain, FaRocket, FaUsers, FaCubes, FaComments } from "react-icons/fa";
 
 const stats = [
     { value: 200, suffix: "+", label: "Problems Solved" },
@@ -11,11 +12,11 @@ const stats = [
 ];
 
 const skills = [
-    "Problem Solving",
-    "Fast Learner",
-    "Team Collaboration",
-    "System Design",
-    "Communication"
+    { name: "Problem Solving", icon: FaBrain },
+    { name: "Fast Learner", icon: FaRocket },
+    { name: "Team Collaboration", icon: FaUsers },
+    { name: "System Design", icon: FaCubes },
+    { name: "Communication", icon: FaComments }
 ];
 
 export default function About() {
@@ -39,12 +40,15 @@ export default function About() {
                     className={styles.bio}
                 >
                     <p>
-                        I&apos;m a <strong>second-year B.Tech Computer Science student</strong> at JIET Jodhpur,
-                        passionate about building <strong>AI-powered applications</strong> and <strong>full-stack solutions</strong>.
+                        <strong>RAJVEER SINGH</strong> | <strong>B.Tech Computer Science (Core)</strong> | <strong>Third Year Student</strong> | JIET College, Jodhpur
                     </p>
                     <p>
-                        My focus is on creating production-ready applications that solve real-world problems
-                        through clean, efficient code and modern development practices.
+                        Passionate about building <strong>AI-powered applications</strong>, <strong>full-stack web solutions</strong>, and <strong>data-driven systems</strong>. 
+                        Experienced in developing production-ready applications using modern frameworks and technologies including <strong>Python, JavaScript, React, Next.js, FastAPI</strong>, and cloud platforms.
+                    </p>
+                    <p>
+                        Skilled in <strong>problem-solving</strong>, <strong>system design</strong>, <strong>data analysis</strong>, and <strong>team collaboration</strong>. 
+                        Proven track record through internships and projects in creating efficient, scalable solutions that solve real-world problems.
                     </p>
                 </motion.div>
 
@@ -74,9 +78,15 @@ export default function About() {
                 >
                     <h3 className={styles.strengthsTitle}>Key Strengths</h3>
                     <div className={styles.strengthsList}>
-                        {skills.map((skill) => (
-                            <span key={skill} className={styles.strength}>{skill}</span>
-                        ))}
+                        {skills.map((skill) => {
+                            const Icon = skill.icon;
+                            return (
+                                <span key={skill.name} className={styles.strength}>
+                                    <Icon className={styles.strengthIcon} />
+                                    {skill.name}
+                                </span>
+                            );
+                        })}
                     </div>
                 </motion.div>
             </div>

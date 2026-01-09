@@ -32,7 +32,7 @@ export default function Navbar() {
             <div className={`container ${styles.container}`}>
                 <Link href="/" className={styles.logo}>
                     <span className={styles.logoIcon}>🎃</span>
-                    <span className={styles.logoText}>Rajveer</span>
+                    <span className={styles.logoText}>RAJVEER SINGH</span>
                 </Link>
 
                 <ul className={styles.links}>

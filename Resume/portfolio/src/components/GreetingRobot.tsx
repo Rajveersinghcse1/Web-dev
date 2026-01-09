@@ -30,12 +30,12 @@ function Robot3D({ isWaving, onClick, mousePosition }: { isWaving: boolean; onCl
                 groupRef.current.rotation.z = Math.sin(time * 10) * 0.05;
             } else {
                 // Follow mouse - robot looks towards cursor
-                targetRotation.current.y = mousePosition.x * 0.5; // Horizontal rotation
-                targetRotation.current.x = -mousePosition.y * 0.3; // Vertical tilt
+                targetRotation.current.y = Math.PI + mousePosition.x * 1.8; // Horizontal rotation (increased speed)
+                targetRotation.current.x = -mousePosition.y * 1.5; // Vertical tilt (increased speed)
 
                 // Smooth interpolation for natural movement
-                groupRef.current.rotation.y += (targetRotation.current.y - groupRef.current.rotation.y) * 0.08;
-                groupRef.current.rotation.x += (targetRotation.current.x - groupRef.current.rotation.x) * 0.08;
+                groupRef.current.rotation.y += (targetRotation.current.y - groupRef.current.rotation.y) * 0.15;
+                groupRef.current.rotation.x += (targetRotation.current.x - groupRef.current.rotation.x) * 0.15;
                 groupRef.current.rotation.z = 0;
             }
         }
@@ -94,8 +94,14 @@ function Robot3D({ isWaving, onClick, mousePosition }: { isWaving: boolean; onCl
     };
 
     return (
-        <group ref={groupRef} onClick={onClick} scale={2.5} rotation={[0, 0, 0]}>
+        <group ref={groupRef} scale={2.5} rotation={[0, 0, 0]}>
             <primitive object={clonedScene} />
+
+            {/* Invisible clickable area - larger than the robot for easier clicking */}
+            <mesh onClick={onClick}>
+                <sphereGeometry args={[1.5, 32, 32]} />
+                <meshBasicMaterial transparent opacity={0} />
+            </mesh>
 
             {/* Add ambient glow */}
             <pointLight

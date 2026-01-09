@@ -139,8 +139,8 @@ export function ChatBot() {
                                     key={topic.name}
                                     onClick={() => handleConfigChange('subject', topic.name)}
                                     className={`px-4 py-3 text-sm rounded-xl border transition-all flex items-center gap-2 ${config.subject === topic.name
-                                            ? 'bg-emerald-500 border-emerald-500 text-white'
-                                            : topic.color + ' hover:shadow-md'
+                                        ? 'bg-emerald-500 border-emerald-500 text-white'
+                                        : topic.color + ' hover:shadow-md'
                                         }`}
                                 >
                                     <span>{topic.icon}</span>
@@ -155,6 +155,12 @@ export function ChatBot() {
                         <div className="flex items-center gap-3 mb-4">
                             <span className="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-bold text-sm">3</span>
                             <label className="text-sm font-semibold text-gray-800">Configure your test</label>
+                        </div>
+                        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4">
+                            <p className="text-xs text-blue-700 flex items-center gap-2">
+                                <span>💡</span>
+                                <span><strong>Tip:</strong> Start with 1-2 sets and 10-15 questions for faster generation. Free tier has rate limits.</span>
+                            </p>
                         </div>
                         <div className="grid grid-cols-3 gap-4">
                             <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
@@ -227,10 +233,24 @@ export function ChatBot() {
 
                         {error && (
                             <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-4">
-                                <p className="text-sm flex items-center gap-2">
-                                    <span>⚠️</span>
-                                    {error}
+                                <p className="text-sm font-medium mb-2">
+                                    {error.includes('⏰') || error.includes('❌') || error.includes('🔑') || error.includes('⚠️')
+                                        ? error
+                                        : `⚠️ ${error}`}
                                 </p>
+                                {(error.includes('Rate limit') || error.includes('quota')) && (
+                                    <div className="mt-2 pt-2 border-t border-red-300">
+                                        <p className="text-xs text-red-600">
+                                            <strong>What to do:</strong>
+                                        </p>
+                                        <ul className="text-xs text-red-600 mt-1 ml-4 list-disc space-y-1">
+                                            <li>Wait 60 seconds before trying again</li>
+                                            <li>Try with fewer questions/sets (e.g., 1 set, 10 questions)</li>
+                                            <li>Use a different API key if available</li>
+                                            <li>Check your usage at <a href="https://ai.dev/usage" target="_blank" rel="noreferrer" className="underline">ai.dev/usage</a></li>
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -238,8 +258,8 @@ export function ChatBot() {
                             onClick={handleStartTest}
                             disabled={!config.subject.trim() || !config.apiKey.trim() || isLoading}
                             className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-3 ${config.subject.trim() && config.apiKey.trim() && !isLoading
-                                    ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:shadow-lg hover:shadow-emerald-300/50 transform hover:scale-[1.02]'
-                                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:shadow-lg hover:shadow-emerald-300/50 transform hover:scale-[1.02]'
+                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                                 }`}
                         >
                             {isLoading ? (
