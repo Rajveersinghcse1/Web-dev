@@ -84,6 +84,15 @@ button {
   }
 }
 
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 /* Utility classes */
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
@@ -91,4 +100,13 @@ button {
 
 .animate-slide-in {
   animation: slideIn 0.3s ease-out;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+.bg-size-\[64px_64px\] {
+  background-size: 64px 64px;
 }

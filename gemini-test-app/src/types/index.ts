@@ -8,6 +8,7 @@ export interface Question {
     options?: string[]; // Only for MCQ
     correctAnswer: string;
     marks: number;
+    topic?: string; // Topic categorization
 }
 
 export interface UserAnswer {
@@ -53,6 +54,35 @@ export interface QuestionAnalysis {
     isCorrect: boolean;
     marks: number;
     timeTaken?: number; // Time spent on this question in seconds
+    topic?: string; // Topic categorization
+}
+
+// Topic-wise analytics
+export interface TopicAnalysis {
+    topicName: string;
+    questionsAttempted: number;
+    correct: number;
+    accuracy: number;
+}
+
+// Progress graph data point
+export interface ProgressDataPoint {
+    date: number;
+    percentage: number;
+    subject: string;
+    correct: number;
+    totalQuestions: number;
+}
+
+// Leaderboard entry
+export interface LeaderboardEntry {
+    id: string;
+    name: string;
+    avatarUrl?: string;
+    totalTests: number;
+    totalQuestions: number;
+    correctAnswers: number;
+    accuracy: number;
 }
 
 export type TestPhase = 'chat' | 'loading' | 'test' | 'result';

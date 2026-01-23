@@ -101,63 +101,63 @@ export function Result() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 py-6 px-4">
+        <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 py-4 px-4">
             {/* Header */}
-            <header className="max-w-5xl mx-auto mb-6">
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
-                        <span className="text-white font-bold">FP</span>
+            <header className="max-w-5xl mx-auto mb-4">
+                <div className="flex items-center gap-2 mb-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
+                        <span className="text-white font-bold text-sm">FP</span>
                     </div>
                     <div>
-                        <h1 className="text-xl font-bold text-gray-900">Free Prep</h1>
-                        <p className="text-xs text-gray-500">Test Results</p>
+                        <h1 className="text-base font-bold text-gray-900">Free Prep</h1>
+                        <p className="text-[10px] text-gray-500 -mt-0.5">Test Results</p>
                     </div>
                 </div>
             </header>
 
             <div className="max-w-5xl mx-auto">
                 {/* Score Card */}
-                <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden mb-6">
-                    <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-8 py-6 text-white">
+                <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-4">
+                    <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-5 py-4 text-white">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-emerald-100 text-sm mb-1">📚 {subject}</p>
-                                <h2 className="text-2xl font-bold mb-1">Test Completed!</h2>
-                                <p className="text-emerald-200">{result.totalQuestions} Questions • {testSets.length} Sets</p>
+                                <p className="text-emerald-100 text-xs mb-0.5">📚 {subject}</p>
+                                <h2 className="text-lg font-bold mb-0.5">Test Completed!</h2>
+                                <p className="text-emerald-200 text-xs">{result.totalQuestions} Questions • {testSets.length} Sets</p>
                             </div>
-                            <div className={`${gradeInfo.bg} rounded-2xl px-6 py-4 text-center shadow-lg`}>
-                                <span className={`text-4xl font-bold ${gradeInfo.color}`}>{gradeInfo.grade}</span>
-                                <p className={`text-sm ${gradeInfo.color} font-medium`}>{gradeInfo.message}</p>
+                            <div className={`${gradeInfo.bg} rounded-xl px-4 py-3 text-center shadow-md`}>
+                                <span className={`text-2xl font-bold ${gradeInfo.color}`}>{gradeInfo.grade}</span>
+                                <p className={`text-xs ${gradeInfo.color} font-medium`}>{gradeInfo.message}</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-5 divide-x divide-gray-100">
-                        <div className="p-5 text-center">
-                            <div className="text-3xl font-bold text-emerald-600">{result.totalScore}</div>
-                            <div className="text-sm text-gray-500">Score</div>
+                        <div className="p-3 text-center">
+                            <div className="text-xl font-bold text-emerald-600">{result.totalScore}</div>
+                            <div className="text-xs text-gray-500">Score</div>
                         </div>
-                        <div className="p-5 text-center">
-                            <div className="text-3xl font-bold text-gray-800">{result.totalQuestions}</div>
-                            <div className="text-sm text-gray-500">Questions</div>
+                        <div className="p-3 text-center">
+                            <div className="text-xl font-bold text-gray-800">{result.totalQuestions}</div>
+                            <div className="text-xs text-gray-500">Questions</div>
                         </div>
-                        <div className="p-5 text-center">
-                            <div className="text-3xl font-bold text-green-600">{result.correct}</div>
-                            <div className="text-sm text-gray-500">Correct</div>
+                        <div className="p-3 text-center">
+                            <div className="text-xl font-bold text-green-600">{result.correct}</div>
+                            <div className="text-xs text-gray-500">Correct</div>
                         </div>
-                        <div className="p-5 text-center">
-                            <div className="text-3xl font-bold text-red-600">{result.incorrect}</div>
-                            <div className="text-sm text-gray-500">Wrong</div>
+                        <div className="p-3 text-center">
+                            <div className="text-xl font-bold text-red-600">{result.incorrect}</div>
+                            <div className="text-xs text-gray-500">Wrong</div>
                         </div>
-                        <div className="p-5 text-center">
-                            <div className="text-3xl font-bold text-gray-400">{result.unanswered}</div>
-                            <div className="text-sm text-gray-500">Skipped</div>
+                        <div className="p-3 text-center">
+                            <div className="text-xl font-bold text-gray-400">{result.unanswered}</div>
+                            <div className="text-xs text-gray-500">Skipped</div>
                         </div>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden mb-6">
+                <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-4">
                     <div className="flex border-b border-gray-100">
                         {[
                             { id: 'overview', label: '📊 Overview' },
@@ -166,7 +166,7 @@ export function Result() {
                             { id: 'answers', label: '📝 Answers' },
                         ].map((tab) => (
                             <button key={tab.id} onClick={() => setActiveTab(tab.id as TabType)}
-                                className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${activeTab === tab.id
+                                className={`flex-1 px-3 py-2.5 text-xs font-medium transition-colors ${activeTab === tab.id
                                     ? 'text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50/50'
                                     : 'text-gray-500 hover:text-gray-700'
                                     }`}>
@@ -177,30 +177,30 @@ export function Result() {
 
                     {/* Overview Tab */}
                     {activeTab === 'overview' && (
-                        <div className="p-6">
-                            <div className="grid md:grid-cols-2 gap-8">
-                                <div className="bg-gray-50 rounded-xl p-6">
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">Performance</h3>
+                        <div className="p-4">
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="bg-gray-50 rounded-lg p-4">
+                                    <h3 className="text-sm font-semibold text-gray-800 mb-3 text-center">Performance</h3>
                                     <DonutChart correct={result.correct} incorrect={result.incorrect} unanswered={result.unanswered} />
-                                    <div className="flex justify-center gap-4 mt-4 text-sm">
-                                        <span className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-emerald-500"></div>Correct</span>
-                                        <span className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-red-500"></div>Wrong</span>
-                                        <span className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-gray-300"></div>Skipped</span>
+                                    <div className="flex justify-center gap-3 mt-3 text-xs">
+                                        <span className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>Correct</span>
+                                        <span className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>Wrong</span>
+                                        <span className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-gray-300"></div>Skipped</span>
                                     </div>
                                 </div>
 
-                                <div className="space-y-4">
-                                    <div className="bg-emerald-50 rounded-xl p-5 border border-emerald-100">
-                                        <p className="text-sm text-emerald-600 font-medium">Attempted</p>
-                                        <p className="text-2xl font-bold text-emerald-700">{result.attempted} / {result.totalQuestions}</p>
+                                <div className="space-y-3">
+                                    <div className="bg-emerald-50 rounded-lg p-3 border border-emerald-100">
+                                        <p className="text-xs text-emerald-600 font-medium">Attempted</p>
+                                        <p className="text-lg font-bold text-emerald-700">{result.attempted} / {result.totalQuestions}</p>
                                     </div>
-                                    <div className="bg-blue-50 rounded-xl p-5 border border-blue-100">
-                                        <p className="text-sm text-blue-600 font-medium">Accuracy</p>
-                                        <p className="text-2xl font-bold text-blue-700">{accuracy}%</p>
+                                    <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                                        <p className="text-xs text-blue-600 font-medium">Accuracy</p>
+                                        <p className="text-lg font-bold text-blue-700">{accuracy}%</p>
                                     </div>
-                                    <div className="bg-teal-50 rounded-xl p-5 border border-teal-100">
-                                        <p className="text-sm text-teal-600 font-medium">Time Spent</p>
-                                        <p className="text-2xl font-bold text-teal-700">{Math.floor(totalTimeSpent / 60)}m {totalTimeSpent % 60}s</p>
+                                    <div className="bg-teal-50 rounded-lg p-3 border border-teal-100">
+                                        <p className="text-xs text-teal-600 font-medium">Time Spent</p>
+                                        <p className="text-lg font-bold text-teal-700">{Math.floor(totalTimeSpent / 60)}m {totalTimeSpent % 60}s</p>
                                     </div>
                                 </div>
                             </div>
@@ -209,82 +209,82 @@ export function Result() {
 
                     {/* Timing Tab */}
                     {activeTab === 'timing' && (
-                        <div className="p-6">
-                            <div className="grid md:grid-cols-2 gap-8">
+                        <div className="p-4">
+                            <div className="grid md:grid-cols-2 gap-4">
                                 {/* Time Distribution Chart */}
-                                <div className="bg-gray-50 rounded-xl p-6">
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">⏱️ Time Distribution</h3>
-                                    <div className="space-y-3">
+                                <div className="bg-gray-50 rounded-lg p-4">
+                                    <h3 className="text-sm font-semibold text-gray-800 mb-3">⏱️ Time Distribution</h3>
+                                    <div className="space-y-2">
                                         {timeRanges.map((range) => (
-                                            <div key={range.label} className="flex items-center gap-3">
-                                                <span className="w-16 text-sm text-gray-600">{range.label}</span>
-                                                <div className="flex-1 h-8 bg-gray-200 rounded-lg overflow-hidden">
+                                            <div key={range.label} className="flex items-center gap-2">
+                                                <span className="w-14 text-xs text-gray-600">{range.label}</span>
+                                                <div className="flex-1 h-6 bg-gray-200 rounded-md overflow-hidden">
                                                     <div
-                                                        className={`h-full ${range.color} flex items-center justify-end pr-2 transition-all duration-500`}
+                                                        className={`h-full ${range.color} flex items-center justify-end pr-1.5 transition-all duration-500`}
                                                         style={{ width: `${(range.count / maxTimeCount) * 100}%` }}
                                                     >
                                                         {range.count > 0 && (
-                                                            <span className="text-xs font-bold text-white">{range.count}</span>
+                                                            <span className="text-[10px] font-bold text-white">{range.count}</span>
                                                         )}
                                                     </div>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
-                                    <p className="text-xs text-gray-500 mt-4 text-center">
+                                    <p className="text-[10px] text-gray-500 mt-3 text-center">
                                         Most questions answered in {timeRanges.reduce((max, r) => r.count > max.count ? r : max, timeRanges[0]).label}
                                     </p>
                                 </div>
 
                                 {/* Time Stats */}
-                                <div className="space-y-4">
-                                    <div className="bg-blue-50 rounded-xl p-5 border border-blue-100">
+                                <div className="space-y-2">
+                                    <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="text-sm text-blue-600 font-medium">Average Time</p>
-                                                <p className="text-2xl font-bold text-blue-700">{avgTimePerQuestion}s</p>
+                                                <p className="text-xs text-blue-600 font-medium">Average Time</p>
+                                                <p className="text-lg font-bold text-blue-700">{avgTimePerQuestion}s</p>
                                             </div>
-                                            <span className="text-3xl">⏱️</span>
+                                            <span className="text-2xl">⏱️</span>
                                         </div>
-                                        <p className="text-xs text-blue-500 mt-2">per question</p>
+                                        <p className="text-[10px] text-blue-500 mt-1">per question</p>
                                     </div>
 
-                                    <div className="bg-green-50 rounded-xl p-5 border border-green-100">
+                                    <div className="bg-green-50 rounded-lg p-3 border border-green-100">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="text-sm text-green-600 font-medium">Fastest Answer</p>
-                                                <p className="text-2xl font-bold text-green-700">{fastestQuestion?.timeTaken || 0}s</p>
+                                                <p className="text-xs text-green-600 font-medium">Fastest Answer</p>
+                                                <p className="text-lg font-bold text-green-700">{fastestQuestion?.timeTaken || 0}s</p>
                                             </div>
-                                            <span className="text-3xl">🚀</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-orange-50 rounded-xl p-5 border border-orange-100">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm text-orange-600 font-medium">Slowest Answer</p>
-                                                <p className="text-2xl font-bold text-orange-700">{slowestQuestion?.timeTaken || 0}s</p>
-                                            </div>
-                                            <span className="text-3xl">🐢</span>
+                                            <span className="text-2xl">🚀</span>
                                         </div>
                                     </div>
 
-                                    <div className="bg-purple-50 rounded-xl p-5 border border-purple-100">
+                                    <div className="bg-orange-50 rounded-lg p-3 border border-orange-100">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="text-sm text-purple-600 font-medium">Total Time</p>
-                                                <p className="text-2xl font-bold text-purple-700">{Math.floor(totalTimeSpent / 60)}m {totalTimeSpent % 60}s</p>
+                                                <p className="text-xs text-orange-600 font-medium">Slowest Answer</p>
+                                                <p className="text-lg font-bold text-orange-700">{slowestQuestion?.timeTaken || 0}s</p>
                                             </div>
-                                            <span className="text-3xl">⌛</span>
+                                            <span className="text-2xl">🐢</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-purple-50 rounded-lg p-3 border border-purple-100">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="text-xs text-purple-600 font-medium">Total Time</p>
+                                                <p className="text-lg font-bold text-purple-700">{Math.floor(totalTimeSpent / 60)}m {totalTimeSpent % 60}s</p>
+                                            </div>
+                                            <span className="text-2xl">⌛</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Time per Question List */}
-                            <div className="mt-8">
-                                <h4 className="font-semibold text-gray-800 mb-4">Question-wise Time</h4>
-                                <div className="grid grid-cols-10 gap-2">
+                            <div className="mt-4">
+                                <h4 className="font-semibold text-gray-800 mb-2 text-sm">Question-wise Time</h4>
+                                <div className="grid grid-cols-10 gap-1.5">
                                     {result.questionAnalysis.slice(0, 60).map((q, i) => {
                                         const time = q.timeTaken || 0;
                                         const bgColor = time <= 15 ? 'bg-green-100 text-green-700' :
@@ -292,9 +292,9 @@ export function Result() {
                                                 time <= 45 ? 'bg-yellow-100 text-yellow-700' :
                                                     time <= 60 ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700';
                                         return (
-                                            <div key={i} className={`${bgColor} rounded-lg p-2 text-center`} title={`Q${i + 1}: ${time}s`}>
-                                                <p className="text-xs font-bold">{i + 1}</p>
-                                                <p className="text-xs">{time}s</p>
+                                            <div key={i} className={`${bgColor} rounded-md p-1.5 text-center`} title={`Q${i + 1}: ${time}s`}>
+                                                <p className="text-[10px] font-bold">{i + 1}</p>
+                                                <p className="text-[9px]">{time}s</p>
                                             </div>
                                         );
                                     })}
@@ -305,46 +305,46 @@ export function Result() {
 
                     {/* Analysis Tab */}
                     {activeTab === 'analysis' && (
-                        <div className="p-6">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-6 text-center">Set-wise Performance</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                        <div className="p-4">
+                            <h3 className="text-sm font-semibold text-gray-800 mb-3 text-center">Set-wise Performance</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
                                 {testSets.map((set) => {
                                     const stats = getSetStats(set.setId);
                                     const percent = stats.total > 0 ? (stats.correct / stats.total) * 100 : 0;
                                     return (
-                                        <div key={set.setId} className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
-                                            <div className="w-14 h-14 mx-auto mb-2 relative">
+                                        <div key={set.setId} className="bg-gray-50 rounded-lg p-3 text-center border border-gray-100">
+                                            <div className="w-12 h-12 mx-auto mb-1.5 relative">
                                                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                                                     <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="8" />
                                                     <circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" strokeWidth="8"
                                                         strokeDasharray={`${percent * 2.51} 251`} strokeLinecap="round" />
                                                 </svg>
-                                                <div className="absolute inset-0 flex items-center justify-center font-bold text-gray-800">
+                                                <div className="absolute inset-0 flex items-center justify-center font-bold text-gray-800 text-sm">
                                                     {stats.correct}
                                                 </div>
                                             </div>
-                                            <p className="font-semibold">Set {set.setId}</p>
-                                            <p className="text-xs text-gray-500">{stats.correct}/{stats.total}</p>
-                                            <p className="text-xs text-teal-600">{Math.round(stats.totalTime / 60)}m</p>
+                                            <p className="font-semibold text-xs">Set {set.setId}</p>
+                                            <p className="text-[10px] text-gray-500">{stats.correct}/{stats.total}</p>
+                                            <p className="text-[10px] text-teal-600">{Math.round(stats.totalTime / 60)}m</p>
                                         </div>
                                     );
                                 })}
                             </div>
 
-                            <div className="bg-gray-50 rounded-xl p-6">
-                                <h4 className="font-semibold mb-4">💰 Score Breakdown</h4>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between p-3 bg-green-50 rounded-lg">
+                            <div className="bg-gray-50 rounded-lg p-4">
+                                <h4 className="font-semibold mb-3 text-sm">💰 Score Breakdown</h4>
+                                <div className="space-y-1.5">
+                                    <div className="flex justify-between p-2 bg-green-50 rounded-md text-xs">
                                         <span>✅ {result.correct} Correct × +{testConfig.positiveMarks}</span>
                                         <span className="font-bold text-green-600">+{result.positiveMarks}</span>
                                     </div>
-                                    <div className="flex justify-between p-3 bg-red-50 rounded-lg">
+                                    <div className="flex justify-between p-2 bg-red-50 rounded-md text-xs">
                                         <span>❌ {result.incorrect} Wrong × -{testConfig.negativeMarks}</span>
                                         <span className="font-bold text-red-600">-{result.negativeMarks}</span>
                                     </div>
-                                    <div className="flex justify-between p-3 bg-emerald-100 rounded-lg border-2 border-emerald-300">
-                                        <span className="font-semibold">🎯 Final Score</span>
-                                        <span className="text-xl font-bold text-emerald-600">{result.totalScore} / {result.maxScore}</span>
+                                    <div className="flex justify-between p-2 bg-emerald-100 rounded-md border border-emerald-300">
+                                        <span className="font-semibold text-xs">🎯 Final Score</span>
+                                        <span className="text-base font-bold text-emerald-600">{result.totalScore} / {result.maxScore}</span>
                                     </div>
                                 </div>
                             </div>
@@ -353,45 +353,45 @@ export function Result() {
 
                     {/* Answers Tab */}
                     {activeTab === 'answers' && (
-                        <div className="p-6">
-                            <div className="flex items-center gap-2 mb-6 flex-wrap">
-                                <span className="text-sm text-gray-500">Filter:</span>
+                        <div className="p-4">
+                            <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+                                <span className="text-xs text-gray-500">Filter:</span>
                                 <button onClick={() => setFilterSet('all')}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium ${filterSet === 'all' ? 'bg-emerald-500 text-white' : 'bg-gray-100'}`}>
+                                    className={`px-3 py-1.5 rounded-md text-xs font-medium ${filterSet === 'all' ? 'bg-emerald-500 text-white' : 'bg-gray-100'}`}>
                                     All
                                 </button>
                                 {testSets.map(set => (
                                     <button key={set.setId} onClick={() => setFilterSet(set.setId)}
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium ${filterSet === set.setId ? 'bg-emerald-500 text-white' : 'bg-gray-100'}`}>
+                                        className={`px-3 py-1.5 rounded-md text-xs font-medium ${filterSet === set.setId ? 'bg-emerald-500 text-white' : 'bg-gray-100'}`}>
                                         Set {set.setId}
                                     </button>
                                 ))}
                             </div>
 
-                            <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                            <div className="space-y-2 max-h-[400px] overflow-y-auto">
                                 {filteredQuestions.map((analysis, index) => {
                                     const isCorrect = analysis.isCorrect;
                                     const wasAnswered = analysis.userAnswer !== null;
 
                                     return (
                                         <div key={analysis.questionId}
-                                            className={`rounded-xl border-2 overflow-hidden ${!wasAnswered ? 'border-gray-200 bg-gray-50' : isCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'
+                                            className={`rounded-lg border overflow-hidden ${!wasAnswered ? 'border-gray-200 bg-gray-50' : isCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'
                                                 }`}>
-                                            <div className={`px-4 py-2 flex items-center justify-between ${!wasAnswered ? 'bg-gray-100' : isCorrect ? 'bg-green-100' : 'bg-red-100'
+                                            <div className={`px-3 py-1.5 flex items-center justify-between ${!wasAnswered ? 'bg-gray-100' : isCorrect ? 'bg-green-100' : 'bg-red-100'
                                                 }`}>
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`w-6 h-6 rounded flex items-center justify-center text-white text-xs font-bold ${!wasAnswered ? 'bg-gray-500' : isCorrect ? 'bg-green-500' : 'bg-red-500'
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className={`w-5 h-5 rounded flex items-center justify-center text-white text-[10px] font-bold ${!wasAnswered ? 'bg-gray-500' : isCorrect ? 'bg-green-500' : 'bg-red-500'
                                                         }`}>{index + 1}</span>
-                                                    <span className="text-xs text-gray-500">⏱️ {analysis.timeTaken || 0}s</span>
+                                                    <span className="text-[10px] text-gray-500">⏱️ {analysis.timeTaken || 0}s</span>
                                                 </div>
-                                                <span className={`px-2 py-1 rounded text-xs font-medium ${!wasAnswered ? 'bg-gray-200' : isCorrect ? 'bg-green-200 text-green-700' : 'bg-red-200 text-red-700'
+                                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${!wasAnswered ? 'bg-gray-200' : isCorrect ? 'bg-green-200 text-green-700' : 'bg-red-200 text-red-700'
                                                     }`}>
                                                     {!wasAnswered ? 'Skipped' : isCorrect ? '✅ +4' : '❌ -1'}
                                                 </span>
                                             </div>
-                                            <div className="p-4">
-                                                <p className="text-gray-800 text-sm mb-2">{analysis.question}</p>
-                                                <div className="flex gap-4 text-sm">
+                                            <div className="p-3">
+                                                <p className="text-gray-800 text-xs mb-1.5">{analysis.question}</p>
+                                                <div className="flex gap-3 text-xs">
                                                     <span>Your: <strong className={isCorrect || !wasAnswered ? '' : 'text-red-600'}>{analysis.userAnswer || '-'}</strong></span>
                                                     <span>Correct: <strong className="text-green-600">{analysis.correctAnswer}</strong></span>
                                                 </div>
@@ -406,7 +406,7 @@ export function Result() {
 
                 <div className="flex justify-center">
                     <button onClick={resetTest}
-                        className="px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl font-semibold hover:opacity-90 shadow-lg flex items-center gap-2">
+                        className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg font-semibold hover:opacity-90 shadow-md flex items-center gap-2 text-sm">
                         🔄 Take Another Test
                     </button>
                 </div>
