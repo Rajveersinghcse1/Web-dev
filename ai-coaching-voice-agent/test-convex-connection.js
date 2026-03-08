@@ -7,7 +7,7 @@
 const https = require('https');
 const http = require('http');
 
-const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL || 'http://127.0.0.1:3210';
+const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL || 'https://bright-beagle-821.convex.cloud';
 
 console.log('🔍 Testing Convex Database Connection...\n');
 console.log(`📍 Convex URL: ${CONVEX_URL}\n`);

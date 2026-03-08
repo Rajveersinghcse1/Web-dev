@@ -94,7 +94,7 @@ export default defineSchema({
     })
         .index("by_category", ["category"])
         .index("by_level", ["level"])
-        .index("by_id", ["id"]),
+        .index("by_achievement_id", ["id"]),
 
     // Team Sessions
     teamSessions: defineTable({

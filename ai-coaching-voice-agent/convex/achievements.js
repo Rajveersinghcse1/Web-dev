@@ -37,7 +37,7 @@ export const unlock = mutation({
         if (!user) throw new Error("User not found");
 
         const achievement = await ctx.db.query("achievements")
-            .withIndex("by_id", (q) => q.eq("id", args.achievementId))
+            .withIndex("by_achievement_id", (q) => q.eq("id", args.achievementId))
             .first();
 
         if (!achievement) throw new Error("Achievement not found");
@@ -92,7 +92,7 @@ export const seed = mutation({
         let count = 0;
         for (const ach of args.achievements) {
             const existing = await ctx.db.query("achievements")
-                .withIndex("by_id", (q) => q.eq("id", ach.id))
+                .withIndex("by_achievement_id", (q) => q.eq("id", ach.id))
                 .first();
 
             if (existing) {
@@ -115,7 +115,7 @@ export const seedDefaults = mutation({
         let count = 0;
         for (const ach of ACHIEVEMENT_DATA) {
             const existing = await ctx.db.query("achievements")
-                .withIndex("by_id", (q) => q.eq("id", ach.id))
+                .withIndex("by_achievement_id", (q) => q.eq("id", ach.id))
                 .first();
 
             if (existing) {

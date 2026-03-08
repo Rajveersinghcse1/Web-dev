@@ -29,8 +29,8 @@ function Provider({ children }) {
             <div style={{ padding: '20px', color: 'red', textAlign: 'center' }}>
                 <h2>Database Connection Error</h2>
                 <p>NEXT_PUBLIC_CONVEX_URL is not configured</p>
-                <p>Please check your .env.local file and ensure Convex is running.</p>
-                <p><strong>Expected:</strong> NEXT_PUBLIC_CONVEX_URL=http://127.0.0.1:3210</p>
+                <p>Please check your .env.local file and ensure NEXT_PUBLIC_CONVEX_URL is set.</p>
+                <p><strong>Expected:</strong> NEXT_PUBLIC_CONVEX_URL=https://bright-beagle-821.convex.cloud</p>
             </div>
         );
     }
