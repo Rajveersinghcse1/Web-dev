@@ -371,6 +371,5 @@ export default function UnifiedLearningPage() {
         )}
       </AnimatePresence>
     </div>
-    </div >
   );
 }
