@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { 
-    Lightbulb, 
-    Plus, 
-    Search, 
-    Filter, 
-    Edit, 
-    Trash2, 
-    Eye, 
-    Upload, 
-    Download, 
-    Zap, 
-    Rocket, 
+import {
+    Lightbulb,
+    Plus,
+    Search,
+    Filter,
+    Edit,
+    Trash2,
+    Eye,
+    Upload,
+    Download,
+    Zap,
+    Rocket,
     Star,
     Save,
     X,
@@ -154,7 +154,7 @@ const InnovationPage = () => {
             formData.append('status', currentInnovation.status);
             formData.append('difficulty', currentInnovation.difficulty);
             formData.append('type', currentInnovation.type);
-            
+
             if (currentInnovation.tags) formData.append('tags', Array.isArray(currentInnovation.tags) ? currentInnovation.tags.join(',') : currentInnovation.tags);
             if (currentInnovation.techStack) formData.append('techStack', Array.isArray(currentInnovation.techStack) ? currentInnovation.techStack.join(',') : currentInnovation.techStack);
             if (currentInnovation.requirements) formData.append('requirements', Array.isArray(currentInnovation.requirements) ? currentInnovation.requirements.join(',') : currentInnovation.requirements);
@@ -270,7 +270,7 @@ const InnovationPage = () => {
                                 placeholder="Search innovations..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent w-80"
+                                className="pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent w-80 bg-white text-slate-900 placeholder:text-slate-500"
                             />
                         </div>
                         <select
@@ -300,7 +300,7 @@ const InnovationPage = () => {
                         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-600"></div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <AnimatePresence>
                             {filteredInnovations.map((innovation, index) => (
                                 <motion.div
@@ -309,11 +309,11 @@ const InnovationPage = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -20 }}
                                     transition={{ delay: index * 0.1 }}
-                                    className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
+                                    className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col max-h-[450px]"
                                 >
-                                    <div className="relative h-48 overflow-hidden">
-                                        <img 
-                                            src={innovation.imageUrl || '/api/placeholder/400/300'} 
+                                    <div className="relative h-32 overflow-hidden">
+                                        <img
+                                            src={innovation.imageUrl || '/api/placeholder/400/300'}
                                             alt={innovation.title}
                                             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                                             onError={(e) => {
@@ -330,20 +330,19 @@ const InnovationPage = () => {
                                             </span>
                                         </div>
                                         <div className="absolute top-4 right-4">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-semibold bg-white/90 backdrop-blur-sm ${
-                                                innovation.status === 'completed' ? 'text-green-600' : 'text-orange-600'
-                                            } shadow-lg`}>
+                                            <span className={`px-3 py-1 rounded-full text-xs font-semibold bg-white/90 backdrop-blur-sm ${innovation.status === 'completed' ? 'text-green-600' : 'text-orange-600'
+                                                } shadow-lg`}>
                                                 {innovation.status}
                                             </span>
                                         </div>
                                     </div>
 
-                                    <div className="p-6">
+                                    <div className="p-4 flex-1 flex flex-col overflow-hidden">
                                         <div className="flex items-start justify-between mb-4">
                                             <div className="flex items-center space-x-3">
                                                 {getCategoryIcon(innovation.category)}
                                                 <div>
-                                                    <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
+                                                    <h3 className="text-base font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors line-clamp-2">
                                                         {innovation.title}
                                                     </h3>
                                                     <div className="flex items-center space-x-2">
@@ -356,41 +355,41 @@ const InnovationPage = () => {
                                                 <span className="text-sm font-semibold">{innovation.rating || '0.0'}</span>
                                             </div>
                                         </div>
-                                        
-                                        <p className="text-gray-600 mb-4 line-clamp-3 text-sm">
+
+                                        <p className="text-gray-600 mb-2 line-clamp-2 text-xs leading-snug">
                                             {innovation.description}
                                         </p>
-                                        
-                                        {/* Progress Bar */}
-                                        <div className="mb-4">
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="text-sm font-medium text-gray-700">Progress</span>
-                                                <span className="text-sm text-gray-500">{innovation.progress || 0}%</span>
+
+                                        {/* Progress Bar - Compact */}
+                                        <div className="mb-2">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="text-xs font-medium text-gray-700">Progress</span>
+                                                <span className="text-xs text-gray-500">{innovation.progress || 0}%</span>
                                             </div>
-                                            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                                                <div 
-                                                    className="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full transition-all duration-300"
+                                            <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                                <div
+                                                    className="bg-gradient-to-r from-orange-500 to-red-500 h-1.5 rounded-full transition-all duration-300"
                                                     style={{ width: `${innovation.progress || 0}%` }}
                                                 ></div>
                                             </div>
                                         </div>
-                                        
-                                        {/* Stats */}
-                                        <div className="grid grid-cols-3 gap-4 mb-4">
-                                            <div className="text-center">
-                                                <div className="text-lg font-bold text-gray-900">${innovation.funding?.toLocaleString() || 0}</div>
-                                                <div className="text-xs text-gray-500">Funded</div>
+
+                                        {/* Stats - Compact */}
+                                        <div className="grid grid-cols-3 gap-2 mb-2">
+                                            <div className="text-center bg-slate-50 rounded-lg p-1.5 border border-slate-200">
+                                                <div className="text-xs font-bold text-gray-900">${innovation.funding?.toLocaleString() || 0}</div>
+                                                <div className="text-[10px] text-gray-500">Funded</div>
                                             </div>
-                                            <div className="text-center">
-                                                <div className="text-lg font-bold text-gray-900">{innovation.votes || 0}</div>
-                                                <div className="text-xs text-gray-500">Votes</div>
+                                            <div className="text-center bg-green-50 rounded-lg p-1.5 border border-green-200">
+                                                <div className="text-xs font-bold text-green-700">{innovation.votes || 0}</div>
+                                                <div className="text-[10px] text-green-600">Votes</div>
                                             </div>
-                                            <div className="text-center">
-                                                <div className="text-lg font-bold text-gray-900">{innovation.views || 0}</div>
-                                                <div className="text-xs text-gray-500">Views</div>
+                                            <div className="text-center bg-blue-50 rounded-lg p-1.5 border border-blue-200">
+                                                <div className="text-xs font-bold text-blue-700">{innovation.views || 0}</div>
+                                                <div className="text-[10px] text-blue-600">Views</div>
                                             </div>
                                         </div>
-                                        
+
                                         {/* Team */}
                                         <div className="mb-4">
                                             <div className="flex items-center space-x-2 mb-2">
@@ -417,18 +416,18 @@ const InnovationPage = () => {
                                                 )}
                                             </div>
                                         </div>
-                                        
-                                        {/* Tags */}
-                                        <div className="flex flex-wrap gap-1 mb-4">
+
+                                        {/* Tags - Compact */}
+                                        <div className="flex flex-wrap gap-1 mb-2">
                                             {innovation.tags?.slice(0, 4).map(tag => (
                                                 <span key={tag} className="px-2 py-1 bg-orange-100 text-orange-800 rounded-lg text-xs">
                                                     {tag}
                                                 </span>
                                             ))}
                                         </div>
-                                        
-                                        {/* Timeline */}
-                                        <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+
+                                        {/* Timeline - Compact */}
+                                        <div className="flex items-center justify-between text-[10px] text-gray-500 mb-2">
                                             <div className="flex items-center space-x-1">
                                                 <Calendar className="w-4 h-4" />
                                                 <span>Started: {innovation.startDate ? new Date(innovation.startDate).toLocaleDateString() : 'N/A'}</span>
@@ -438,9 +437,9 @@ const InnovationPage = () => {
                                                 <span>Launch: {innovation.expectedLaunch ? new Date(innovation.expectedLaunch).toLocaleDateString() : 'N/A'}</span>
                                             </div>
                                         </div>
-                                        
-                                        {/* Actions */}
-                                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+
+                                        {/* Actions - Compact */}
+                                        <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-auto">
                                             <div className="flex space-x-2">
                                                 {innovation.demoUrl && (
                                                     <a
@@ -511,8 +510,8 @@ const InnovationPage = () => {
                                 <div className="p-6 border-b border-gray-200">
                                     <div className="flex items-center justify-between">
                                         <h2 className="text-2xl font-bold text-gray-900">
-                                            {modalMode === 'create' ? 'Create New Innovation' : 
-                                             modalMode === 'edit' ? 'Edit Innovation' : 'Innovation Details'}
+                                            {modalMode === 'create' ? 'Create New Innovation' :
+                                                modalMode === 'edit' ? 'Edit Innovation' : 'Innovation Details'}
                                         </h2>
                                         <button
                                             onClick={() => setShowModal(false)}
@@ -522,7 +521,7 @@ const InnovationPage = () => {
                                         </button>
                                     </div>
                                 </div>
-                                
+
                                 <div className="p-6 space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
@@ -538,7 +537,7 @@ const InnovationPage = () => {
                                                 placeholder="Enter innovation title"
                                             />
                                         </div>
-                                        
+
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 Category *
@@ -554,7 +553,7 @@ const InnovationPage = () => {
                                                 ))}
                                             </select>
                                         </div>
-                                        
+
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 Status *
@@ -570,7 +569,7 @@ const InnovationPage = () => {
                                                 ))}
                                             </select>
                                         </div>
-                                        
+
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 Development Stage
@@ -586,7 +585,7 @@ const InnovationPage = () => {
                                                 ))}
                                             </select>
                                         </div>
-                                        
+
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 Difficulty
@@ -618,7 +617,7 @@ const InnovationPage = () => {
                                                 ))}
                                             </select>
                                         </div>
-                                        
+
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 Lead Innovator *
@@ -632,7 +631,7 @@ const InnovationPage = () => {
                                                 placeholder="Enter lead innovator name"
                                             />
                                         </div>
-                                        
+
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 Progress (%)
@@ -647,7 +646,7 @@ const InnovationPage = () => {
                                                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-50"
                                             />
                                         </div>
-                                        
+
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 Start Date
@@ -660,7 +659,7 @@ const InnovationPage = () => {
                                                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-50"
                                             />
                                         </div>
-                                        
+
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 Expected Launch
@@ -673,7 +672,7 @@ const InnovationPage = () => {
                                                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-50"
                                             />
                                         </div>
-                                        
+
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 Total Budget ($)
@@ -687,7 +686,7 @@ const InnovationPage = () => {
                                                 placeholder="0"
                                             />
                                         </div>
-                                        
+
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 Current Funding ($)
@@ -702,7 +701,7 @@ const InnovationPage = () => {
                                             />
                                         </div>
                                     </div>
-                                    
+
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
                                             Description *
@@ -716,7 +715,7 @@ const InnovationPage = () => {
                                             placeholder="Describe your innovative idea..."
                                         />
                                     </div>
-                                    
+
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -731,7 +730,7 @@ const InnovationPage = () => {
                                                 placeholder="https://demo.example.com"
                                             />
                                         </div>
-                                        
+
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 GitHub Repository
@@ -746,7 +745,7 @@ const InnovationPage = () => {
                                             />
                                         </div>
                                     </div>
-                                    
+
                                     {modalMode !== 'view' && (
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -773,7 +772,7 @@ const InnovationPage = () => {
                                         </div>
                                     )}
                                 </div>
-                                
+
                                 {modalMode !== 'view' && (
                                     <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
                                         <button

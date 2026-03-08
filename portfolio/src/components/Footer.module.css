@@ -1,0 +1,206 @@
+.footer {
+    background: #ffffff;
+    padding: 40px 0 16px;
+    margin-top: 80px;
+    border-top: 2px solid #e5e7eb;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.footerContent {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 32px;
+}
+
+.brandSection {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.logo {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 4px;
+}
+
+.tagline {
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.5;
+    max-width: 280px;
+}
+
+.socialLinks {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.socialIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(106, 13, 173, 0.08);
+    border-radius: 50%;
+    color: #6a0dad;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.socialIcon:hover {
+    background: #6a0dad;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(106, 13, 173, 0.3);
+}
+
+.linksSection,
+.contactSection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.linksSection h4,
+.contactSection h4 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #6a0dad;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.linksSection a {
+    font-size: 0.85rem;
+    color: #666;
+    transition: all 0.2s ease;
+    width: fit-content;
+}
+
+.linksSection a:hover {
+    color: #6a0dad;
+    transform: translateX(3px);
+}
+
+.contactSection p {
+    font-size: 0.8rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.inlineIcon {
+    color: #6a0dad;
+    font-size: 0.85rem;
+}
+
+.emailLink {
+    color: #666;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.emailLink:hover {
+    color: #6a0dad;
+    text-decoration: underline;
+}
+
+.connectMessage {
+    margin-top: 8px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, rgba(106, 13, 173, 0.08) 0%, rgba(255, 106, 0, 0.04) 100%);
+    border-radius: 10px;
+    border: 1px solid rgba(106, 13, 173, 0.1);
+}
+
+.connectMessage p {
+    font-size: 0.78rem;
+    color: #6a0dad;
+    font-weight: 500;
+    margin: 0;
+}
+
+.footerBottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.copyright,
+.madeWith {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.madeWith {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.heartIcon {
+    color: #f97316;
+    animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+@media (max-width: 768px) {
+    .footerContent {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        text-align: center;
+    }
+
+    .brandSection {
+        align-items: center;
+    }
+
+    .tagline {
+        max-width: 100%;
+    }
+
+    .socialLinks {
+        justify-content: center;
+    }
+
+    .linksSection a,
+    .contactSection p {
+        justify-content: center;
+    }
+
+    .linksSection a:hover {
+        transform: translateX(0) scale(1.05);
+    }
+
+    .footerBottom {
+        flex-direction: column;
+        text-align: center;
+    }
+}

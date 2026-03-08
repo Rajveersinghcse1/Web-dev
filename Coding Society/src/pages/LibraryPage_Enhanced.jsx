@@ -109,6 +109,7 @@ const EnhancedLibraryPage = () => {
       pages: 85,
       lastModified: '2 days ago',
       author: 'Dr. Sarah Johnson',
+      publisher: 'O\'Reilly Media',
       authorType: 'Professor',
       rating: 4.9,
       downloads: 2450,
@@ -136,6 +137,7 @@ const EnhancedLibraryPage = () => {
       pages: 156,
       lastModified: '1 week ago',
       author: 'Prof. Michael Chen',
+      publisher: 'MIT Press',
       authorType: 'Professor',
       rating: 4.95,
       downloads: 5420,
@@ -163,6 +165,7 @@ const EnhancedLibraryPage = () => {
       pages: 74,
       lastModified: '3 days ago',
       author: 'Emily Davis',
+      publisher: 'Packt Publishing',
       authorType: 'Industry Expert',
       rating: 4.8,
       downloads: 1890,
@@ -190,6 +193,7 @@ const EnhancedLibraryPage = () => {
       pages: 120,
       lastModified: '5 days ago',
       author: 'Dr. Alex Rodriguez',
+      publisher: 'Springer',
       authorType: 'Researcher',
       rating: 4.7,
       downloads: 3240,
@@ -217,6 +221,7 @@ const EnhancedLibraryPage = () => {
       pages: 98,
       lastModified: '1 day ago',
       author: 'James Wilson',
+      publisher: 'Manning Publications',
       authorType: 'Cloud Architect',
       rating: 4.85,
       downloads: 2680,
@@ -396,7 +401,7 @@ const EnhancedLibraryPage = () => {
   // Filter and sort logic
   const filteredMaterials = useMemo(() => {
     let materials = [];
-    
+
     // Add fetched content
     const mappedContent = libraryContent.map(item => ({
       id: item._id,
@@ -421,11 +426,11 @@ const EnhancedLibraryPage = () => {
 
     // Add mapped content based on tab
     if (selectedTab === 'all') {
-       materials.push(...mappedContent);
+      materials.push(...mappedContent);
     } else {
-       if (selectedTab === 'notes') materials.push(...mappedContent.filter(i => i.contentType === 'note'));
-       if (selectedTab === 'papers') materials.push(...mappedContent.filter(i => i.contentType === 'paper'));
-       if (selectedTab === 'books') materials.push(...mappedContent.filter(i => i.contentType === 'book'));
+      if (selectedTab === 'notes') materials.push(...mappedContent.filter(i => i.contentType === 'note'));
+      if (selectedTab === 'papers') materials.push(...mappedContent.filter(i => i.contentType === 'paper'));
+      if (selectedTab === 'books') materials.push(...mappedContent.filter(i => i.contentType === 'book'));
     }
 
     if (selectedTab === 'all' || selectedTab === 'notes') {
@@ -477,149 +482,76 @@ const EnhancedLibraryPage = () => {
     const isBook = material.contentType === 'book';
 
     return (
-      <Card key={material.id} className="group bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-        <CardHeader className="pb-3">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start space-x-3 flex-1">
-              <div className="text-3xl flex-shrink-0">{material.thumbnail || '📚'}</div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-slate-900 text-sm sm:text-base line-clamp-2 mb-1">
-                  {material.title}
-                </h3>
-                <p className="text-sm text-slate-600 mb-2">
-                  by {material.author || material.instructor}
-                  {material.authorType && (
-                    <span className="ml-1 text-xs text-slate-500">({material.authorType})</span>
-                  )}
-                </p>
-                
-                {/* Enhanced metadata */}
-                <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mb-3">
-                  <span className="flex items-center gap-1">
-                    <FileText className="w-3 h-3" />
-                    {material.pages || material.duration} {material.pages ? 'pages' : ''}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {material.estimatedTime || material.timeLimit || 'Self-paced'}
-                  </span>
-                  {material.format && (
-                    <span className="flex items-center gap-1">
-                      <File className="w-3 h-3" />
-                      {material.format}
-                    </span>
-                  )}
-                </div>
-
-                {/* Difficulty and Premium badges */}
-                <div className="flex items-center gap-2 mb-3">
-                  <span className={`text-xs px-2 py-1 rounded-full border ${difficultyColors[material.difficulty]}`}>
-                    {material.difficulty}
-                  </span>
-                  {material.isPremium && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1">
-                      <Star className="w-3 h-3" />
-                      Premium
-                    </span>
-                  )}
-                  {material.hasVideo && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-200 flex items-center gap-1">
-                      <Video className="w-3 h-3" />
-                      Video
-                    </span>
-                  )}
-                  {material.hasAudio && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-purple-50 text-purple-800 border border-purple-200 flex items-center gap-1">
-                      <Headphones className="w-3 h-3" />
-                      Audio
-                    </span>
-                  )}
-                </div>
+      <Card key={material.id} className="group bg-white border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden hover:border-blue-400 flex flex-col h-full max-h-[400px]">
+        <CardHeader className="pb-2 bg-gradient-to-r from-slate-50 to-white border-b border-slate-100">
+          <div className="flex items-start gap-3">
+            {/* Icon - Smaller */}
+            <div className="flex-shrink-0">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-2xl shadow-md">
+                {material.thumbnail || '📚'}
               </div>
             </div>
-            
-            <div className="flex flex-col items-end space-y-2">
-              <div className="flex items-center space-x-1">
-                <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                <span className="text-sm font-medium text-slate-700">{material.rating}</span>
+
+            {/* Title, Writer, Publisher, Rating - Compact */}
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-slate-900 text-base line-clamp-2 mb-1 group-hover:text-blue-600 transition-colors leading-tight">
+                {material.title}
+              </h3>
+
+              {/* Writer & Publisher - Inline */}
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-slate-600 mb-1.5">
+                <span><span className="font-semibold text-slate-700">Writer:</span> {material.author || material.instructor || 'Unknown'}</span>
+                {(material.publisher || material.university) && (
+                  <span><span className="font-semibold text-slate-700">Publisher:</span> {material.publisher || material.university}</span>
+                )}
               </div>
-              <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-600">
-                <MoreVertical className="w-4 h-4" />
-              </Button>
+
+              {/* Rating - Compact */}
+              <div className="flex items-center gap-1 bg-yellow-50 px-2 py-0.5 rounded-md border border-yellow-200 w-fit">
+                <Star className="w-3 h-3 text-yellow-600 fill-current" />
+                <span className="text-xs font-bold text-slate-900">{material.rating || 'N/A'}</span>
+              </div>
             </div>
           </div>
         </CardHeader>
-        
-        <CardContent>
-          {/* AI Summary for notes */}
-          {isNote && material.aiSummary && (
-            <div className="mb-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
-              <div className="flex items-center gap-2 mb-2">
-                <Brain className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-800">AI Summary</span>
-              </div>
-              <p className="text-sm text-blue-700">{material.aiSummary}</p>
-            </div>
-          )}
 
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {(material.tags || material.topics)?.slice(0, 3).map((tag, index) => (
-              <span key={index} className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer transition-colors border border-slate-200">
-                {tag}
-              </span>
-            ))}
-            {(material.tags || material.topics)?.length > 3 && (
-              <span className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
-                +{(material.tags || material.topics).length - 3} more
-              </span>
-            )}
+        <CardContent className="pt-2 pb-3 flex-1 flex flex-col overflow-hidden">
+          {/* Summary - Compact */}
+          <div className="mb-2 p-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+            <p className="text-xs text-slate-700 leading-snug line-clamp-2">
+              {material.aiSummary || material.description || 'No summary available.'}
+            </p>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-            <div className="flex items-center justify-between">
-              <span className="text-slate-600">Downloads:</span>
-              <span className="font-medium text-slate-900 flex items-center gap-1">
-                <Download className="w-3 h-3" />
-                {material.downloads?.toLocaleString() || 'N/A'}
-              </span>
+          {/* Stats - Compact 3-Column Grid: Pages, Downloads, Views */}
+          <div className="grid grid-cols-3 gap-1.5 mb-2">
+            <div className="bg-slate-50 rounded-lg p-1.5 border border-slate-200 text-center">
+              <p className="text-[10px] text-slate-600 mb-0.5">Pages</p>
+              <p className="font-bold text-slate-900 text-xs">{material.pages || 'N/A'}</p>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-slate-600">Views:</span>
-              <span className="font-medium text-slate-900 flex items-center gap-1">
-                <Eye className="w-3 h-3" />
-                {material.views?.toLocaleString() || 'N/A'}
-              </span>
+            <div className="bg-green-50 rounded-lg p-1.5 border border-green-200 text-center">
+              <p className="text-[10px] text-green-700 mb-0.5">Downloads</p>
+              <p className="font-bold text-green-700 text-xs">{material.downloads?.toLocaleString() || '0'}</p>
             </div>
-            {material.completionRate && (
-              <div className="flex items-center justify-between col-span-2">
-                <span className="text-slate-600">Completion Rate:</span>
-                <span className="font-medium text-green-600">{material.completionRate}%</span>
-              </div>
-            )}
-            {isPaper && material.avgScore && (
-              <div className="flex items-center justify-between col-span-2">
-                <span className="text-slate-600">Average Score:</span>
-                <span className="font-medium text-blue-600">{material.avgScore}%</span>
-              </div>
-            )}
+            <div className="bg-blue-50 rounded-lg p-1.5 border border-blue-200 text-center">
+              <p className="text-[10px] text-blue-700 mb-0.5">Views</p>
+              <p className="font-bold text-blue-700 text-xs">{material.views?.toLocaleString() || '0'}</p>
+            </div>
           </div>
 
-          {/* Action buttons */}
-          <div className="flex items-center space-x-2">
-            <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white flex-1 text-sm shadow-md hover:shadow-lg transition-all duration-300">
-              <Eye className="w-4 h-4 mr-2" />
-              {isNote ? 'Study Now' : isPaper ? 'View Paper' : 'Read Book'}
+          {/* Action Buttons - Compact */}
+          <div className="grid grid-cols-4 gap-1.5 mt-auto">
+            <Button className="col-span-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white h-8 text-xs font-semibold shadow-md hover:shadow-lg transition-all duration-300 rounded-lg">
+              <Eye className="w-3 h-3 mr-1" />
+              Read
             </Button>
-            <Button variant="outline" size="sm" className="border-slate-200 hover:bg-slate-50 text-slate-600">
-              <Download className="w-4 h-4" />
+            <Button variant="outline" className="h-8 border-slate-300 hover:bg-slate-50 hover:border-slate-400 text-slate-700 rounded-lg text-xs font-medium px-2">
+              <Download className="w-3 h-3 mr-0.5" />
+              <span className="hidden sm:inline text-[10px]">Save</span>
             </Button>
-            <Button variant="outline" size="sm" className="border-slate-200 hover:bg-slate-50 text-slate-600">
-              <Bookmark className="w-4 h-4" />
-            </Button>
-            <Button variant="outline" size="sm" className="border-slate-200 hover:bg-slate-50 text-slate-600">
-              <Share className="w-4 h-4" />
+            <Button variant="outline" className="h-8 border-slate-300 hover:bg-slate-50 hover:border-slate-400 text-slate-700 rounded-lg text-xs font-medium px-2">
+              <Share className="w-3 h-3 mr-0.5" />
+              <span className="hidden sm:inline text-[10px]">Share</span>
             </Button>
           </div>
         </CardContent>
@@ -630,51 +562,49 @@ const EnhancedLibraryPage = () => {
   return (
     <div className="min-h-screen bg-slate-50 pt-20 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Enhanced Header */}
+        {/* Enhanced Header - Single Row Layout */}
         <div className="mb-12">
-          <div className="text-center mb-12">
-            <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center shadow-xl mb-6 transform rotate-3 hover:rotate-0 transition-all duration-300">
-              <Library className="w-10 h-10 text-white" />
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-              Digital Learning Library
-            </h1>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-8">
-              Access premium educational content, interactive study materials, and comprehensive exam resources powered by AI
-            </p>
-            
-            {/* Enhanced Search Bar */}
-            <div className="max-w-4xl mx-auto">
-              <div className="flex flex-col sm:flex-row gap-4 bg-white/80 backdrop-blur-sm p-4 rounded-3xl shadow-lg border border-slate-200">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                  <Input
-                    placeholder="Search notes, papers, books, or ask AI anything..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-12 h-12 bg-slate-50 border-slate-200 text-lg rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-blue-50 rounded-xl"
-                  >
-                    <Brain className="w-5 h-5 text-blue-500" />
-                  </Button>
+          <div className="mb-8">
+            {/* Title and Description in One Row */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
+                  <Library className="w-8 h-8 text-white" />
                 </div>
-                <Button 
-                  variant="outline" 
-                  className="h-12 px-6 rounded-2xl border-slate-200 hover:bg-slate-50 text-slate-700"
-                  onClick={() => setShowFilters(!showFilters)}
-                >
-                  <Filter className="w-5 h-5 mr-2" />
-                  Filters
-                </Button>
-                <Button className="h-12 px-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300">
-                  <Upload className="w-5 h-5 mr-2" />
-                  Upload
-                </Button>
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-bold text-slate-900">
+                    Digital Learning Library
+                  </h1>
+                  <p className="text-base text-slate-600 mt-1">
+                    Access premium educational content, interactive study materials, and comprehensive exam resources powered by AI.
+                  </p>
+                </div>
               </div>
+            </div>
+
+            {/* Search Bar and Filters in One Row */}
+            <div className="flex gap-3">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                <Input
+                  placeholder="Search notes, papers, books..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-12 h-12 bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 text-base rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+                />
+              </div>
+              <Button
+                variant="outline"
+                className="h-12 px-6 rounded-xl border-slate-300 hover:bg-slate-50 text-slate-700 shadow-sm"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Filter className="w-5 h-5 mr-2" />
+                Filters
+              </Button>
+              <Button className="h-12 px-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+                <Upload className="w-5 h-5 mr-2" />
+                Upload
+              </Button>
             </div>
           </div>
 
@@ -685,7 +615,7 @@ const EnhancedLibraryPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">Category</label>
-                  <select 
+                  <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
                     className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
@@ -699,7 +629,7 @@ const EnhancedLibraryPage = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">Sort By</label>
-                  <select 
+                  <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                     className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
@@ -713,7 +643,7 @@ const EnhancedLibraryPage = () => {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">View Mode</label>
                   <div className="flex gap-2">
-                    <Button 
+                    <Button
                       variant={viewMode === 'grid' ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setViewMode('grid')}
@@ -722,7 +652,7 @@ const EnhancedLibraryPage = () => {
                       <Layers className="w-4 h-4 mr-2" />
                       Grid
                     </Button>
-                    <Button 
+                    <Button
                       variant={viewMode === 'list' ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setViewMode('list')}
@@ -784,258 +714,88 @@ const EnhancedLibraryPage = () => {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-          {/* Main Content */}
-          <div className="xl:col-span-3">
-            <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-8">
-              <TabsList className="grid w-full grid-cols-4 bg-white/50 backdrop-blur-sm p-1 rounded-2xl border border-slate-200">
-                <TabsTrigger value="all" className="flex items-center gap-2 text-sm font-medium rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300">
-                  <Library className="w-4 h-4" />
-                  <span className="hidden sm:inline">All Content</span>
-                </TabsTrigger>
-                <TabsTrigger value="notes" className="flex items-center gap-2 text-sm font-medium rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300">
-                  <FileText className="w-4 h-4" />
-                  <span className="hidden sm:inline">Study Notes</span>
-                </TabsTrigger>
-                <TabsTrigger value="papers" className="flex items-center gap-2 text-sm font-medium rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300">
-                  <GraduationCap className="w-4 h-4" />
-                  <span className="hidden sm:inline">Exam Papers</span>
-                </TabsTrigger>
-                <TabsTrigger value="books" className="flex items-center gap-2 text-sm font-medium rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300">
-                  <Book className="w-4 h-4" />
-                  <span className="hidden sm:inline">Reference Books</span>
-                </TabsTrigger>
-              </TabsList>
+        {/* Main Content - Full Width */}
+        <div>
+          <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-8">
+            <TabsList className="inline-flex items-center gap-2 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm">
+              <TabsTrigger
+                value="all"
+                className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-lg bg-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md text-slate-900 hover:bg-slate-50 transition-all duration-200"
+              >
+                <Library className="w-4 h-4" />
+                All Content
+              </TabsTrigger>
+              <TabsTrigger
+                value="notes"
+                className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-lg bg-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md text-slate-900 hover:bg-slate-50 transition-all duration-200"
+              >
+                <FileText className="w-4 h-4" />
+                Study Notes
+              </TabsTrigger>
+              <TabsTrigger
+                value="papers"
+                className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-lg bg-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md text-slate-900 hover:bg-slate-50 transition-all duration-200"
+              >
+                <GraduationCap className="w-4 h-4" />
+                Exam Papers
+              </TabsTrigger>
+              <TabsTrigger
+                value="books"
+                className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-lg bg-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md text-slate-900 hover:bg-slate-50 transition-all duration-200"
+              >
+                <Book className="w-4 h-4" />
+                Reference Books
+              </TabsTrigger>
+            </TabsList>
 
-              <TabsContent value="all" className="space-y-6 mt-8">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-900">All Learning Materials</h2>
-                    <p className="text-slate-600">{filteredMaterials.length} resources found</p>
-                  </div>
+            <TabsContent value="all" className="space-y-6 mt-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900">All Learning Materials</h2>
+                  <p className="text-slate-600">{filteredMaterials.length} resources found</p>
                 </div>
-                <div className={`grid grid-cols-1 ${viewMode === 'grid' ? 'md:grid-cols-2 xl:grid-cols-2' : 'md:grid-cols-1'} gap-6`}>
-                  {filteredMaterials.map(renderMaterialCard)}
-                </div>
-              </TabsContent>
+              </div>
+              <div className={`grid grid-cols-1 ${viewMode === 'grid' ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-1'} gap-6`}>
+                {filteredMaterials.map(renderMaterialCard)}
+              </div>
+            </TabsContent>
 
-              <TabsContent value="notes" className="space-y-6 mt-8">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-900">Study Notes</h2>
-                    <p className="text-slate-600">Premium educational content with AI-powered insights</p>
-                  </div>
+            <TabsContent value="notes" className="space-y-6 mt-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900">Study Notes</h2>
+                  <p className="text-slate-600">Premium educational content with AI-powered insights</p>
                 </div>
-                <div className={`grid grid-cols-1 ${viewMode === 'grid' ? 'md:grid-cols-2 xl:grid-cols-2' : 'md:grid-cols-1'} gap-6`}>
-                  {filteredMaterials.filter(item => item.contentType === 'note').map(renderMaterialCard)}
-                </div>
-              </TabsContent>
+              </div>
+              <div className={`grid grid-cols-1 ${viewMode === 'grid' ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-1'} gap-6`}>
+                {filteredMaterials.filter(item => item.contentType === 'note').map(renderMaterialCard)}
+              </div>
+            </TabsContent>
 
-              <TabsContent value="papers" className="space-y-6 mt-8">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-900">Exam Papers</h2>
-                    <p className="text-slate-600">Practice with real exam papers from top universities</p>
-                  </div>
+            <TabsContent value="papers" className="space-y-6 mt-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900">Exam Papers</h2>
+                  <p className="text-slate-600">Practice with real exam papers from top universities</p>
                 </div>
-                <div className={`grid grid-cols-1 ${viewMode === 'grid' ? 'md:grid-cols-2 xl:grid-cols-2' : 'md:grid-cols-1'} gap-6`}>
-                  {filteredMaterials.filter(item => item.contentType === 'paper').map(renderMaterialCard)}
-                </div>
-              </TabsContent>
+              </div>
+              <div className={`grid grid-cols-1 ${viewMode === 'grid' ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-1'} gap-6`}>
+                {filteredMaterials.filter(item => item.contentType === 'paper').map(renderMaterialCard)}
+              </div>
+            </TabsContent>
 
-              <TabsContent value="books" className="space-y-6 mt-8">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-900">Reference Books</h2>
-                    <p className="text-slate-600">Comprehensive textbooks and reference materials</p>
-                  </div>
+            <TabsContent value="books" className="space-y-6 mt-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900">Reference Books</h2>
+                  <p className="text-slate-600">Comprehensive textbooks and reference materials</p>
                 </div>
-                <div className={`grid grid-cols-1 ${viewMode === 'grid' ? 'md:grid-cols-2 xl:grid-cols-2' : 'md:grid-cols-1'} gap-6`}>
-                  {filteredMaterials.filter(item => item.contentType === 'book').map(renderMaterialCard)}
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
-
-          {/* Enhanced Sidebar */}
-          <div className="xl:col-span-1 space-y-6">
-            {/* Quick Categories */}
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden">
-              <CardHeader className="bg-slate-50 border-b border-slate-100">
-                <CardTitle className="text-slate-900 text-lg flex items-center gap-2">
-                  <Target className="w-5 h-5 text-blue-600" />
-                  Quick Categories
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 p-4">
-                {categories.slice(1, 6).map((category) => {
-                  const IconComponent = category.icon;
-                  return (
-                    <div 
-                      key={category.id}
-                      className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 ${
-                        selectedCategory === category.id ? 'bg-blue-50 border border-blue-200 shadow-sm' : 'hover:bg-slate-50 border border-transparent hover:border-slate-100'
-                      }`}
-                      onClick={() => setSelectedCategory(category.id)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${selectedCategory === category.id ? 'bg-blue-100' : 'bg-slate-100'}`}>
-                          <IconComponent className={`w-4 h-4 ${selectedCategory === category.id ? 'text-blue-600' : 'text-slate-500'}`} />
-                        </div>
-                        <span className={`text-sm font-medium ${selectedCategory === category.id ? 'text-blue-900' : 'text-slate-700'}`}>
-                          {category.name}
-                        </span>
-                      </div>
-                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                        selectedCategory === category.id ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'
-                      }`}>
-                        {category.count}
-                      </span>
-                    </div>
-                  );
-                })}
-              </CardContent>
-            </Card>
-
-            {/* AI Study Assistant */}
-            <Card className="bg-gradient-to-br from-purple-600 to-pink-600 text-white shadow-xl rounded-3xl overflow-hidden border-none">
-              <CardHeader className="border-b border-white/10">
-                <CardTitle className="text-white text-lg flex items-center gap-2">
-                  <Brain className="w-5 h-5" />
-                  AI Study Assistant
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 p-6">
-                <p className="text-sm text-purple-100">
-                  Get personalized study recommendations and instant answers to your questions.
-                </p>
-                <div className="space-y-3">
-                  <Button className="w-full bg-white text-purple-600 hover:bg-purple-50 border-none shadow-md">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Ask AI Anything
-                  </Button>
-                  <Button variant="outline" className="w-full border-white/30 text-white hover:bg-white/10 hover:text-white">
-                    <Lightbulb className="w-4 h-4 mr-2" />
-                    Get Study Plan
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Learning Progress */}
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden">
-              <CardHeader className="bg-slate-50 border-b border-slate-100">
-                <CardTitle className="text-slate-900 text-lg flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-green-600" />
-                  Learning Progress
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-5 p-6">
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-slate-600 font-medium">JavaScript Course</span>
-                      <span className="text-slate-900 font-bold">85%</span>
-                    </div>
-                    <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                      <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '85%' }}></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-slate-600 font-medium">React Patterns</span>
-                      <span className="text-slate-900 font-bold">92%</span>
-                    </div>
-                    <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                      <div className="bg-green-600 h-2.5 rounded-full" style={{ width: '92%' }}></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-slate-600 font-medium">Algorithms</span>
-                      <span className="text-slate-900 font-bold">68%</span>
-                    </div>
-                    <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                      <div className="bg-orange-600 h-2.5 rounded-full" style={{ width: '68%' }}></div>
-                    </div>
-                  </div>
-                </div>
-                <Button variant="outline" className="w-full border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl">
-                  <Activity className="w-4 h-4 mr-2" />
-                  View Full Report
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden">
-              <CardHeader className="bg-slate-50 border-b border-slate-100">
-                <CardTitle className="text-slate-900 text-lg flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-yellow-500" />
-                  Quick Actions
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-4">
-                <div className="space-y-3">
-                  <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md rounded-xl">
-                    <Upload className="w-4 h-4 mr-2" />
-                    Upload Content
-                  </Button>
-                  <Button variant="outline" className="w-full border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl">
-                    <BookMarked className="w-4 h-4 mr-2" />
-                    My Bookmarks
-                  </Button>
-                  <Button variant="outline" className="w-full border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl">
-                    <Download className="w-4 h-4 mr-2" />
-                    My Downloads
-                  </Button>
-                  <Button variant="outline" className="w-full border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl">
-                    <Users className="w-4 h-4 mr-2" />
-                    Study Groups
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Recent Activity */}
-            <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-xl rounded-3xl overflow-hidden">
-              <CardHeader className="bg-slate-50 border-b border-slate-100">
-                <CardTitle className="text-slate-900 text-lg flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-blue-500" />
-                  Recent Activity
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 p-4">
-                <div className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-xl transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100">
-                    <Download className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-slate-900">Downloaded React Notes</p>
-                    <p className="text-xs text-slate-500">2 hours ago</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-xl transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center border border-green-100">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-slate-900">Completed JS Course</p>
-                    <p className="text-xs text-slate-500">1 day ago</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-xl transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center border border-purple-100">
-                    <Star className="w-5 h-4 text-purple-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-slate-900">Rated ML Course</p>
-                    <p className="text-xs text-slate-500">3 days ago</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+              <div className={`grid grid-cols-1 ${viewMode === 'grid' ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-1'} gap-6`}>
+                {filteredMaterials.filter(item => item.contentType === 'book').map(renderMaterialCard)}
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>

@@ -25,6 +25,7 @@ import DashboardPage from './pages/DashboardPage';
 import AIToolsPage from './pages/AIToolsPage';
 import GamifiedPage from './pages/GamifiedPage';
 import StudyPage from './pages/StudyPage';
+import LibraryPage_Enhanced from './pages/LibraryPage_Enhanced';
 import IdeasPage from './pages/IdeasPage';
 import ATSResumeBuilder from './pages/ATSResumeBuilder';
 import InternshipPage from './pages/InternshipPage_new';
@@ -40,7 +41,7 @@ import QuestDetailPage from './pages/QuestDetailPage';
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
   const { user, isLoading } = useAuth();
-  
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -51,7 +52,7 @@ const ProtectedRoute = ({ children }) => {
       </div>
     );
   }
-  
+
   return user ? children : <Navigate to="/" replace />;
 };
 
@@ -88,7 +89,7 @@ function AppContent() {
             </main>
           </div>
         } />
-        
+
         {/* Protected Routes */}
         <Route path="/dashboard" element={
           <div className="min-h-screen bg-white">
@@ -105,7 +106,7 @@ function AppContent() {
             <Navigation />
             <main className="pt-16">
               <UserProtectedRoute>
-                <StudyPage />
+                <LibraryPage_Enhanced />
               </UserProtectedRoute>
             </main>
           </div>
@@ -222,7 +223,7 @@ function AppContent() {
             </main>
           </div>
         } />
-        
+
         {/* Coding Challenges Routes */}
         <Route path="/challenges" element={
           <ErrorBoundary>
@@ -234,14 +235,14 @@ function AppContent() {
             <ChallengePage />
           </ErrorBoundary>
         } />
-        
+
         {/* Admin Dashboard */}
         <Route path="/admin" element={
           <AdminProtectedRoute>
             <AdminDashboard />
           </AdminProtectedRoute>
         } />
-        
+
         {/* Admin Routes */}
         {AdminRoutes.map((route, index) => (
           <Route
@@ -254,7 +255,7 @@ function AppContent() {
             }
           />
         ))}
-        
+
         {/* Fallback route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
