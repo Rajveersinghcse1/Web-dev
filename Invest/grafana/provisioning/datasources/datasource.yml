@@ -1,0 +1,13 @@
+apiVersion: 1
+
+datasources:
+  - name: MySQL
+    type: mysql
+    access: proxy
+    url: mysql:3306
+    database: college_db
+    user: college_user
+    secureJsonData:
+      password: college_pass
+    isDefault: true
+    editable: true

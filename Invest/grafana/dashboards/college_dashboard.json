@@ -1,0 +1,403 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": { "type": "mysql", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "red", "value": 20 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "title": "📚 Total Students",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "mysql" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(*) as total_students FROM students;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "mysql", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 0 },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "title": "🏫 Total Classes",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "mysql" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(*) as total_classes FROM classes;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "mysql", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "purple", "value": null }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 0 },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "title": "📝 Total Enrollments",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "mysql" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(*) as total_enrollments FROM enrollments;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "mysql", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "orange", "value": null }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 0 },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "title": "🏢 Departments",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "mysql" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(DISTINCT department) as departments FROM students;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "mysql", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false }
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 5 },
+      "id": 5,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "right" },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": { "mode": "single" }
+      },
+      "title": "🎓 Students by Department",
+      "type": "piechart",
+      "targets": [
+        {
+          "datasource": { "type": "mysql" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT department, COUNT(*) as count FROM students GROUP BY department ORDER BY count DESC;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "mysql", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisLabel": "",
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "lineWidth": 1,
+            "showPoints": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 5 },
+      "id": 6,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "single" }
+      },
+      "title": "📊 Students by Year",
+      "type": "barchart",
+      "targets": [
+        {
+          "datasource": { "type": "mysql" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT CONCAT('Year ', year) as year_label, COUNT(*) as students FROM students GROUP BY year ORDER BY year;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "mysql", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "drawStyle": "bars",
+            "fillOpacity": 60,
+            "gradientMode": "hue",
+            "lineWidth": 1,
+            "showPoints": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 14 },
+      "id": 7,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "single" }
+      },
+      "title": "🪑 Class Enrollment Count vs Capacity",
+      "type": "barchart",
+      "targets": [
+        {
+          "datasource": { "type": "mysql" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT c.class_name, COUNT(e.id) as enrolled, c.max_capacity FROM classes c LEFT JOIN enrollments e ON c.id = e.class_id GROUP BY c.id, c.class_name, c.max_capacity ORDER BY c.class_name;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "mysql", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false }
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 14 },
+      "id": 8,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "right" },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": { "mode": "single" }
+      },
+      "title": "📈 Grade Distribution",
+      "type": "piechart",
+      "targets": [
+        {
+          "datasource": { "type": "mysql" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COALESCE(grade, 'Not Graded') as grade, COUNT(*) as count FROM enrollments GROUP BY grade ORDER BY grade;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "mysql", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": {
+            "align": "auto",
+            "cellOptions": { "type": "auto" },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{ "color": "green", "value": null }]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "department" },
+            "properties": [
+              { "id": "custom.width", "value": 100 }
+            ]
+          }
+        ]
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 23 },
+      "id": 9,
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": { "show": false, "reducer": ["sum"] },
+        "sortBy": [{ "desc": false, "displayName": "name" }]
+      },
+      "title": "📋 All Students",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": { "type": "mysql" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT s.id, s.name, s.email, s.phone, s.department, s.year, s.enrolled_date, COUNT(e.id) as total_classes FROM students s LEFT JOIN enrollments e ON s.id = e.student_id GROUP BY s.id, s.name, s.email, s.phone, s.department, s.year, s.enrolled_date ORDER BY s.name;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "mysql", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": {
+            "align": "auto",
+            "cellOptions": { "type": "auto" },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{ "color": "green", "value": null }]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 33 },
+      "id": 10,
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": { "show": false, "reducer": ["sum"] },
+        "sortBy": []
+      },
+      "title": "📖 Enrollment Details",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": { "type": "mysql" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT e.id, s.name as student_name, c.class_name, c.subject, c.teacher, COALESCE(e.grade, 'Pending') as grade, e.enrollment_date FROM enrollments e JOIN students s ON e.student_id = s.id JOIN classes c ON e.class_id = c.id ORDER BY s.name, c.class_name;",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["college", "students", "management"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1y", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "🎓 College Class Management Dashboard",
+  "uid": "college-dashboard",
+  "version": 1
+}

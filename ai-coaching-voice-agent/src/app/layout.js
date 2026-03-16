@@ -1,6 +1,4 @@
 import { Inter, Poppins } from "next/font/google";
-import { StackProvider, StackTheme } from "@stackframe/stack";
-import { stackClientApp } from "../stack/client";
 import Provider from "./provider";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -51,22 +49,18 @@ export default function RootLayout({ children }) {
       <body className={`${poppins.className} antialiased`}>
         <SkipLink targetId="main-content" />
         <ThemeProvider>
-          <StackProvider app={stackClientApp}>
-            <StackTheme>
-              <Provider>
-                <OfflineIndicator />
-                {children}
-                <Toaster />
-                <AchievementToastContainer />
-                <CommandPalette />
-                <InstallPrompt />
-                <PerformanceMonitor 
-                  enabled={process.env.NODE_ENV === 'development'} 
-                  position="bottom-right" 
-                />
-              </Provider>
-            </StackTheme>
-          </StackProvider>
+          <Provider>
+            <OfflineIndicator />
+            {children}
+            <Toaster />
+            <AchievementToastContainer />
+            <CommandPalette />
+            <InstallPrompt />
+            <PerformanceMonitor 
+              enabled={process.env.NODE_ENV === 'development'} 
+              position="bottom-right" 
+            />
+          </Provider>
         </ThemeProvider>
       </body>
     </html>

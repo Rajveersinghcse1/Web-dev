@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import styles from "./Footer.module.css";
-import { FaGithub, FaLinkedin, FaEnvelope, FaMapMarkerAlt, FaHeart } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaEnvelope, FaMapMarkerAlt, FaHeart, FaPhoneAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 export default function Footer() {
@@ -25,7 +25,7 @@ export default function Footer() {
                                 <FaGithub />
                             </motion.a>
                             <motion.a
-                                href="https://linkedin.com/in/rajveersinghcse"
+                                href="https://www.linkedin.com/in/rajveer-singh-cse/"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className={styles.socialIcon}
@@ -51,6 +51,7 @@ export default function Footer() {
                         <Link href="#experience">Experience</Link>
                         <Link href="#projects">Projects</Link>
                         <Link href="#skills">Skills</Link>
+                        <Link href="#blogs">Blogs</Link>
                         <Link href="#education">Education</Link>
                     </div>
 
@@ -65,6 +66,12 @@ export default function Footer() {
                         <p>
                             <FaMapMarkerAlt className={styles.inlineIcon} />
                             Jodhpur, India
+                        </p>
+                        <p>
+                            <FaPhoneAlt className={styles.inlineIcon} />
+                            <a href="tel:+918529348446" className={styles.emailLink}>
+                                +91 8529348446
+                            </a>
                         </p>
                         <div className={styles.connectMessage}>
                             <p>Connect with me on GitHub, LinkedIn, or via email!</p>

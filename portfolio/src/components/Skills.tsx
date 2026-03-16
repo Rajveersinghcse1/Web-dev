@@ -10,7 +10,7 @@ import {
     SiFastapi, SiNodedotjs, SiExpress,
     SiPandas, SiNumpy, SiScikitlearn, SiTensorflow,
     SiPostgresql, SiMongodb, SiRedis,
-    SiGit, SiDocker, SiPostman, SiLinux,
+    SiGit, SiDocker, SiPostman, SiLinux, SiGrafana, SiPrometheus,
     SiFramer, SiLangchain
 } from "react-icons/si";
 import { TbSql, TbDatabase, TbBrandFramerMotion, TbBrandPython } from "react-icons/tb";
@@ -51,6 +51,8 @@ const skillIcons: { [key: string]: IconType } = {
     // Tools
     "Git": SiGit,
     "Docker": SiDocker,
+    "Grafana": SiGrafana,
+    "Prometheus": SiPrometheus,
     "VS Code": VscCode,
     "Postman": SiPostman,
     "Linux": SiLinux,
@@ -89,6 +91,8 @@ const skillColors: { [key: string]: string } = {
     // Tools
     "Git": "#F05032",
     "Docker": "#2496ED",
+    "Grafana": "#F46800",
+    "Prometheus": "#E6522C",
     "VS Code": "#007ACC",
     "Postman": "#FF6C37",
     "Linux": "#FCC624",
@@ -196,6 +200,14 @@ const skillExperience: { [key: string]: { description: string; projects: string[
         description: "Containerization for consistent development and deployment.",
         projects: ["Container Deployment", "Development Environments", "Microservices", "DevOps"]
     },
+    "Grafana": {
+        description: "Dashboarding and visualization for application metrics, logs, and operational health.",
+        projects: ["Observability Dashboards", "Service Monitoring", "Performance Tracking", "Alert Visualization"]
+    },
+    "Prometheus": {
+        description: "Metrics collection and alerting for backend services and infrastructure monitoring.",
+        projects: ["Metrics Pipelines", "System Monitoring", "Alert Rules", "Reliability Tracking"]
+    },
     "VS Code": {
         description: "Primary IDE with extensions for efficient development workflow.",
         projects: ["Code Development", "Debugging", "Git Integration", "Extension Usage"]
@@ -264,6 +276,8 @@ const skillCategories = [
         skills: [
             { name: "Git", icon: <SiGit /> },
             { name: "Docker", icon: <SiDocker /> },
+            { name: "Grafana", icon: <SiGrafana /> },
+            { name: "Prometheus", icon: <SiPrometheus /> },
             { name: "VS Code", icon: <VscCode /> },
             { name: "Postman", icon: <SiPostman /> },
             { name: "Linux", icon: <SiLinux /> }

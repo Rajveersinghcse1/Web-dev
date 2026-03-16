@@ -1,0 +1,77 @@
+# ============================================================
+#  College Class Management System — Docker Compose
+# ============================================================
+
+version: "3.8"
+
+services:
+  # ── MySQL Database ─────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: college_mysql
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - college_net
+
+  # ── FastAPI Application ────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: college_api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - college_net
+
+  # ── Grafana Dashboard ─────────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: college_grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - college_net
+
+volumes:
+  mysql_data:
+  grafana_data:
+
+networks:
+  college_net:
+    driver: bridge

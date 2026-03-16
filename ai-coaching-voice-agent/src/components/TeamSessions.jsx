@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users, Trophy, Target, Zap, Crown, Medal, Star,
@@ -8,7 +8,7 @@ import {
   Mic, MicOff, Video, VideoOff, MessageSquare, Send, Download, PhoneOff, Monitor,
   Keyboard, Radio
 } from 'lucide-react';
-import { useUser } from "@stackframe/stack";
+import { UserContext } from '@/app/AuthProvider';
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { toast } from 'sonner';
@@ -17,13 +17,13 @@ import { useWebRTC } from '@/hooks/useWebRTC';
 import { useSessionTracking } from '@/hooks/useSessionTracking';
 
 export default function TeamSessions() {
-  const user = useUser();
+  const { user } = useContext(UserContext);
   const [view, setView] = useState('landing'); // landing, create, join, active, details
   const [sessionId, setSessionId] = useState(null);
   const [selectedHistorySession, setSelectedHistorySession] = useState(null);
 
   const activeSession = useQuery(api.teamSessions.get, sessionId ? { sessionId } : "skip");
-  const history = useQuery(api.teamSessions.getHistory, user ? { userId: user.id } : "skip");
+  const history = useQuery(api.teamSessions.getHistory, user ? { userId: user._id } : "skip");
 
   // If we have a session ID and data is loaded, show active view
   if (sessionId && activeSession) {

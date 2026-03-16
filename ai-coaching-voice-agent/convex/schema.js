@@ -5,6 +5,7 @@ export default defineSchema({
     users: defineTable({
         name: v.string(),
         email: v.string(),
+        password: v.optional(v.string()), // Hashed password for authentication (optional for existing users)
         image: v.optional(v.string()),
         credits: v.number(),
         subscriptionId: v.optional(v.string()),

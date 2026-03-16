@@ -11,6 +11,7 @@
 import type * as DiscussionRoom from "../DiscussionRoom.js";
 import type * as achievements from "../achievements.js";
 import type * as aptitude from "../aptitude.js";
+import type * as auth from "../auth.js";
 import type * as communityTests from "../communityTests.js";
 import type * as messages from "../messages.js";
 import type * as mockInterviews from "../mockInterviews.js";
@@ -33,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   DiscussionRoom: typeof DiscussionRoom;
   achievements: typeof achievements;
   aptitude: typeof aptitude;
+  auth: typeof auth;
   communityTests: typeof communityTests;
   messages: typeof messages;
   mockInterviews: typeof mockInterviews;

@@ -1,12 +1,13 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { UserButton, useUser } from "@stackframe/stack";
+import { useContext } from 'react';
+import { UserContext } from '@/app/AuthProvider';
 import { Brain, Mic, BookOpen, Languages, Heart, Sparkles, ArrowRight, CheckCircle2, Zap, Users, Globe } from "lucide-react";
 import Link from "next/link";
 import { BlurFade } from "@/components/ui/blur-fade";
 
 export default function Home() {
-  const user = useUser();
+  const { user } = useContext(UserContext);
 
   const features = [
     { icon: BookOpen, title: "Smart Lectures", desc: "AI-powered personalized lectures on any topic" },
@@ -41,15 +42,19 @@ export default function Home() {
                 <Link href="/dashboard">
                   <Button variant="ghost" className="text-gray-700 hover:text-violet-600 hover:bg-violet-50">Dashboard</Button>
                 </Link>
-                <UserButton />
+                <Link href="/dashboard">
+                  <Button className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700">
+                    Go to Dashboard
+                  </Button>
+                </Link>
               </>
             ) : (
               <>
-                <Link href="/handler/sign-in">
+                <Link href="/sign-in">
                   <Button variant="ghost" className="text-gray-700 hover:text-violet-600 hover:bg-violet-50">Sign In</Button>
                 </Link>
-                <Link href="/handler/sign-up">
-                  <Button className="bg-linear-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 shadow-lg shadow-violet-500/20">
+                <Link href="/sign-up">
+                  <Button className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 shadow-lg shadow-violet-500/20">
                     Get Started
                   </Button>
                 </Link>
@@ -76,7 +81,7 @@ export default function Home() {
                 </span>
               </h1>
               <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto font-medium">
-                Experience personalized learning through natural voice conversations. 
+                Experience personalized learning thrural voice conversations. 
                 Master interviews, languages, and new topics with your AI companion.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">

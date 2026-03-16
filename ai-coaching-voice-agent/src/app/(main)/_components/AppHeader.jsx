@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import { UserButton } from '@stackframe/stack';
+import { UserButton } from '@/components/UserButton';
 import { Brain, Home, ChevronRight, Users } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

@@ -1,17 +1,17 @@
 "use client";
 
-import React from 'react';
+import React, { useContext } from 'react';
 import MockInterviewSystem from '@/components/MockInterviewSystem';
-import { useUser } from '@stackframe/stack';
+import { UserContext } from '@/app/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 export default function MockInterviewPage() {
-    const user = useUser();
+    const { user, isLoading } = useContext(UserContext);
     const router = useRouter();
 
     // Loading state
-    if (user === undefined) {
+    if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
                 <div className="text-center">
@@ -46,5 +46,5 @@ export default function MockInterviewPage() {
     }
 
     // User authenticated - show interview system
-    return <MockInterviewSystem userId={user.id} />;
+    return <MockInterviewSystem userId={user._id} />;
 }

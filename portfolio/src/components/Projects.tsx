@@ -38,7 +38,7 @@ const projects = [
         description: "Voice-first coaching platform with STT/TTS pipelines and Gemini AI for real-time mock interviews and feedback.",
         stack: ["Next.js 14", "Convex", "FastAPI", "AssemblyAI", "gTTS"],
         links: {
-            github: "https://github.com/Rajveersinghcse1/Webdev/tree/main/ai-coaching-voiceagent",
+            github: "https://github.com/Rajveersinghcse1/Web-dev/tree/main/ai-coaching-voice-agent",
             live: "https://placement-trainee-git-main-rajveersinghcse1s-projects.vercel.app/"
         }
     },
@@ -49,7 +49,7 @@ const projects = [
         description: "Full-stack education hub with gamification, quizzes, and live code editor for integrated learning paths.",
         stack: ["React", "Next.js", "FastAPI", "MongoDB", "Redis"],
         links: {
-            github: "https://github.com/Rajveersinghcse1/Webdev/tree/main/Coding%20Society",
+            github: "https://github.com/Rajveersinghcse1/Web-dev/tree/main/Coding%20Society",
             live: "https://web-dev3390.vercel.app"
         }
     },

@@ -17,8 +17,8 @@ const contactItems = [
     {
         icon: FaLinkedin,
         title: "LinkedIn",
-        content: "linkedin.com/in/rajveersinghcse",
-        href: "https://linkedin.com/in/rajveersinghcse",
+        content: "linkedin.com/in/rajveer-singh-cse/",
+        href: "https://www.linkedin.com/in/rajveer-singh-cse/",
         color: "#0A66C2"
     },
     {

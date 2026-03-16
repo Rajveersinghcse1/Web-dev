@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { AuthModal } from './AuthModal';
+import AuthForm from './AuthForm';
 import { 
   Brain, 
   Target, 
@@ -36,12 +36,14 @@ const staggerContainer = {
 
 export function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
   const { user, isLoading } = useAuth();
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup');
+  const [showAuthForm, setShowAuthForm] = useState(false);
 
-  const openAuth = (mode: 'signin' | 'signup') => {
-    setAuthMode(mode);
-    setShowAuthModal(true);
+  if (showAuthForm) {
+    return <AuthForm onBack={() => setShowAuthForm(false)} />;
+  }
+
+  const openAuth = () => {
+    setShowAuthForm(true);
   };
 
   const features = [
@@ -120,13 +122,6 @@ export function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white overflow-x-hidden">
-      {/* Auth Modal */}
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
-        defaultMode={authMode}
-      />
-
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -162,13 +157,13 @@ export function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
               ) : (
                 <>
                   <button
-                    onClick={() => openAuth('signin')}
+                    onClick={openAuth}
                     className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-emerald-600 transition-colors"
                   >
                     Sign In
                   </button>
                   <button
-                    onClick={() => openAuth('signup')}
+                    onClick={openAuth}
                     className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-emerald-200 transition-all"
                   >
                     Get Started Free

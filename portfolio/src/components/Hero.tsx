@@ -55,8 +55,8 @@ export default function Hero() {
                     <Link href="#projects" className={styles.primaryBtn}>
                         View My Work
                     </Link>
-                    <Link href="#contact" className={styles.secondaryBtn}>
-                        Contact Me
+                    <Link href="#blogs" className={styles.secondaryBtn}>
+                        Read Blogs
                     </Link>
                 </motion.div>
             </motion.div>

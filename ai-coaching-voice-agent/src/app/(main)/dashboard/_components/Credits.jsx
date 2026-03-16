@@ -1,15 +1,13 @@
 "use client";
 import React, { useContext } from 'react';
 import { UserContext } from '@/app/AuthProvider';
-import { useUser } from '@stackframe/stack';
 import Image from 'next/image';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Wallet2, User, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 
 function Credits() {
-    const { userData, isLoading, error, retry } = useContext(UserContext);
-    const user = useUser();
+    const { userData, user, isLoading, error } = useContext(UserContext);
 
     const CalculateProgress = () => {
         const credits = userData?.credits || 0;
@@ -58,9 +56,9 @@ function Credits() {
         <div className="space-y-4">
             {/* User Info */}
             <div className="flex gap-4 items-center">
-                {user?.profileImageUrl ? (
+                {user?.image ? (
                     <Image
-                        src={user.profileImageUrl}
+                        src={user.image}
                         alt="user"
                         width={60}
                         height={60}
@@ -72,8 +70,8 @@ function Credits() {
                     </div>
                 )}
                 <div>
-                    <h2 className="text-lg font-bold">{user?.displayName || 'User'}</h2>
-                    <h2 className="text-gray-500 text-sm">{user?.primaryEmail || 'No email'}</h2>
+                    <h2 className="text-lg font-bold">{user?.name || 'User'}</h2>
+                    <h2 className="text-gray-500 text-sm">{user?.email || 'No email'}</h2>
                 </div>
             </div>
 
